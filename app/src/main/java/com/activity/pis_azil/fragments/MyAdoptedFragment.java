@@ -1,4 +1,5 @@
-package com.activity.pis_azil;
+/*
+package com.activity.pis_azil.fragments;
 
 import android.os.Bundle;
 
@@ -16,12 +17,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.activity.pis_azil.ApiClient;
-import com.activity.pis_azil.ApiService;
 import com.activity.pis_azil.R;
+import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.adapters.MyAdoptedAnimalsAdapter;
 import com.activity.pis_azil.models.AnimalModel;
 import com.activity.pis_azil.models.UserModel;
+import com.activity.pis_azil.network.ApiService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -179,3 +180,4 @@ public class MyAdoptedFragment extends Fragment {
         }
     }
 }
+*/

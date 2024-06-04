@@ -1,106 +1,81 @@
 package com.activity.pis_azil.models;
 
 public class AnimalModel {
-    private String animalId;
-    private String animalName;
-    private String animalType;
-    private String currentDate;
-    private String currentTime;
-    private String imgUrl;
-    private boolean isAdopted;
-    private String adopterId;
-    private String adopterName;
-    private String documentId;
+    private int idLjubimca;
+    private int idUdomitelja;
+    private String imeLjubimca;
+    private String tipLjubimca;
+    private String opisLjubimca;
+    private boolean udomljen;
+    private String imgUrl; // Promijenjeno iz int u String za URL
 
-    // Constructors, getters and setters
-
+    // Constructors, getters, and setters
     public AnimalModel() {}
 
-    public AnimalModel(String animalId, String animalName, String animalType, String imgUrl, boolean isAdopted) {
-        this.animalId = animalId;
-        this.animalName = animalName;
-        this.animalType = animalType;
-        this.imgUrl = imgUrl;
-        this.isAdopted = isAdopted;
+    public AnimalModel(int idLjubimca, int idUdomitelja, String imeLjubimca, String tipLjubimca, String opisLjubimca, boolean udomljen, String imgUrl) {
+        this.idLjubimca = idLjubimca;
+        this.idUdomitelja = idUdomitelja;
+        this.imeLjubimca = imeLjubimca;
+        this.tipLjubimca = tipLjubimca;
+        this.opisLjubimca = opisLjubimca;
+        this.udomljen = udomljen;
+        this.imgUrl = imgUrl; // Inicijalizacija imgUrl
     }
 
-    public String getAnimalId() {
-        return animalId;
+    // Getteri i setteri
+    public int getIdLjubimca() {
+        return idLjubimca;
     }
 
-    public void setAnimalId(String animalId) {
-        this.animalId = animalId;
+    public void setIdLjubimca(int idLjubimca) {
+        this.idLjubimca = idLjubimca;
     }
 
-    public String getAnimalName() {
-        return animalName;
+    public int getIdUdomitelja() {
+        return idUdomitelja;
     }
 
-    public void setAnimalName(String animalName) {
-        this.animalName = animalName;
+    public void setIdUdomitelja(int idUdomitelja) {
+        this.idUdomitelja = idUdomitelja;
     }
 
-    public String getAnimalType() {
-        return animalType;
+    public String getImeLjubimca() {
+        return imeLjubimca;
     }
 
-    public void setAnimalType(String animalType) {
-        this.animalType = animalType;
+    public void setImeLjubimca(String imeLjubimca) {
+        this.imeLjubimca = imeLjubimca;
     }
 
-    public String getCurrentDate() {
-        return currentDate;
+    public String getTipLjubimca() {
+        return tipLjubimca;
     }
 
-    public void setCurrentDate(String currentDate) {
-        this.currentDate = currentDate;
+    public void setTipLjubimca(String tipLjubimca) {
+        this.tipLjubimca = tipLjubimca;
     }
 
-    public String getCurrentTime() {
-        return currentTime;
+    public String getOpisLjubimca() {
+        return opisLjubimca;
     }
 
-    public void setCurrentTime(String currentTime) {
-        this.currentTime = currentTime;
+    public void setOpisLjubimca(String opisLjubimca) {
+        this.opisLjubimca = opisLjubimca;
     }
 
-    public String getImg_url() {
-        return imgUrl;
+    public boolean isUdomljen() {
+        return udomljen;
     }
 
-    public void setImg_url(String imgUrl) {
-        this.imgUrl = imgUrl;
+    public void setUdomljen(boolean udomljen) {
+        this.udomljen = udomljen;
     }
 
-    public boolean isAdopted() {
-        return isAdopted;
+    public String getImgUrl() {
+        return imgUrl; // Getter za imgUrl
     }
 
-    public void setAdopted(boolean adopted) {
-        isAdopted = adopted;
-    }
-
-    public String getAdopterId() {
-        return adopterId;
-    }
-
-    public void setAdopterId(String adopterId) {
-        this.adopterId = adopterId;
-    }
-
-    public String getAdopterName() {
-        return adopterName;
-    }
-
-    public void setAdopterName(String adopterName) {
-        this.adopterName = adopterName;
-    }
-
-    public String getDocumentId() {
-        return documentId;
-    }
-
-    public void setDocumentId(String documentId) {
-        this.documentId = documentId;
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl; // Setter za imgUrl
     }
 }

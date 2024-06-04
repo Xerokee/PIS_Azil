@@ -1,13 +1,13 @@
-package com.activity.pis_azil;
+package com.activity.pis_azil.network;
 
 import com.activity.pis_azil.models.MyAdoptionModel;
 import com.activity.pis_azil.models.UserModel;
-import com.activity.pis_azil.models.ViewAllModel;
 import com.activity.pis_azil.models.AnimalModel;
 import com.activity.pis_azil.models.PopularModel;
 import com.activity.pis_azil.models.RecommendedModel;
 import com.activity.pis_azil.models.HomeCategory;
 import com.activity.pis_azil.models.NavCategoryModel;
+import com.activity.pis_azil.models.ViewAllModel;
 
 import java.util.List;
 import java.util.Map;
@@ -38,10 +38,10 @@ public interface ApiService {
     Call<Void> deleteUser(@Path("id") int id);
 
     @GET("azil/KucniLjubimci")
-    Call<List<ViewAllModel>> getAllAnimals();
+    Call<List<AnimalModel>> getAllAnimals();
 
     @GET("azil/KucniLjubimci/{type}")
-    Call<List<ViewAllModel>> getAnimalsByType(@Path("type") String type);
+    Call<List<AnimalModel>> getAnimalsByType(@Path("type") String type);
 
     @POST("azil/KucniLjubimci/add")
     Call<Void> addAnimal(@Body ViewAllModel animal);
@@ -76,7 +76,7 @@ public interface ApiService {
     Call<List<RecommendedModel>> getRecommendedAnimals();
 
     @GET("azil/SearchAnimals")
-    Call<List<ViewAllModel>> searchAnimals(@Query("keyword") String keyword);
+    Call<List<AnimalModel>> searchAnimals(@Query("keyword") String keyword);
 
     @GET("azil/NavCategories")
     Call<List<NavCategoryModel>> getNavCategories();

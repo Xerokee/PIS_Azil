@@ -1,4 +1,5 @@
-package com.activity.pis_azil;
+// MainActivity.java
+package com.activity.pis_azil.activities;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -20,9 +21,11 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.activity.pis_azil.R;
 import com.activity.pis_azil.models.UserModel;
+import com.activity.pis_azil.network.ApiClient;
+import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.ui.profile.ProfileFragment;
-import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.List;

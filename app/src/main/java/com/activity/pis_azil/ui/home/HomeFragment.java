@@ -1,33 +1,25 @@
 package com.activity.pis_azil.ui.home;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.activity.pis_azil.ApiClient;
-import com.activity.pis_azil.ApiService;
 import com.activity.pis_azil.R;
-import com.activity.pis_azil.adapters.HomeAdapter;
-import com.activity.pis_azil.adapters.PopularAdapter;
-import com.activity.pis_azil.adapters.RecommendedAdapter;
-import com.activity.pis_azil.adapters.ViewAllAdapter;
-import com.activity.pis_azil.models.HomeCategory;
-import com.activity.pis_azil.models.PopularModel;
-import com.activity.pis_azil.models.RecommendedModel;
-import com.activity.pis_azil.models.ViewAllModel;
+import com.activity.pis_azil.adapters.AnimalsAdapter;
+import com.activity.pis_azil.models.AnimalModel;
+import com.activity.pis_azil.network.ApiClient;
+import com.activity.pis_azil.network.ApiService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,164 +30,82 @@ import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
 
-    ScrollView scrollView;
-    ProgressBar progressBar;
-    RecyclerView popularRec, homeCatRec, recommendedRec;
-    ApiService apiService;
+    private RecyclerView recyclerView;
+    private AnimalsAdapter animalsAdapter;
+    private List<AnimalModel> animalModelList = new ArrayList<>();
+    private ApiService apiService;
+    private ProgressBar progressBar;
+    private EditText searchBox;
 
-    List<PopularModel> popularModelList;
-    PopularAdapter popularAdapters;
-
-    EditText searchBox;
-    private List<ViewAllModel> viewAllModelList;
-    private RecyclerView recyclerViewSearch;
-    private ViewAllAdapter viewAllAdapter;
-
-    List<HomeCategory> categoryList;
-    HomeAdapter homeAdapter;
-
-    List<RecommendedModel> recommendedModelList;
-    RecommendedAdapter recommendedAdapter;
-
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
+    @SuppressLint("MissingInflatedId")
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        apiService = ApiClient.getClient().create(ApiService.class);
 
-        popularRec = root.findViewById(R.id.pop_rec);
-        homeCatRec = root.findViewById(R.id.explore_rec_);
-        recommendedRec = root.findViewById(R.id.recommended_rec);
-        scrollView = root.findViewById(R.id.scroll_view);
+        recyclerView = root.findViewById(R.id.recycler_view);
         progressBar = root.findViewById(R.id.progressbar);
-
-        progressBar.setVisibility(View.VISIBLE);
-        scrollView.setVisibility(View.GONE);
-
-        popularRec.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
-        popularModelList = new ArrayList<>();
-        popularAdapters = new PopularAdapter(getActivity(), popularModelList);
-        popularRec.setAdapter(popularAdapters);
-
-        fetchPopularAnimals();
-
-        homeCatRec.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
-        categoryList = new ArrayList<>();
-        homeAdapter = new HomeAdapter(getActivity(), categoryList);
-        homeCatRec.setAdapter(homeAdapter);
-
-        fetchHomeCategories();
-
-        recommendedRec.setLayoutManager(new LinearLayoutManager(getActivity(), RecyclerView.HORIZONTAL, false));
-        recommendedModelList = new ArrayList<>();
-        recommendedAdapter = new RecommendedAdapter(getActivity(), recommendedModelList);
-        recommendedRec.setAdapter(recommendedAdapter);
-
-        fetchRecommendedAnimals();
-
-        recyclerViewSearch = root.findViewById(R.id.search_rec);
         searchBox = root.findViewById(R.id.search_box);
-        viewAllModelList = new ArrayList<>();
-        viewAllAdapter = new ViewAllAdapter(getContext(), viewAllModelList);
-        recyclerViewSearch.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerViewSearch.setAdapter(viewAllAdapter);
-        recyclerViewSearch.setHasFixedSize(true);
-        searchBox.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        animalsAdapter = new AnimalsAdapter(animalModelList, getContext());
+        recyclerView.setAdapter(animalsAdapter);
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                if (s.toString().isEmpty()) {
-                    viewAllModelList.clear();
-                    viewAllAdapter.notifyDataSetChanged();
-                } else {
-                    searchAnimal(s.toString());
-                }
-            }
-        });
+        apiService = ApiClient.getClient().create(ApiService.class);
+        loadAllAnimals();
 
         return root;
     }
 
-    private void fetchPopularAnimals() {
-        apiService.getPopularAnimals().enqueue(new Callback<List<PopularModel>>() {
+    private void loadAllAnimals() {
+        progressBar.setVisibility(View.VISIBLE);
+        apiService.getAllAnimals().enqueue(new Callback<List<AnimalModel>>() {
             @Override
-            public void onResponse(Call<List<PopularModel>> call, Response<List<PopularModel>> response) {
+            public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
+                progressBar.setVisibility(View.GONE);
                 if (response.isSuccessful() && response.body() != null) {
-                    popularModelList.addAll(response.body());
-                    popularAdapters.notifyDataSetChanged();
-
-                    progressBar.setVisibility(View.GONE);
-                    scrollView.setVisibility(View.VISIBLE);
+                    animalModelList.clear(); // Ovo će osigurati da se lista osvježi
+                    List<AnimalModel> animals = response.body();
+                    for (AnimalModel animal : animals) {
+                        // Ensure the URL is properly formatted
+                        if (!animal.getImgUrl().startsWith("http")) {
+                            animal.setImgUrl("http://192.168.75.1:8000" + animal.getImgUrl().substring(animal.getImgUrl().lastIndexOf('/')));
+                        }
+                    }
+                    animalModelList.addAll(animals);
+                    animalsAdapter.notifyDataSetChanged();
                 } else {
-                    Toast.makeText(getActivity(), "Error: " + response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "No animals found", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<List<PopularModel>> call, Throwable t) {
-                Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(getContext(), "Failed to load animals", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void fetchHomeCategories() {
-        apiService.getHomeCategories().enqueue(new Callback<List<HomeCategory>>() {
+    private void searchAnimals(String keyword) {
+        progressBar.setVisibility(View.VISIBLE);
+        apiService.searchAnimals(keyword).enqueue(new Callback<List<AnimalModel>>() {
             @Override
-            public void onResponse(Call<List<HomeCategory>> call, Response<List<HomeCategory>> response) {
+            public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
+                progressBar.setVisibility(View.GONE);
                 if (response.isSuccessful() && response.body() != null) {
-                    categoryList.addAll(response.body());
-                    homeAdapter.notifyDataSetChanged();
+                    animalModelList.clear();
+                    animalModelList.addAll(response.body());
+                    animalsAdapter.notifyDataSetChanged();
                 } else {
-                    Toast.makeText(getActivity(), "Error: " + response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "No animals found", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<List<HomeCategory>> call, Throwable t) {
-                Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void fetchRecommendedAnimals() {
-        apiService.getRecommendedAnimals().enqueue(new Callback<List<RecommendedModel>>() {
-            @Override
-            public void onResponse(Call<List<RecommendedModel>> call, Response<List<RecommendedModel>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    recommendedModelList.addAll(response.body());
-                    recommendedAdapter.notifyDataSetChanged();
-                } else {
-                    Toast.makeText(getActivity(), "Error: " + response.message(), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<RecommendedModel>> call, Throwable t) {
-                Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void searchAnimal(String keyword) {
-        apiService.searchAnimals(keyword).enqueue(new Callback<List<ViewAllModel>>() {
-            @Override
-            public void onResponse(Call<List<ViewAllModel>> call, Response<List<ViewAllModel>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    viewAllModelList.clear();
-                    viewAllModelList.addAll(response.body());
-                    viewAllAdapter.notifyDataSetChanged();
-                } else {
-                    Toast.makeText(getActivity(), "Error: " + response.message(), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<ViewAllModel>> call, Throwable t) {
-                Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(getContext(), "Failed to search animals", Toast.LENGTH_SHORT).show();
             }
         });
     }

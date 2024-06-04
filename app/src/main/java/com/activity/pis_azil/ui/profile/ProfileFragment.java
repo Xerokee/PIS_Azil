@@ -22,10 +22,9 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.activity.pis_azil.ApiClient;
-import com.activity.pis_azil.ApiService;
+import com.activity.pis_azil.network.ApiClient;
+import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.R;
-import com.activity.pis_azil.activities.HomeActivity;
 import com.activity.pis_azil.models.UserModel;
 import com.bumptech.glide.Glide;
 

@@ -15,8 +15,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.activity.pis_azil.ApiClient;
-import com.activity.pis_azil.ApiService;
+import com.activity.pis_azil.network.ApiClient;
+import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.models.MyAdoptionModel;
 import com.activity.pis_azil.models.UserModel;

@@ -1,8 +1,8 @@
-package com.activity.pis_azil;
+/*
+package com.activity.pis_azil.fragments;
 
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,11 +14,12 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.activity.pis_azil.ApiClient;
-import com.activity.pis_azil.ApiService;
+import com.activity.pis_azil.R;
+import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.adapters.MyAdoptionAdapter;
 import com.activity.pis_azil.models.MyAdoptionModel;
 import com.activity.pis_azil.models.AnimalModel;
+import com.activity.pis_azil.network.ApiService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +72,7 @@ public class MyAnimalsFragment extends Fragment {
                         adoption.setAnimalType(animal.getAnimalType());
                         adoption.setCurrentDate(animal.getCurrentDate());
                         adoption.setCurrentTime(animal.getCurrentTime());
-                        adoption.setImg_url(animal.getImg_url());
+                        adoption.setImg_url(animal.getImgUrl());
                         adoption.setAdopted(animal.isAdopted());
                         cartModelList.add(adoption);
                     }
@@ -90,3 +91,4 @@ public class MyAnimalsFragment extends Fragment {
         });
     }
 }
+*/

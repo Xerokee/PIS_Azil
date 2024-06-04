@@ -1,6 +1,5 @@
 package com.activity.pis_azil.activities;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -13,9 +12,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.activity.pis_azil.ApiClient;
-import com.activity.pis_azil.ApiService;
-import com.activity.pis_azil.MainActivity;
+import com.activity.pis_azil.network.ApiClient;
+import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.models.UserModel;
 

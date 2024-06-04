@@ -1,4 +1,4 @@
-package com.activity.pis_azil;
+package com.activity.pis_azil.fragments;
 
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
@@ -12,10 +12,11 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.activity.pis_azil.ApiClient;
-import com.activity.pis_azil.ApiService;
+import com.activity.pis_azil.R;
+import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.models.ViewAllModel;
+import com.activity.pis_azil.network.ApiService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import retrofit2.Call;

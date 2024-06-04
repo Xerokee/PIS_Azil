@@ -11,8 +11,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.activity.pis_azil.ApiClient;
-import com.activity.pis_azil.ApiService;
+import com.activity.pis_azil.network.ApiClient;
+import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.adapters.NavCategoryAdapter;
 import com.activity.pis_azil.models.NavCategoryModel;

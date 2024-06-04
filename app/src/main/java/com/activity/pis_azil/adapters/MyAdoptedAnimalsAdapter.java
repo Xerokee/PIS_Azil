@@ -1,8 +1,7 @@
-package com.activity.pis_azil.adapters;
+/*package com.activity.pis_azil.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +13,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.activity.pis_azil.ApiClient;
-import com.activity.pis_azil.ApiService;
+import com.activity.pis_azil.network.ApiClient;
+import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.models.AnimalModel;
-import com.activity.pis_azil.models.MyAdoptionModel;
 import com.activity.pis_azil.models.UserModel;
 import com.bumptech.glide.Glide;
 
@@ -53,7 +51,7 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
         AnimalModel animal = adoptedAnimalsList.get(position);
         holder.animalName.setText(animal.getAnimalName());
         holder.animalType.setText(animal.getAnimalType());
-        Glide.with(context).load(animal.getImg_url()).into(holder.animalImage);
+        Glide.with(context).load(animal.getImgUrl()).into(holder.animalImage);
 
         if (animal.isAdopted()) {
             holder.tvAdoptedStatus.setText("Udomljeno");
@@ -173,3 +171,4 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
         notifyDataSetChanged();
     }
 }
+*/

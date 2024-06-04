@@ -12,6 +12,12 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
+        android:id="@+id/nav_animal_list"
+        android:name="com.activity.pis_azil.fragments.AnimalListFragment"
+        android:label="Animal List"
+        tools:layout="@layout/fragment_animal_list" />
+
+    <fragment
         android:id="@+id/nav_profile"
         android:name="com.activity.pis_azil.ui.profile.ProfileFragment"
         android:label="@string/profil"
@@ -23,17 +29,17 @@
         tools:layout="@layout/fragment_category" />
     <fragment
         android:id="@+id/nav_new_products"
-        android:name="com.activity.pis_azil.NewAnimalsFragment"
+        android:name="com.activity.pis_azil.fragments.NewAnimalsFragment"
         android:label="Nove Životinje"
         tools:layout="@layout/fragment_new_animals" />
     <fragment
         android:id="@+id/nav_my_orders"
-        android:name="com.activity.pis_azil.MyAdoptedFragment"
+        android:name="com.activity.pis_azil.fragments.MyAdoptedFragment"
         android:label="Sklonište"
         tools:layout="@layout/fragment_my_adopted" />
     <fragment
         android:id="@+id/nav_my_carts"
-        android:name="com.activity.pis_azil.MyAnimalsFragment"
+        android:name="com.activity.pis_azil.fragments.MyAnimalsFragment"
         android:label="Lista Životinja"
         tools:layout="@layout/fragment_my_adoptions" />
 </navigation>
