@@ -1,3 +1,4 @@
+/*
 package com.activity.pis_azil.models;
 
 public class PopularModel {
@@ -58,3 +59,4 @@ public class PopularModel {
         this.img_url = img_url;
     }
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package com.activity.pis_azil.models;
 
 public class HomeCategory {
@@ -40,3 +41,4 @@ public class HomeCategory {
         this.type = type;
     }
 }
+*/

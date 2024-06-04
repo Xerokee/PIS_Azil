@@ -3,10 +3,6 @@ package com.activity.pis_azil.network;
 import com.activity.pis_azil.models.MyAdoptionModel;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.models.AnimalModel;
-import com.activity.pis_azil.models.PopularModel;
-import com.activity.pis_azil.models.RecommendedModel;
-import com.activity.pis_azil.models.HomeCategory;
-import com.activity.pis_azil.models.NavCategoryModel;
 import com.activity.pis_azil.models.ViewAllModel;
 
 import java.util.List;
@@ -65,19 +61,6 @@ public interface ApiService {
     @POST("azil/AdoptedAnimals/add")
     Call<Void> addAdoption(@Body MyAdoptionModel adoption);
 
-    // Methods for HomeFragment and CategoryFragment
-    @GET("azil/PopularAnimals")
-    Call<List<PopularModel>> getPopularAnimals();
-
-    @GET("azil/HomeCategories")
-    Call<List<HomeCategory>> getHomeCategories();
-
-    @GET("azil/RecommendedAnimals")
-    Call<List<RecommendedModel>> getRecommendedAnimals();
-
     @GET("azil/SearchAnimals")
     Call<List<AnimalModel>> searchAnimals(@Query("keyword") String keyword);
-
-    @GET("azil/NavCategories")
-    Call<List<NavCategoryModel>> getNavCategories();
 }

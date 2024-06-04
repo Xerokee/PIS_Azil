@@ -1,3 +1,4 @@
+/*
 package com.activity.pis_azil.models;
 
 public class NavCategoryModel {
@@ -48,3 +49,4 @@ public class NavCategoryModel {
         this.img_url = img_url;
     }
 }
+*/

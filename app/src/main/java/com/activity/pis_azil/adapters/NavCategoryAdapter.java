@@ -1,3 +1,4 @@
+/*
 package com.activity.pis_azil.adapters;
 
 import android.content.Context;
@@ -67,3 +68,4 @@ public class NavCategoryAdapter extends RecyclerView.Adapter<NavCategoryAdapter.
         }
     }
 }
+*/

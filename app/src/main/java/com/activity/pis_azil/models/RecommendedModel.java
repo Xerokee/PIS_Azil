@@ -1,3 +1,4 @@
+/*
 package com.activity.pis_azil.models;
 
 public class RecommendedModel {
@@ -58,3 +59,4 @@ public class RecommendedModel {
         this.img_url = img_url;
     }
 }
+*/

@@ -1,4 +1,6 @@
+/*
 package com.activity.pis_azil.adapters;
+
 
 import android.content.Context;
 import android.content.Intent;
@@ -65,3 +67,4 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.ViewHolder> {
         }
     }
 }
+*/

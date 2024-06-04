@@ -1,3 +1,4 @@
+/*
 package com.activity.pis_azil.ui.category;
 
 import android.os.Bundle;
@@ -68,3 +69,4 @@ public class CategoryFragment extends Fragment {
         });
     }
 }
+*/
