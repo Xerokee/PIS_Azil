@@ -18,49 +18,48 @@ import retrofit2.http.DELETE;
 import retrofit2.http.Query;
 
 public interface ApiService {
-    @GET("azil/Korisnici")
+    @GET("Korisnici")
     Call<List<UserModel>> getAllUsers();
 
-    @GET("azil/Korisnici/user_id/{id_korisnika}")
+    @GET("Korisnici/user_id/{id_korisnika}")
     Call<UserModel> getUserById(@Path("id_korisnika") int id);
 
-    @POST("azil/Korisnik/add")
+    @POST("Korisnici/add")
     Call<Void> addUser(@Body UserModel user);
 
-    @PUT("azil/Korisnici/update/{id}")
+    @PUT("Korisnici/update/{id}")
     Call<Void> updateUser(@Path("id") int id, @Body Map<String, Object> userUpdates);
 
-    @DELETE("azil/Korisnici/delete/{id}")
+    @DELETE("Korisnici/delete/{id}")
     Call<Void> deleteUser(@Path("id") int id);
 
-    @GET("azil/KucniLjubimci")
+    @GET("KucniLjubimci")
     Call<List<AnimalModel>> getAllAnimals();
 
-    @GET("azil/KucniLjubimci/{type}")
+    @GET("KucniLjubimci/{type}")
     Call<List<AnimalModel>> getAnimalsByType(@Path("type") String type);
 
-    @POST("azil/KucniLjubimci/add")
+    @POST("KucniLjubimci/add")
     Call<Void> addAnimal(@Body ViewAllModel animal);
 
-    @PUT("azil/KucniLjubimci/update/{id}")
+    @PUT("KucniLjubimci/update/{id}")
     Call<Void> updateAnimal(@Path("id") String id, @Body Map<String, Object> updateData);
 
-    @DELETE("azil/KucniLjubimci/delete/{id}")
+    @DELETE("KucniLjubimci/delete/{id}")
     Call<Void> deleteAnimal(@Path("id") String id);
 
-    // New methods
-    @GET("azil/AdoptedAnimals")
+    @GET("AdoptedAnimals")
     Call<List<AnimalModel>> getAdoptedAnimals();
 
-    @GET("azil/AdoptedAnimals/search")
+    @GET("AdoptedAnimals/search")
     Call<List<UserModel>> searchUsersByName(@Query("startText") String startText, @Query("endText") String endText);
 
-    @POST("azil/AdoptedAnimals/adopters")
+    @POST("AdoptedAnimals/adopters")
     Call<List<AnimalModel>> getAnimalsForAdopters(@Body List<String> adopterIds);
 
-    @POST("azil/AdoptedAnimals/add")
+    @POST("AdoptedAnimals/add")
     Call<Void> addAdoption(@Body MyAdoptionModel adoption);
 
-    @GET("azil/SearchAnimals")
+    @GET("SearchAnimals")
     Call<List<AnimalModel>> searchAnimals(@Query("keyword") String keyword);
 }

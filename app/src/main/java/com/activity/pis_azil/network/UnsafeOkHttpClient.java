@@ -1,6 +1,8 @@
 package com.activity.pis_azil.network;
 
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.logging.HttpLoggingInterceptor;
 import java.security.cert.CertificateException;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -37,6 +39,10 @@ public class UnsafeOkHttpClient {
             // Create an ssl socket factory with our all-trusting manager
             final javax.net.ssl.SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
+            // Add the logging interceptor
+            HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+
             OkHttpClient.Builder builder = new OkHttpClient.Builder();
             builder.sslSocketFactory(sslSocketFactory, (X509TrustManager)trustAllCerts[0]);
             builder.hostnameVerifier(new HostnameVerifier() {
@@ -46,10 +52,22 @@ public class UnsafeOkHttpClient {
                 }
             });
 
+            // Add interceptors
+            builder.addInterceptor(chain -> {
+                Request original = chain.request();
+                Request request = original.newBuilder()
+                        .header("RequestUserId", "123")
+                        .method(original.method(), original.body())
+                        .build();
+                return chain.proceed(request);
+            });
+
+            // Add the logging interceptor
+            builder.addInterceptor(logging);
+
             return builder.build();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 }
-
