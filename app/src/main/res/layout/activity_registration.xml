@@ -7,28 +7,18 @@
     tools:context=".activities.RegistrationActivity"
     android:background="@color/white">
 
-    <ImageView
-        android:id="@+id/reg_img"
-        android:layout_width="415dp"
-        android:layout_height="179dp"
-        android:layout_marginTop="4dp"
-        android:src="@mipmap/regbg"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_img"
         android:layout_width="200dp"
         android:layout_height="200dp"
-        android:layout_marginTop="8dp"
         android:src="@drawable/ic_baseline_person_24"
         app:civ_border_color="@color/purple_700"
         app:civ_border_width="2dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/reg_img" />
+        tools:layout_editor_absoluteY="38dp"
+        tools:ignore="MissingConstraints" />
 
     <EditText
         android:id="@+id/name"

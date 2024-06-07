@@ -8,6 +8,7 @@ import com.activity.pis_azil.models.ViewAllModel;
 import java.util.List;
 import java.util.Map;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -20,6 +21,9 @@ import retrofit2.http.Query;
 public interface ApiService {
     @GET("Korisnici")
     Call<List<UserModel>> getAllUsers();
+
+    @GET("Korisnici/lozinka/{email}")
+    Call<ResponseBody> getPasswordByEmail(@Path("email") String email);
 
     @GET("Korisnici/user_id/{id_korisnika}")
     Call<UserModel> getUserById(@Path("id_korisnika") int id);

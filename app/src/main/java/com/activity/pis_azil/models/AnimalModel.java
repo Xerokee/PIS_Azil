@@ -7,7 +7,7 @@ public class AnimalModel {
     private String tipLjubimca;
     private String opisLjubimca;
     private boolean udomljen;
-    private String imgUrl; // Promijenjeno iz int u String za URL
+    private String imgUrl;
 
     // Constructors, getters, and setters
     public AnimalModel() {}
@@ -19,7 +19,7 @@ public class AnimalModel {
         this.tipLjubimca = tipLjubimca;
         this.opisLjubimca = opisLjubimca;
         this.udomljen = udomljen;
-        this.imgUrl = imgUrl; // Inicijalizacija imgUrl
+        this.imgUrl = imgUrl;
     }
 
     // Getteri i setteri
@@ -72,10 +72,10 @@ public class AnimalModel {
     }
 
     public String getImgUrl() {
-        return imgUrl; // Getter za imgUrl
+        return imgUrl;
     }
 
     public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl; // Setter za imgUrl
+        this.imgUrl = imgUrl;
     }
 }

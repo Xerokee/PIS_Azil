@@ -1,4 +1,3 @@
-// AnimalListFragment.java
 package com.activity.pis_azil.fragments;
 
 import android.os.Bundle;
@@ -23,6 +22,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import android.util.Log;
 
 public class AnimalListFragment extends Fragment {
 
@@ -52,12 +52,15 @@ public class AnimalListFragment extends Fragment {
                     List<AnimalModel> animals = response.body();
                     animalsAdapter = new AnimalsAdapter(animals, getContext());
                     recyclerView.setAdapter(animalsAdapter);
+                    Log.d("AnimalListFragment", "Animals loaded: " + animals.size());
+                } else {
+                    Log.e("AnimalListFragment", "Failed to load animals: " + response.code() + ", " + response.message());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<List<AnimalModel>> call, @NonNull Throwable t) {
-                // Handle failure
+                Log.e("AnimalListFragment", "Error loading animals", t);
             }
         });
     }

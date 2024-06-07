@@ -157,13 +157,21 @@ public class ProfileFragment extends Fragment {
     }
 
     private void loadUserProfile() {
-        apiService.getUserById(1).enqueue(new Callback<UserModel>() { // Pretpostavimo da je ID korisnika 1
+        SharedPreferences preferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        int userId = preferences.getInt("user_id", -1);
+        if (userId == -1) {
+            Toast.makeText(getContext(), "Korisnik nije prijavljen", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        apiService.getUserById(userId).enqueue(new Callback<UserModel>() {
             @Override
             public void onResponse(Call<UserModel> call, Response<UserModel> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     UserModel userModel = response.body();
                     name.setText(userModel.getIme());
                     email.setText(userModel.getEmail());
+                    password.setText(userModel.getLozinka());
                     if (userModel.getProfileImg() != null) {
                         Glide.with(getContext()).load(userModel.getProfileImg()).into(profileImg);
                     }
@@ -181,10 +189,22 @@ public class ProfileFragment extends Fragment {
 
     private void updateUserProfile() {
         String newName = name.getText().toString().trim();
-        Map<String, Object> userUpdates = new HashMap<>();
-        userUpdates.put("name", newName);
+        String newEmail = email.getText().toString().trim();
+        String newPassword = password.getText().toString().trim();
 
-        apiService.updateUser(1, userUpdates).enqueue(new Callback<Void>() { // Pretpostavimo da je ID korisnika 1
+        SharedPreferences preferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        int userId = preferences.getInt("user_id", -1);
+        if (userId == -1) {
+            Toast.makeText(getContext(), "Korisnik nije prijavljen", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Map<String, Object> userUpdates = new HashMap<>();
+        userUpdates.put("ime", newName);
+        userUpdates.put("email", newEmail);
+        userUpdates.put("lozinka", newPassword);
+
+        apiService.updateUser(userId, userUpdates).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
