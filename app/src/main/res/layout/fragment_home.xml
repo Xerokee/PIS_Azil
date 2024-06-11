@@ -15,17 +15,20 @@
 
     <EditText
         android:id="@+id/search_box"
-        android:elevation="3dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/search_gb"
         android:drawableLeft="@drawable/ic_baseline_search_24"
         android:drawablePadding="5dp"
-        android:background="@drawable/search_gb"
+        android:elevation="3dp"
         android:hint="Pretraži svoju životinju ovdje..."
-        android:textColorHint="@color/green_700"
+        android:padding="13dp"
         android:textColor="@color/green_700"
-        android:padding="13dp" />
+        android:textColorHint="@color/green_700" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"

@@ -3,11 +3,14 @@ package com.activity.pis_azil.ui.home;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -31,6 +34,8 @@ import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
 
+    private static final String TAG = "HomeFragment";
+
     private RecyclerView recyclerView;
     private AnimalsAdapter animalsAdapter;
     private List<AnimalModel> animalModelList = new ArrayList<>();
@@ -38,7 +43,6 @@ public class HomeFragment extends Fragment {
     private ProgressBar progressBar;
     private EditText searchBox;
 
-    @SuppressLint("MissingInflatedId")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,11 +59,27 @@ public class HomeFragment extends Fragment {
         apiService = ApiClient.getClient().create(ApiService.class);
         loadAllAnimals();
 
+        // Add listener for search box
+        searchBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                Log.d(TAG, "onEditorAction called with actionId: " + actionId + " and event: " + event);
+                if (actionId == EditorInfo.IME_ACTION_SEARCH || (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
+                    String keyword = searchBox.getText().toString().trim();
+                    Log.d(TAG, "Search initiated with keyword: " + keyword);
+                    searchAnimalsByType(keyword);
+                    return true;
+                }
+                return false;
+            }
+        });
+
         return root;
     }
 
     private void loadAllAnimals() {
         progressBar.setVisibility(View.VISIBLE);
+        Log.d(TAG, "Fetching all animals...");
         apiService.getAllAnimals().enqueue(new Callback<List<AnimalModel>>() {
             @Override
             public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
@@ -67,16 +87,14 @@ public class HomeFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     animalModelList.clear(); // Ovo će osigurati da se lista osvježi
                     List<AnimalModel> animals = response.body();
+                    Log.d(TAG, "Received " + animals.size() + " animals from the server.");
                     for (AnimalModel animal : animals) {
-                        // Ensure the URL is properly formatted
-                        int lastSlashIndex = animal.getImgUrl().lastIndexOf('/');
-                        if (lastSlashIndex != -1 && lastSlashIndex < animal.getImgUrl().length() - 1) {
-                            animal.setImgUrl("http://192.168.75.1:8000" + animal.getImgUrl().substring(lastSlashIndex));
-                        }
+                        Log.d(TAG, "Animal: " + animal.getImeLjubimca() + ", Type: " + animal.getTipLjubimca() + ", Image URL: " + animal.getImgUrl());
                     }
                     animalModelList.addAll(animals);
                     animalsAdapter.notifyDataSetChanged();
                 } else {
+                    Log.e(TAG, "Error fetching animals. Response code: " + response.code() + ", Message: " + response.message());
                     Toast.makeText(getContext(), "Nema pronađenih životinja", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -84,22 +102,30 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
+                Log.e(TAG, "Failed to fetch animals", t);
                 Toast.makeText(getContext(), "Greška u učitavanju životinja", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void searchAnimals(String keyword) {
+    private void searchAnimalsByType(String type) {
         progressBar.setVisibility(View.VISIBLE);
-        apiService.searchAnimals(keyword).enqueue(new Callback<List<AnimalModel>>() {
+        Log.d(TAG, "Searching animals by type: " + type);
+        apiService.getAnimalsByType(type).enqueue(new Callback<List<AnimalModel>>() {
             @Override
             public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
                 progressBar.setVisibility(View.GONE);
                 if (response.isSuccessful() && response.body() != null) {
                     animalModelList.clear();
-                    animalModelList.addAll(response.body());
+                    List<AnimalModel> animals = response.body();
+                    Log.d(TAG, "Found " + animals.size() + " animals of type: " + type);
+                    for (AnimalModel animal : animals) {
+                        Log.d(TAG, "Animal: " + animal.getImeLjubimca() + ", Type: " + animal.getTipLjubimca() + ", Image URL: " + animal.getImgUrl());
+                    }
+                    animalModelList.addAll(animals);
                     animalsAdapter.notifyDataSetChanged();
                 } else {
+                    Log.e(TAG, "Error searching animals by type. Response code: " + response.code() + ", Message: " + response.message());
                     Toast.makeText(getContext(), "Nema pronađenih životinja", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -107,6 +133,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
+                Log.e(TAG, "Failed to search animals by type", t);
                 Toast.makeText(getContext(), "Greška u pretrazi životinja", Toast.LENGTH_SHORT).show();
             }
         });
