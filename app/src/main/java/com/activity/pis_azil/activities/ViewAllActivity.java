@@ -22,7 +22,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ViewAllActivity extends AppCompatActivity {
-
     private RecyclerView recyclerView;
     private AnimalsAdapter animalsAdapter;
     private List<AnimalModel> animalModelList = new ArrayList<>();
@@ -50,13 +49,13 @@ public class ViewAllActivity extends AppCompatActivity {
                         animalModelList.addAll(response.body());
                         animalsAdapter.notifyDataSetChanged();
                     } else {
-                        Toast.makeText(ViewAllActivity.this, "No animals found", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ViewAllActivity.this, "Nema pronađenih životinja", Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
-                    Toast.makeText(ViewAllActivity.this, "Failed to load animals", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ViewAllActivity.this, "Greška u učitavanju životinja", Toast.LENGTH_SHORT).show();
                 }
             });
         } else {
@@ -72,13 +71,13 @@ public class ViewAllActivity extends AppCompatActivity {
                     animalModelList.addAll(response.body());
                     animalsAdapter.notifyDataSetChanged();
                 } else {
-                    Toast.makeText(ViewAllActivity.this, "No animals found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ViewAllActivity.this, "Nismo pronašli životinje", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
-                Toast.makeText(ViewAllActivity.this, "Failed to load animals", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ViewAllActivity.this, "Greška u učitavanju životinja", Toast.LENGTH_SHORT).show();
             }
         });
     }

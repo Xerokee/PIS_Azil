@@ -75,7 +75,7 @@ public class ViewAllAdapter extends RecyclerView.Adapter<ViewAllAdapter.ViewHold
             return;
         }
 
-        apiService.getUserById(Integer.parseInt(adopterId)).enqueue(new Callback<UserModel>() {
+        apiService.getUserById(1, 1).enqueue(new Callback<UserModel>() {
             @Override
             public void onResponse(Call<UserModel> call, Response<UserModel> response) {
                 if (response.isSuccessful() && response.body() != null) {

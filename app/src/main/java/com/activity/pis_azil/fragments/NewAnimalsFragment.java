@@ -119,7 +119,7 @@ public class NewAnimalsFragment extends Fragment {
     }
 
     private void checkIfUserIsAdmin() {
-        apiService.getUserById(1).enqueue(new Callback<UserModel>() { // Pretpostavimo da je admin provjeren pomoću ID 1
+        apiService.getUserById(123, 123).enqueue(new Callback<UserModel>() { // Pretpostavimo da je admin provjeren pomoću ID 1
             @Override
             public void onResponse(Call<UserModel> call, Response<UserModel> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isAdmin()) {

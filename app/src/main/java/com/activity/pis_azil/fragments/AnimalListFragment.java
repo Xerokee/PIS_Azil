@@ -52,15 +52,15 @@ public class AnimalListFragment extends Fragment {
                     List<AnimalModel> animals = response.body();
                     animalsAdapter = new AnimalsAdapter(animals, getContext());
                     recyclerView.setAdapter(animalsAdapter);
-                    Log.d("AnimalListFragment", "Animals loaded: " + animals.size());
+                    Log.d("AnimalListFragment", "Životinje učitane: " + animals.size());
                 } else {
-                    Log.e("AnimalListFragment", "Failed to load animals: " + response.code() + ", " + response.message());
+                    Log.e("AnimalListFragment", "Greška u učitavanju životinja: " + response.code() + ", " + response.message());
                 }
             }
 
             @Override
             public void onFailure(@NonNull Call<List<AnimalModel>> call, @NonNull Throwable t) {
-                Log.e("AnimalListFragment", "Error loading animals", t);
+                Log.e("AnimalListFragment", "Greška učitavanje životinja", t);
             }
         });
     }

@@ -8,9 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,15 +24,17 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.loader.content.CursorLoader;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.activity.pis_azil.R;
 import com.activity.pis_azil.activities.HomeActivity;
+import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
-import com.activity.pis_azil.R;
-import com.activity.pis_azil.models.UserModel;
 import com.bumptech.glide.Glide;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,6 +71,7 @@ public class ProfileFragment extends Fragment {
         logout = root.findViewById(R.id.logout);
 
         logout.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.red));
+        update.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.green_700));
 
         profileImg.setOnClickListener(v -> showImagePickDialog());
         logout.setOnClickListener(v -> logoutUser());
@@ -77,14 +82,11 @@ public class ProfileFragment extends Fragment {
     }
 
     private void logoutUser() {
-        // Brisanje korisničkih podataka
-        // Pretpostavljamo da koristite SharedPreferences za pohranu korisničkih podataka
         SharedPreferences preferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.clear();
         editor.apply();
 
-        // Povratak na HomeActivity
         Intent intent = new Intent(requireContext(), HomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -137,12 +139,16 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == IMAGE_PICK_GALLERY_CODE) {
-                imageUri = data.getData();
-                uploadProfilePhoto(imageUri);
+                imageUri = data != null ? data.getData() : null;
+                if (imageUri != null) {
+                    profileImg.setImageURI(imageUri);
+                }
             } else if (requestCode == IMAGE_PICK_CAMERA_CODE) {
-                uploadProfilePhoto(imageUri);
+                profileImg.setImageURI(imageUri);
             }
         }
     }
@@ -158,9 +164,10 @@ public class ProfileFragment extends Fragment {
 
     private void loadUserProfile() {
         SharedPreferences preferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-        int userId = preferences.getInt("user_id", -1);
+        int userId = preferences.getInt("id_korisnika", -1);
+
         if (userId == -1) {
-            Toast.makeText(getContext(), "Korisnik nije prijavljen", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "User ID not found", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -176,15 +183,28 @@ public class ProfileFragment extends Fragment {
                         Glide.with(getContext()).load(userModel.getProfileImg()).into(profileImg);
                     }
                 } else {
-                    Toast.makeText(getContext(), "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Error fetching user data: " + response.message(), Toast.LENGTH_SHORT).show();
+                    Log.e("ProfileFragment", "Error fetching user data: " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<UserModel> call, Throwable t) {
-                Toast.makeText(getContext(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("ProfileFragment", "Network error: ", t);
             }
         });
+    }
+
+    private String getRealPathFromURI(Uri contentUri) {
+        String[] proj = { MediaStore.Images.Media.DATA };
+        CursorLoader loader = new CursorLoader(getContext(), contentUri, proj, null, null, null);
+        Cursor cursor = loader.loadInBackground();
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        String result = cursor.getString(column_index);
+        cursor.close();
+        return result;
     }
 
     private void updateUserProfile() {
@@ -193,31 +213,49 @@ public class ProfileFragment extends Fragment {
         String newPassword = password.getText().toString().trim();
 
         SharedPreferences preferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-        int userId = preferences.getInt("user_id", -1);
+        int userId = preferences.getInt("id_korisnika", -1); // Ensure you store and retrieve the user ID
+
         if (userId == -1) {
-            Toast.makeText(getContext(), "Korisnik nije prijavljen", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "User ID not found", Toast.LENGTH_SHORT).show();
             return;
         }
 
         Map<String, Object> userUpdates = new HashMap<>();
-        userUpdates.put("ime", newName);
-        userUpdates.put("email", newEmail);
-        userUpdates.put("lozinka", newPassword);
+        if (!newName.isEmpty()) {
+            userUpdates.put("ime", newName);
+        }
+        if (!newEmail.isEmpty()) {
+            userUpdates.put("email", newEmail);
+        }
+        if (!newPassword.isEmpty()) {
+            userUpdates.put("lozinka", newPassword);
+        }
+
+        if (userUpdates.isEmpty()) {
+            Toast.makeText(getContext(), "Nijedno polje nije ažurirano", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         apiService.updateUser(userId, userUpdates).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(getContext(), "Profil ažuriran", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(ACTION_PROFILE_UPDATED);
-                    LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+                    LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(ACTION_PROFILE_UPDATED));
                 } else {
-                    Toast.makeText(getContext(), "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
+                    try {
+                        String errorBody = response.errorBody().string();
+                        Log.e("ProfileFragment", "Update failed: " + errorBody + " " + response.code());
+                        Toast.makeText(getContext(), "Greška: " + errorBody, Toast.LENGTH_SHORT).show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                Log.e("ProfileFragment", "Update failed", t);
                 Toast.makeText(getContext(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

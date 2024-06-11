@@ -155,7 +155,9 @@ public class RegistrationActivity extends AppCompatActivity {
 
         Log.d("RegistrationActivity", "Slanje podataka: " + new Gson().toJson(userModel));
 
-        apiService.addUser(userModel).enqueue(new Callback<Void>() {
+        int requestUserId = 1; // Ovdje stavite odgovarajući ID korisnika koji pravi zahtjev
+
+        apiService.addUser(requestUserId, userModel).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 progressBar.setVisibility(View.GONE);

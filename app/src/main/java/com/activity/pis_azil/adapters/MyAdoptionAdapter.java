@@ -1,3 +1,4 @@
+/*
 package com.activity.pis_azil.adapters;
 
 import android.app.AlertDialog;
@@ -320,3 +321,4 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         }
     }
 }
+*/

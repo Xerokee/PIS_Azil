@@ -82,6 +82,8 @@ public class LoginActivity extends AppCompatActivity {
                             SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
                             SharedPreferences.Editor editor = preferences.edit();
                             editor.putString("user_email", userEmail);
+                            // Save the user ID (assuming you get it in the response or another call)
+                            editor.putInt("id_korisnika", 1);
                             editor.apply();
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         } else {

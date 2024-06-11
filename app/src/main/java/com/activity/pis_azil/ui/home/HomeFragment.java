@@ -2,6 +2,7 @@ package com.activity.pis_azil.ui.home;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,21 +69,22 @@ public class HomeFragment extends Fragment {
                     List<AnimalModel> animals = response.body();
                     for (AnimalModel animal : animals) {
                         // Ensure the URL is properly formatted
-                        if (!animal.getImgUrl().startsWith("http")) {
-                            animal.setImgUrl("http://192.168.75.1:8000" + animal.getImgUrl().substring(animal.getImgUrl().lastIndexOf('/')));
+                        int lastSlashIndex = animal.getImgUrl().lastIndexOf('/');
+                        if (lastSlashIndex != -1 && lastSlashIndex < animal.getImgUrl().length() - 1) {
+                            animal.setImgUrl("http://192.168.75.1:8000" + animal.getImgUrl().substring(lastSlashIndex));
                         }
                     }
                     animalModelList.addAll(animals);
                     animalsAdapter.notifyDataSetChanged();
                 } else {
-                    Toast.makeText(getContext(), "No animals found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Nema pronađenih životinja", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
-                Toast.makeText(getContext(), "Failed to load animals", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Greška u učitavanju životinja", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -98,14 +100,14 @@ public class HomeFragment extends Fragment {
                     animalModelList.addAll(response.body());
                     animalsAdapter.notifyDataSetChanged();
                 } else {
-                    Toast.makeText(getContext(), "No animals found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Nema pronađenih životinja", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
-                Toast.makeText(getContext(), "Failed to search animals", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Greška u pretrazi životinja", Toast.LENGTH_SHORT).show();
             }
         });
     }

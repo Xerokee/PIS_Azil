@@ -1,14 +1,14 @@
-// MainActivity.java
 package com.activity.pis_azil.activities;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,9 +26,10 @@ import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.ui.profile.ProfileFragment;
+import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
 
-import java.util.List;
+import java.io.IOException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
@@ -38,7 +39,6 @@ import retrofit2.Response;
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-    private ProgressBar progressBar;
     private ApiService apiService;
 
     @Override
@@ -71,24 +71,47 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateNavigationHeader(TextView headerName, TextView headerEmail, CircleImageView headerImg) {
-        apiService.getAllUsers().enqueue(new Callback<List<UserModel>>() {
+        SharedPreferences preferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        int userId = preferences.getInt("id_korisnika", -1); // Default to -1 if not found
+        Log.i("MainActivity", "Fetching user data for ID: " + userId);
+
+        if (userId == -1) {
+            Log.e("MainActivity", "User ID not found");
+            return;
+        }
+
+        apiService.getUserById(userId).enqueue(new Callback<UserModel>() {
             @Override
-            public void onResponse(@NonNull Call<List<UserModel>> call, @NonNull Response<List<UserModel>> response) {
-                if (response.isSuccessful()) {
-                    List<UserModel> users = response.body();
-                    if (users != null && !users.isEmpty()) {
-                        UserModel user = users.get(0);
-                        headerName.setText(user.getIme());
-                        headerEmail.setText(user.getEmail());
-                        // Assume you have the profile image URL, you can load it using Glide
-                        // Glide.with(MainActivity.this).load(user.getProfileImg()).into(headerImg);
+            public void onResponse(@NonNull Call<UserModel> call, @NonNull Response<UserModel> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    UserModel user = response.body();
+                    Log.i("MainActivity", "Fetched user: " + user.getIme() + ", " + user.getEmail());
+
+                    headerName.setVisibility(View.VISIBLE);
+                    headerEmail.setVisibility(View.VISIBLE);
+
+                    headerName.setText(user.getIme());
+                    headerEmail.setText(user.getEmail());
+
+                    if (user.getProfileImg() != null && !user.getProfileImg().isEmpty()) {
+                        Glide.with(MainActivity.this).load(user.getProfileImg()).into(headerImg);
+                    } else {
+                        headerImg.setImageResource(R.drawable.fruits); // Placeholder image
+                    }
+                    Log.i("MainActivity", "User data fetched successfully");
+                } else {
+                    Log.e("MainActivity", "Error fetching user data: " + response.message() + " " + response.code());
+                    try {
+                        Log.e("MainActivity", "Error body: " + response.errorBody().string());
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<List<UserModel>> call, @NonNull Throwable t) {
-                // Handle failure
+            public void onFailure(@NonNull Call<UserModel> call, @NonNull Throwable t) {
+                Log.e("MainActivity", "Failed to fetch user data", t);
             }
         });
     }
@@ -125,3 +148,4 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp();
     }
 }
+

@@ -12,6 +12,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
@@ -22,20 +23,26 @@ public interface ApiService {
     @GET("Korisnici")
     Call<List<UserModel>> getAllUsers();
 
+    @GET("Korisnici/user_id/{id_korisnika}")
+    Call<UserModel> getUserById(@Path("id_korisnika") int id);
+
     @GET("Korisnici/lozinka/{email}")
     Call<ResponseBody> getPasswordByEmail(@Path("email") String email);
 
     @GET("Korisnici/user_id/{id_korisnika}")
-    Call<UserModel> getUserById(@Path("id_korisnika") int id);
+    Call<UserModel> getUserById(@Header("RequestUserId") int userId, @Path("id_korisnika") int id);
+
+    @PUT("Korisnici/update/{id_korisnika}")
+    Call<Void> updateUser(@Path("id_korisnika") int id, @Body Map<String, Object> updates);
 
     @POST("Korisnici/add")
-    Call<Void> addUser(@Body UserModel user);
+    Call<Void> addUser(@Header("RequestUserId") int requestUserId, @Body UserModel user);
 
-    @PUT("Korisnici/update/{id}")
-    Call<Void> updateUser(@Path("id") int id, @Body Map<String, Object> userUpdates);
+    @PUT("KucniLjubimci/update/{id}")
+    Call<Void> updateAnimal(@Path("id") String id, @Body Map<String, Object> updateData);
 
-    @DELETE("Korisnici/delete/{id}")
-    Call<Void> deleteUser(@Path("id") int id);
+    @DELETE("KucniLjubimci/delete/{id}")
+    Call<Void> deleteAnimal(@Path("id") String id);
 
     @GET("KucniLjubimci")
     Call<List<AnimalModel>> getAllAnimals();
@@ -45,12 +52,6 @@ public interface ApiService {
 
     @POST("KucniLjubimci/add")
     Call<Void> addAnimal(@Body ViewAllModel animal);
-
-    @PUT("KucniLjubimci/update/{id}")
-    Call<Void> updateAnimal(@Path("id") String id, @Body Map<String, Object> updateData);
-
-    @DELETE("KucniLjubimci/delete/{id}")
-    Call<Void> deleteAnimal(@Path("id") String id);
 
     @GET("AdoptedAnimals")
     Call<List<AnimalModel>> getAdoptedAnimals();
