@@ -1,7 +1,7 @@
 package com.activity.pis_azil.adapters;
 
 import android.content.Context;
-import android.util.Log;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.pis_azil.R;
+import com.activity.pis_azil.activities.DetailedActivity;
 import com.activity.pis_azil.models.AnimalModel;
 import com.bumptech.glide.Glide;
 
@@ -39,22 +40,21 @@ public class AnimalsAdapter extends RecyclerView.Adapter<AnimalsAdapter.AnimalVi
         holder.animalName.setText(animal.getImeLjubimca());
         holder.animalDescription.setText(animal.getOpisLjubimca());
 
-        Log.d("AnimalsAdapter", "Animal name: " + animal.getImeLjubimca());
-        Log.d("AnimalsAdapter", "Animal description: " + animal.getOpisLjubimca());
-
         if (animal.getImgUrl() != null && !animal.getImgUrl().isEmpty()) {
-            String imageUrl = animal.getImgUrl();
-            if (imageUrl.startsWith("http://192.168.75.1:8000")) {
-                imageUrl = imageUrl.replace("http://192.168.75.1:8000", "http://193.198.57.183:7081/Zivotinje");
-            }
             Glide.with(context)
-                    .load(imageUrl)
-                    .placeholder(R.drawable.paw) // Placeholder image
-                    .error(R.drawable.fruits) // Error image
+                    .load(animal.getImgUrl())
+                    .placeholder(R.drawable.paw)
+                    .error(R.drawable.fruits)
                     .into(holder.animalImage);
         } else {
-            holder.animalImage.setImageResource(R.drawable.milk2); // Default image
+            holder.animalImage.setImageResource(R.drawable.milk2);
         }
+
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, DetailedActivity.class);
+            intent.putExtra("animal", animal);
+            context.startActivity(intent);
+        });
     }
 
     @Override

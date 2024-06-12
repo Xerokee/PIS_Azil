@@ -1,6 +1,8 @@
 package com.activity.pis_azil.models;
 
-public class AnimalModel {
+import java.io.Serializable;
+
+public class AnimalModel implements Serializable {
     private int id_ljubimca;
     private int id_udomitelja;
     private String ime_ljubimca;

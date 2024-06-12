@@ -12,8 +12,8 @@ import android.widget.Toast;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.R;
+import com.activity.pis_azil.models.AnimalModel;
 import com.activity.pis_azil.models.MyAdoptionModel;
-import com.activity.pis_azil.models.ViewAllModel;
 import com.bumptech.glide.Glide;
 
 import java.text.SimpleDateFormat;
@@ -28,11 +28,11 @@ import retrofit2.Response;
 public class DetailedActivity extends AppCompatActivity {
 
     ImageView detailedImg;
-    TextView rating, description;
+    TextView name, description;
     Button addToCart;
     Toolbar toolbar;
     ApiService apiService;
-    ViewAllModel viewAllModel = null;
+    AnimalModel animalModel = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,19 +41,16 @@ public class DetailedActivity extends AppCompatActivity {
 
         apiService = ApiClient.getClient().create(ApiService.class);
 
-        final Object object = getIntent().getSerializableExtra("detail");
-        if (object instanceof ViewAllModel) {
-            viewAllModel = (ViewAllModel) object;
-        }
+        animalModel = (AnimalModel) getIntent().getSerializableExtra("animal");
 
         detailedImg = findViewById(R.id.detailed_img);
-        rating = findViewById(R.id.detailed_rating);
+        name = findViewById(R.id.detailed_name);
         description = findViewById(R.id.detailed_dec);
 
-        if (viewAllModel != null) {
-            Glide.with(getApplicationContext()).load(viewAllModel.getImg_url()).into(detailedImg);
-            rating.setText(viewAllModel.getRating());
-            description.setText(viewAllModel.getDescription());
+        if (animalModel != null) {
+            Glide.with(getApplicationContext()).load(animalModel.getImgUrl()).into(detailedImg);
+            name.setText(animalModel.getImeLjubimca());
+            description.setText(animalModel.getOpisLjubimca());
         }
 
         addToCart = findViewById(R.id.add_to_cart);
@@ -72,11 +69,11 @@ public class DetailedActivity extends AppCompatActivity {
 
         MyAdoptionModel cartModel = new MyAdoptionModel();
         cartModel.setAnimalId(UUID.randomUUID().toString());
-        cartModel.setAnimalName(viewAllModel.getName());
-        cartModel.setAnimalType(viewAllModel.getType());
+        cartModel.setAnimalName(animalModel.getImeLjubimca());
+        cartModel.setAnimalType(animalModel.getTipLjubimca());
         cartModel.setCurrentDate(saveCurrentDate);
         cartModel.setCurrentTime(saveCurrentTime);
-        cartModel.setImg_url(viewAllModel.getImg_url());
+        cartModel.setImg_url(animalModel.getImgUrl());
 
         apiService.addAdoption(cartModel).enqueue(new Callback<Void>() {
             @Override
