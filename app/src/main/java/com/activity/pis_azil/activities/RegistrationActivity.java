@@ -34,8 +34,8 @@ import java.io.IOException;
 public class RegistrationActivity extends AppCompatActivity {
 
     Button signUp;
-    EditText name, email, password;
-    ImageView profileImg;
+    EditText ime, email, lozinka;
+    ImageView regProfileImg;
     TextView signIn;
     ApiService apiService;
     ProgressBar progressBar;
@@ -56,15 +56,15 @@ public class RegistrationActivity extends AppCompatActivity {
         progressBar.setVisibility(View.GONE);
 
         signUp = findViewById(R.id.reg_btn);
-        name = findViewById(R.id.name);
-        email = findViewById(R.id.email_reg);
-        password = findViewById(R.id.password_reg);
-        profileImg = findViewById(R.id.profile_img);
+        ime = findViewById(R.id.reg_name);
+        email = findViewById(R.id.reg_email);
+        lozinka = findViewById(R.id.reg_password);
+        regProfileImg = findViewById(R.id.regProfileImg);
         signIn = findViewById(R.id.sign_in);
 
         signIn.setOnClickListener(v -> startActivity(new Intent(RegistrationActivity.this, LoginActivity.class)));
 
-        profileImg.setOnClickListener(v -> showImagePickDialog());
+        regProfileImg.setOnClickListener(v -> showImagePickDialog());
 
         signUp.setOnClickListener(v -> {
             createUser();
@@ -125,18 +125,18 @@ public class RegistrationActivity extends AppCompatActivity {
             if (requestCode == IMAGE_PICK_GALLERY_CODE) {
                 imageUri = data != null ? data.getData() : null;
                 if (imageUri != null) {
-                    profileImg.setImageURI(imageUri);
+                    regProfileImg.setImageURI(imageUri);
                 }
             } else if (requestCode == IMAGE_PICK_CAMERA_CODE) {
-                profileImg.setImageURI(imageUri);
+                regProfileImg.setImageURI(imageUri);
             }
         }
     }
 
     private void createUser() {
-        String userName = name.getText().toString();
+        String userName = ime.getText().toString();
         String userEmail = email.getText().toString();
-        String userPassword = password.getText().toString();
+        String userPassword = lozinka.getText().toString();
 
         // Provjera praznih polja
         if (TextUtils.isEmpty(userName) || TextUtils.isEmpty(userEmail) || TextUtils.isEmpty(userPassword)) {

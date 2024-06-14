@@ -45,8 +45,8 @@ import retrofit2.Response;
 
 public class ProfileFragment extends Fragment {
 
-    CircleImageView profileImg;
-    EditText name, email, password;
+    CircleImageView profileImage;
+    EditText ime, email, lozinka;
     Button update, logout;
     ApiService apiService;
 
@@ -63,17 +63,17 @@ public class ProfileFragment extends Fragment {
 
         apiService = ApiClient.getClient().create(ApiService.class);
 
-        profileImg = root.findViewById(R.id.profile_img);
-        name = root.findViewById(R.id.profile_name);
-        email = root.findViewById(R.id.profile_email);
-        password = root.findViewById(R.id.profile_password);
+        profileImage = root.findViewById(R.id.profileImage);
+        ime = root.findViewById(R.id.profileName);
+        email = root.findViewById(R.id.profileEmail);
+        lozinka = root.findViewById(R.id.profilePassword);
         update = root.findViewById(R.id.update);
         logout = root.findViewById(R.id.logout);
 
         logout.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.red));
         update.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.green_700));
 
-        profileImg.setOnClickListener(v -> showImagePickDialog());
+        profileImage.setOnClickListener(v -> showImagePickDialog());
         logout.setOnClickListener(v -> logoutUser());
         update.setOnClickListener(v -> updateUserProfile());
         loadUserProfile();
@@ -145,10 +145,10 @@ public class ProfileFragment extends Fragment {
             if (requestCode == IMAGE_PICK_GALLERY_CODE) {
                 imageUri = data != null ? data.getData() : null;
                 if (imageUri != null) {
-                    profileImg.setImageURI(imageUri);
+                    profileImage.setImageURI(imageUri);
                 }
             } else if (requestCode == IMAGE_PICK_CAMERA_CODE) {
-                profileImg.setImageURI(imageUri);
+                profileImage.setImageURI(imageUri);
             }
         }
     }
@@ -176,11 +176,11 @@ public class ProfileFragment extends Fragment {
             public void onResponse(Call<UserModel> call, Response<UserModel> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     UserModel userModel = response.body();
-                    name.setText(userModel.getIme());
+                    ime.setText(userModel.getIme());
                     email.setText(userModel.getEmail());
-                    password.setText(userModel.getLozinka());
+                    lozinka.setText(userModel.getLozinka());
                     if (userModel.getProfileImg() != null) {
-                        Glide.with(getContext()).load(userModel.getProfileImg()).into(profileImg);
+                        Glide.with(getContext()).load(userModel.getProfileImg()).into(profileImage);
                     }
                 } else {
                     Toast.makeText(getContext(), "Error fetching user data: " + response.message(), Toast.LENGTH_SHORT).show();
@@ -208,12 +208,12 @@ public class ProfileFragment extends Fragment {
     }
 
     private void updateUserProfile() {
-        String newName = name.getText().toString().trim();
-        String newEmail = email.getText().toString().trim();
-        String newPassword = password.getText().toString().trim();
+        String Ime = ime.getText().toString().trim();
+        String Mail = email.getText().toString().trim();
+        String Lozinka = lozinka.getText().toString().trim();
 
         SharedPreferences preferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-        int userId = preferences.getInt("id_korisnika", -1); // Ensure you store and retrieve the user ID
+        int userId = preferences.getInt("id_korisnika", -1);
 
         if (userId == -1) {
             Toast.makeText(getContext(), "User ID not found", Toast.LENGTH_SHORT).show();
@@ -221,14 +221,14 @@ public class ProfileFragment extends Fragment {
         }
 
         Map<String, Object> userUpdates = new HashMap<>();
-        if (!newName.isEmpty()) {
-            userUpdates.put("ime", newName);
+        if (!Ime.isEmpty()) {
+            userUpdates.put("ime", Ime);
         }
-        if (!newEmail.isEmpty()) {
-            userUpdates.put("email", newEmail);
+        if (!Mail.isEmpty()) {
+            userUpdates.put("email", Mail);
         }
-        if (!newPassword.isEmpty()) {
-            userUpdates.put("lozinka", newPassword);
+        if (!Lozinka.isEmpty()) {
+            userUpdates.put("lozinka", Lozinka);
         }
 
         if (userUpdates.isEmpty()) {
@@ -260,6 +260,7 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

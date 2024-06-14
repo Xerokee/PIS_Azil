@@ -1,97 +1,117 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".fragments.NewAnimalsFragment"
-    android:background="@color/white">
+    tools:context=".fragments.NewAnimalsFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- Floating Action Button -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabAddAnimal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="parent" />
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
-        <!-- Form Container -->
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin" />
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:id="@+id/scrollView2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
         <LinearLayout
-            android:id="@+id/animalFormContainer"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/fabAddAnimal"
-            app:layout_constraintVertical_bias="1.0">
+            android:padding="16dp">
 
-            <EditText
-                android:id="@+id/editTextName"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:hint="Ime životinje"
-                android:textColorHint="@color/green_700"
-                android:textColor="@color/green_700"
-                android:inputType="textPersonName" />
+                android:layout_height="wrap_content">
 
-            <EditText
-                android:id="@+id/editTextDescription"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:hint="Opis"
-                android:textColorHint="@color/green_700"
-                android:textColor="@color/green_700"
-                android:inputType="textMultiLine" />
+                <LinearLayout
+                    android:id="@+id/animalFormContainer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="1.0">
 
-            <EditText
-                android:id="@+id/editTextRating"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:hint="Ocjena"
-                android:textColorHint="@color/green_700"
-                android:textColor="@color/green_700"
-                android:inputType="numberDecimal"
-                app:layout_constraintTop_toBottomOf="@+id/editTextDescription" />
+                    <EditText
+                        android:id="@+id/editTextName"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:hint="Ime životinje"
+                        android:inputType="textPersonName"
+                        android:textColor="@color/green_700"
+                        android:textColorHint="@color/green_700" />
 
-            <EditText
-                android:id="@+id/editTextImgUrl"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:hint="Slika životinje"
-                android:textColorHint="@color/green_700"
-                android:textColor="@color/green_700"
-                android:inputType="text" />
+                    <EditText
+                        android:id="@+id/editTextDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:hint="Opis"
+                        android:inputType="textMultiLine"
+                        android:textColor="@color/green_700"
+                        android:textColorHint="@color/green_700" />
 
-            <EditText
-                android:id="@+id/editTextType"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:hint="Tip životinje"
-                android:textColorHint="@color/green_700"
-                android:textColor="@color/green_700"
-                android:inputType="text" />
+                    <EditText
+                        android:id="@+id/editTextType"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:hint="Tip životinje"
+                        android:inputType="text"
+                        android:textColor="@color/green_700"
+                        android:textColorHint="@color/green_700" />
 
-            <Button
-                android:id="@+id/buttonSubmitAnimal"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="16dp"
-                android:text="Potvrdi dodavanje"
-                android:textColor="@color/black" />
+                    <ImageView
+                        android:id="@+id/imageViewAnimal"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_marginTop="16dp"
+                        android:background="@color/green_200"
+                        android:scaleType="centerCrop" />
 
+                    <Button
+                        android:id="@+id/buttonSubmitAnimal"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="16dp"
+                        android:text="Potvrdi dodavanje"
+                        android:textColor="@color/black" />
+
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddAnimal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:layout_marginBottom="32dp"
+        android:src="@drawable/fruits"
+        app:layout_anchor="@id/scrollView2"
+        app:layout_anchorGravity="bottom|end" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

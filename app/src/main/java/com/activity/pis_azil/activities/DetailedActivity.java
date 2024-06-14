@@ -48,9 +48,16 @@ public class DetailedActivity extends AppCompatActivity {
         description = findViewById(R.id.detailed_dec);
 
         if (animalModel != null) {
-            Glide.with(getApplicationContext()).load(animalModel.getImgUrl()).into(detailedImg);
+            Glide.with(getApplicationContext())
+                    .load(animalModel.getImgUrl())
+                    .placeholder(R.drawable.paw) // Placeholder image
+                    .error(R.drawable.milk2) // Error image
+                    .into(detailedImg);
             name.setText(animalModel.getImeLjubimca());
             description.setText(animalModel.getOpisLjubimca());
+        } else {
+            // Set placeholder image if animalModel is null
+            detailedImg.setImageResource(R.drawable.fruits);
         }
 
         addToCart = findViewById(R.id.add_to_cart);

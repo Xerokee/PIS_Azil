@@ -1,3 +1,4 @@
+/*
 package com.activity.pis_azil.adapters;
 
 import android.content.Context;
@@ -113,3 +114,4 @@ public class ViewAllAdapter extends RecyclerView.Adapter<ViewAllAdapter.ViewHold
         }
     }
 }
+*/

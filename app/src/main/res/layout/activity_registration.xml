@@ -8,7 +8,7 @@
     android:background="@color/white">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/profile_img"
+        android:id="@+id/regProfileImg"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:src="@drawable/ic_baseline_person_24"
@@ -21,7 +21,7 @@
         tools:ignore="MissingConstraints" />
 
     <EditText
-        android:id="@+id/name"
+        android:id="@+id/reg_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -36,11 +36,11 @@
         android:padding="13dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profile_img"
+        app:layout_constraintTop_toBottomOf="@+id/regProfileImg"
         app:layout_constraintWidth_percent=".8" />
 
     <EditText
-        android:id="@+id/email_reg"
+        android:id="@+id/reg_email"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
@@ -55,11 +55,11 @@
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/name"
+        app:layout_constraintTop_toBottomOf="@+id/reg_name"
         app:layout_constraintWidth_percent=".8" />
 
     <EditText
-        android:id="@+id/password_reg"
+        android:id="@+id/reg_password"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
@@ -75,7 +75,7 @@
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/email_reg"
+        app:layout_constraintTop_toBottomOf="@+id/reg_email"
         app:layout_constraintWidth_percent=".8" />
 
     <Button
@@ -93,7 +93,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password_reg" />
+        app:layout_constraintTop_toBottomOf="@+id/reg_password" />
 
     <TextView
         android:id="@+id/textView"

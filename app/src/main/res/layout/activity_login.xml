@@ -8,7 +8,7 @@
     android:background="@color/white">
 
     <ImageView
-        android:id="@+id/reg_img"
+        android:id="@+id/log_img"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:src="@mipmap/loginbg"
@@ -19,7 +19,7 @@
 
 
     <EditText
-        android:id="@+id/email_login"
+        android:id="@+id/login_email"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
@@ -34,11 +34,11 @@
         android:padding="13dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/reg_img"
+        app:layout_constraintTop_toBottomOf="@+id/log_img"
         app:layout_constraintWidth_percent=".8" />
 
     <EditText
-        android:id="@+id/password_login"
+        android:id="@+id/login_password"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
@@ -54,7 +54,7 @@
         android:padding="13dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/email_login"
+        app:layout_constraintTop_toBottomOf="@+id/login_email"
         app:layout_constraintWidth_percent=".8" />
 
     <Button
@@ -72,7 +72,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/password_login" />
+        app:layout_constraintTop_toBottomOf="@+id/login_password" />
 
     <TextView
         android:id="@+id/textView"

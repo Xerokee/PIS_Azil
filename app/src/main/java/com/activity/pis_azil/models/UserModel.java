@@ -1,36 +1,38 @@
 package com.activity.pis_azil.models;
 
-public class UserModel {
-    private int idKorisnika;
-    private String ime;
-    private String email;
+import java.io.Serializable;
+
+public class UserModel implements Serializable {
+    public int id_korisnika;
+    public String ime;
+    public String email;
     private String lozinka;
-    private boolean admin;
-    private String profileImg;
+    public boolean admin;
+    public String profileImg;
 
     // Getters and setters
     public int getIdKorisnika() {
-        return idKorisnika;
+        return id_korisnika;
     }
 
     public void setIdKorisnika(int idKorisnika) {
-        this.idKorisnika = idKorisnika;
+        this.id_korisnika = idKorisnika;
     }
 
     public String getIme() {
         return ime;
     }
 
-    public void setIme(String ime) {
-        this.ime = ime;
+    public void setIme(String Ime) {
+        this.ime = Ime;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setEmail(String Email) {
+        this.email = Email;
     }
 
     public String getLozinka() {
@@ -45,8 +47,8 @@ public class UserModel {
         return admin;
     }
 
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
+    public void setAdmin(boolean Admin) {
+        this.admin = Admin;
     }
 
     public String getProfileImg() {

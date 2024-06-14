@@ -24,8 +24,9 @@ public class HomeActivity extends AppCompatActivity {
         // Provjera statusa prijave korisnika
         SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         boolean isLoggedIn = preferences.getBoolean("is_logged_in", false);
+        int userId = preferences.getInt("id_korisnika", -1);
 
-        if (isLoggedIn) {
+        if (isLoggedIn && userId != -1) {
             progressBar.setVisibility(View.VISIBLE);
             startActivity(new Intent(HomeActivity.this, MainActivity.class));
             Toast.makeText(this, "Molimo vas pričekajte, već ste prijavljeni!", Toast.LENGTH_SHORT).show();

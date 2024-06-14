@@ -12,6 +12,12 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
+        android:id="@+id/nav_users"
+        android:name="com.activity.pis_azil.fragments.UsersFragment"
+        android:label="Korisnici"
+        tools:layout="@layout/fragment_users" />
+
+    <fragment
         android:id="@+id/nav_animal_list"
         android:name="com.activity.pis_azil.fragments.AnimalListFragment"
         android:label="Animal List"
@@ -22,11 +28,6 @@
         android:name="com.activity.pis_azil.ui.profile.ProfileFragment"
         android:label="@string/profil"
         tools:layout="@layout/fragment_profile" />
-    <fragment
-        android:id="@+id/nav_category"
-        android:name="com.activity.pis_azil.ui.category.CategoryFragment"
-        android:label="@string/kategorija"
-        tools:layout="@layout/fragment_category" />
     <fragment
         android:id="@+id/nav_new_products"
         android:name="com.activity.pis_azil.fragments.NewAnimalsFragment"

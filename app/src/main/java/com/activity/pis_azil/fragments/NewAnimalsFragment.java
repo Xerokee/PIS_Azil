@@ -1,34 +1,46 @@
 package com.activity.pis_azil.fragments;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.activity.pis_azil.R;
-import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.models.ViewAllModel;
+import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static android.app.Activity.RESULT_OK;
+
 public class NewAnimalsFragment extends Fragment {
 
-    private EditText etName, etDescription, etRating, etImgUrl, etType;
+    private static final int PICK_IMAGE_REQUEST = 1;
+
+    private EditText etName, etDescription, etType;
+    private ImageView ivAnimalImage;
+    private Uri imageUri;
     private LinearLayout animalFormContainer;
     private FloatingActionButton fabAddAnimal;
-    ApiService apiService;
+    private ApiService apiService;
 
     public NewAnimalsFragment() {
     }
@@ -42,13 +54,17 @@ public class NewAnimalsFragment extends Fragment {
 
         etName = root.findViewById(R.id.editTextName);
         etDescription = root.findViewById(R.id.editTextDescription);
-        etRating = root.findViewById(R.id.editTextRating);
-        etImgUrl = root.findViewById(R.id.editTextImgUrl);
         etType = root.findViewById(R.id.editTextType);
+        ivAnimalImage = root.findViewById(R.id.imageViewAnimal);
         animalFormContainer = root.findViewById(R.id.animalFormContainer);
 
         fabAddAnimal = root.findViewById(R.id.fabAddAnimal);
-        fabAddAnimal.setOnClickListener(v -> toggleFormVisibility());
+        fabAddAnimal.setOnClickListener(v -> {
+            Log.d("NewAnimalsFragment", "Floating Action Button clicked");
+            toggleFormVisibility();
+        });
+
+        ivAnimalImage.setOnClickListener(v -> openImageChooser());
 
         Button btnSubmitAnimal = root.findViewById(R.id.buttonSubmitAnimal);
         btnSubmitAnimal.setOnClickListener(v -> addNewAnimal());
@@ -69,34 +85,41 @@ public class NewAnimalsFragment extends Fragment {
         }
     }
 
+    private void openImageChooser() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Odaberite sliku"), PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            imageUri = data.getData();
+            Glide.with(this).load(imageUri).into(ivAnimalImage);
+        }
+    }
+
     private void addNewAnimal() {
         String name = etName.getText().toString().trim();
         String description = etDescription.getText().toString().trim();
-        String rating = etRating.getText().toString().trim();
-        String img_url = etImgUrl.getText().toString().trim();
         String type = etType.getText().toString().trim();
 
         Log.d("NewAnimalsFragment", "Uneseni podaci: " +
                 "Ime: " + name +
                 ", Opis: " + description +
-                ", Ocjena: " + rating +
-                ", URL slike: " + img_url +
                 ", Tip: " + type);
 
-        if (name.isEmpty() || description.isEmpty() || rating.isEmpty() || type.isEmpty()) {
+        if (name.isEmpty() || description.isEmpty() || type.isEmpty() || imageUri == null) {
             Toast.makeText(getContext(), "Molimo ispunite sve podatke", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        try {
-            Float.parseFloat(rating);
-        } catch (NumberFormatException e) {
-            Log.e("NewAnimalsFragment", "Greška pri provjeri ocjene: " + e.getMessage());
-            Toast.makeText(getContext(), "Ocjena mora biti broj", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        // Pretvaranje URI slike u URL (u stvarnom scenariju biste trebali uploadati sliku na server i dobiti URL)
+        String imgUrl = imageUri.toString();
 
-        ViewAllModel newAnimal = new ViewAllModel(name, description, rating, img_url, type);
+        ViewAllModel newAnimal = new ViewAllModel(name, description, "N/A", imgUrl, type);
         apiService.addAnimal(newAnimal).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -119,7 +142,16 @@ public class NewAnimalsFragment extends Fragment {
     }
 
     private void checkIfUserIsAdmin() {
-        apiService.getUserById(123, 123).enqueue(new Callback<UserModel>() { // Pretpostavimo da je admin provjeren pomoću ID 1
+        SharedPreferences preferences = getContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        int userId = preferences.getInt("id_korisnika", -1);
+
+        if (userId == -1) {
+            Log.e("NewAnimalsFragment", "User ID not found");
+            fabAddAnimal.setVisibility(View.GONE);
+            return;
+        }
+
+        apiService.getUserById(userId).enqueue(new Callback<UserModel>() {
             @Override
             public void onResponse(Call<UserModel> call, Response<UserModel> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isAdmin()) {
@@ -137,11 +169,11 @@ public class NewAnimalsFragment extends Fragment {
         });
     }
 
+
     private void clearForm() {
         etName.setText("");
         etDescription.setText("");
-        etRating.setText("");
-        etImgUrl.setText("");
         etType.setText("");
+        ivAnimalImage.setImageResource(R.drawable.fruits);
     }
 }

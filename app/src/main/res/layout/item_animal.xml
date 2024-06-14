@@ -5,7 +5,8 @@
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
     app:cardCornerRadius="8dp"
-    app:cardElevation="4dp">
+    app:cardElevation="4dp"
+    app:cardBackgroundColor="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -44,8 +45,7 @@
                 android:layout_height="wrap_content"
                 android:text="Opis ljubimca"
                 android:textColor="@android:color/holo_green_dark"
-                android:textSize="17sp"
-                android:textStyle="bold"
+                android:textSize="15sp"
                 android:maxLines="3"
                 android:ellipsize="end"
                 android:gravity="center"/>

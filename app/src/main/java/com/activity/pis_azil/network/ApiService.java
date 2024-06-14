@@ -26,6 +26,9 @@ public interface ApiService {
     @GET("Korisnici/user_id/{id_korisnika}")
     Call<UserModel> getUserById(@Path("id_korisnika") int id);
 
+    @GET("Korisnici/email/{email}")
+    Call<UserModel> getUserByIdEmail(@Path("email") String email);
+
     @GET("Korisnici/lozinka/{email}")
     Call<ResponseBody> getPasswordByEmail(@Path("email") String email);
 

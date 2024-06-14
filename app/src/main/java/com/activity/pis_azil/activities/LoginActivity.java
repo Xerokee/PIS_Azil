@@ -1,9 +1,8 @@
 package com.activity.pis_azil.activities;
 
+import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -11,10 +10,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.activity.pis_azil.R;
+import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 
@@ -43,8 +40,8 @@ public class LoginActivity extends AppCompatActivity {
         progressBar.setVisibility(View.GONE);
 
         signIn = findViewById(R.id.login_btn);
-        email = findViewById(R.id.email_login);
-        lozinka = findViewById(R.id.password_login);
+        email = findViewById(R.id.login_email);
+        lozinka = findViewById(R.id.login_password);
         signUp = findViewById(R.id.sign_up);
 
         signUp.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, RegistrationActivity.class)));
@@ -59,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
         String userEmail = email.getText().toString().trim();
         String userPassword = lozinka.getText().toString().trim();
 
-        if (TextUtils.isEmpty(userEmail) || TextUtils.isEmpty(userPassword)) {
+        if (userEmail.isEmpty() || userPassword.isEmpty()) {
             Toast.makeText(this, "Sva polja su obavezna", Toast.LENGTH_SHORT).show();
             progressBar.setVisibility(View.GONE);
             return;
@@ -73,21 +70,37 @@ public class LoginActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.GONE);
                 if (response.isSuccessful() && response.body() != null) {
                     try {
-                        String dbPassword = response.body().string().trim();  // Pristupite rezultatu lozinke
+                        String dbPassword = response.body().string().trim();
                         Log.d("LoginActivity", "Database password: " + dbPassword);
                         Log.d("LoginActivity", "Entered password: " + userPassword);
                         if (dbPassword.equals(userPassword)) {
                             Toast.makeText(LoginActivity.this, "Prijava je uspješna!", Toast.LENGTH_SHORT).show();
-                            // Save user data to SharedPreferences
-                            SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-                            SharedPreferences.Editor editor = preferences.edit();
-                            editor.putString("user_email", userEmail);
-                            // Save the user ID (assuming you get it in the response or another call)
-                            editor.putInt("id_korisnika", 1);
-                            editor.apply();
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            // Fetch user data by email
+                            apiService.getUserByIdEmail(userEmail).enqueue(new Callback<UserModel>() {
+                                @Override
+                                public void onResponse(Call<UserModel> call, Response<UserModel> response) {
+                                    if (response.isSuccessful() && response.body() != null) {
+                                        UserModel user = response.body();
+                                        Log.d("LoginActivity", "Dohvaćeni podaci korisnika - ID: " + user.getIdKorisnika() + ", Ime: " + user.getIme() + ", Mail: " + user.getEmail() + ", Slika profila: " + user.getProfileImg());
+                                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                        intent.putExtra("user_data", user); // pass user data to MainActivity
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        Toast.makeText(LoginActivity.this, "Korisnik nije pronađen", Toast.LENGTH_SHORT).show();
+                                        Log.e("LoginActivity", "User not found: " + response.errorBody());
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<UserModel> call, Throwable t) {
+                                    Toast.makeText(LoginActivity.this, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                    Log.e("LoginActivity", "Error fetching user by email: ", t);
+                                }
+                            });
                         } else {
                             Toast.makeText(LoginActivity.this, "Pogrešna lozinka", Toast.LENGTH_SHORT).show();
+                            Log.e("LoginActivity", "Entered password does not match database password.");
                         }
                     } catch (IOException e) {
                         Log.e("LoginActivity", "Error parsing response body", e);
@@ -103,6 +116,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
                 Toast.makeText(LoginActivity.this, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Log.e("LoginActivity", "Error fetching password by email: ", t);
             }
         });
     }

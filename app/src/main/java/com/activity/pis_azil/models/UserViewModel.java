@@ -1,0 +1,66 @@
+package com.activity.pis_azil.models;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+
+import com.activity.pis_azil.network.ApiClient;
+import com.activity.pis_azil.network.ApiService;
+
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class UserViewModel extends ViewModel {
+    private MutableLiveData<UserModel> userLiveData;
+    private MutableLiveData<List<UserModel>> allUsersLiveData;
+    private ApiService apiService;
+
+    public UserViewModel() {
+        apiService = ApiClient.getClient().create(ApiService.class);
+        userLiveData = new MutableLiveData<>();
+        allUsersLiveData = new MutableLiveData<>();
+    }
+
+    public LiveData<UserModel> getUser() {
+        return userLiveData;
+    }
+
+    public LiveData<List<UserModel>> getAllUsers() {
+        return allUsersLiveData;
+    }
+
+    public void fetchUserData(String email) {
+        apiService.getUserByIdEmail(email).enqueue(new Callback<UserModel>() {
+            @Override
+            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    userLiveData.setValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserModel> call, Throwable t) {
+                // Handle error
+            }
+        });
+    }
+
+    public void fetchAllUsers() {
+        apiService.getAllUsers().enqueue(new Callback<List<UserModel>>() {
+            @Override
+            public void onResponse(Call<List<UserModel>> call, Response<List<UserModel>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    allUsersLiveData.setValue(response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<UserModel>> call, Throwable t) {
+                // Handle error
+            }
+        });
+    }
+}

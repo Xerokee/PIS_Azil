@@ -9,13 +9,13 @@
             android:icon="@drawable/ic_menuhome"
             android:title="@string/po_etna" />
         <item
+            android:id="@+id/nav_users"
+            android:icon="@drawable/ic_action_name"
+            android:title="@string/korisnici" />
+        <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/menu_person"
             android:title="@string/profil" />
-        <item
-            android:id="@+id/nav_category"
-            android:icon="@drawable/ic_baseline_category_24"
-            android:title="@string/kategorija" />
         <item
             android:id="@+id/nav_new_products"
             android:icon="@drawable/autorenew"
