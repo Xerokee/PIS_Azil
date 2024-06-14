@@ -1,68 +1,69 @@
 package com.activity.pis_azil.models;
 
 public class MyAdoptionModel {
-    private String animalId;
-    private String animalName;
-    private String animalType;
-    private String currentDate;
-    private String currentTime;
-    private String img_url;
-    private boolean adopted;
+    private int idLjubimca;
+    private String imeLjubimca;
+    private String tipLjubimca;
+    private String opisLjubimca;
+    private String datum;
+    private String imgUrl;
+    private boolean udomljen;
 
     // Getteri i setteri
-    public String getAnimalId() {
-        return animalId;
+
+    public int getIdLjubimca() {
+        return idLjubimca;
     }
 
-    public void setAnimalId(String animalId) {
-        this.animalId = animalId;
+    public void setIdLjubimca(int idLjubimca) {
+        this.idLjubimca = idLjubimca;
     }
 
-    public String getAnimalName() {
-        return animalName;
+    public String getImeLjubimca() {
+        return imeLjubimca;
     }
 
-    public void setAnimalName(String animalName) {
-        this.animalName = animalName;
+    public void setImeLjubimca(String imeLjubimca) {
+        this.imeLjubimca = imeLjubimca;
     }
 
-    public String getAnimalType() {
-        return animalType;
+    public String getTipLjubimca() {
+        return tipLjubimca;
     }
 
-    public void setAnimalType(String animalType) {
-        this.animalType = animalType;
+    public void setTipLjubimca(String tipLjubimca) {
+        this.tipLjubimca = tipLjubimca;
     }
 
-    public String getCurrentDate() {
-        return currentDate;
+    public String getOpisLjubimca() {
+        return opisLjubimca;
     }
 
-    public void setCurrentDate(String currentDate) {
-        this.currentDate = currentDate;
+    public void setOpisLjubimca(String opisLjubimca) {
+        this.opisLjubimca = opisLjubimca;
     }
 
-    public String getCurrentTime() {
-        return currentTime;
+    public String getDatum() {
+        return datum;
     }
 
-    public void setCurrentTime(String currentTime) {
-        this.currentTime = currentTime;
+    public void setDatum(String datum) {
+        this.datum = datum;
     }
 
-    public String getImg_url() {
-        return img_url;
+    public String getImgUrl() {
+        return imgUrl;
     }
 
-    public void setImg_url(String img_url) {
-        this.img_url = img_url;
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 
-    public boolean isAdopted() {
-        return adopted;
+    public boolean isUdomljen() {
+        return udomljen;
     }
 
-    public void setAdopted(boolean adopted) {
-        this.adopted = adopted;
+    public void setUdomljen(boolean udomljen) {
+        this.udomljen = udomljen;
     }
 }

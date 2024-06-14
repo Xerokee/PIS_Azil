@@ -1,29 +1,23 @@
-/*
 package com.activity.pis_azil.fragments;
 
 import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.adapters.MyAdoptionAdapter;
 import com.activity.pis_azil.models.MyAdoptionModel;
 import com.activity.pis_azil.models.AnimalModel;
 import com.activity.pis_azil.network.ApiService;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,11 +31,11 @@ public class MyAnimalsFragment extends Fragment {
     List<MyAdoptionModel> cartModelList;
 
     public MyAnimalsFragment() {
+        // Required empty public constructor
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_my_adoptions, container, false);
 
         apiService = ApiClient.getClient().create(ApiService.class);
@@ -67,13 +61,12 @@ public class MyAnimalsFragment extends Fragment {
                     cartModelList.clear();
                     for (AnimalModel animal : response.body()) {
                         MyAdoptionModel adoption = new MyAdoptionModel();
-                        adoption.setAnimalId(animal.getAnimalId());
-                        adoption.setAnimalName(animal.getAnimalName());
-                        adoption.setAnimalType(animal.getAnimalType());
-                        adoption.setCurrentDate(animal.getCurrentDate());
-                        adoption.setCurrentTime(animal.getCurrentTime());
-                        adoption.setImg_url(animal.getImgUrl());
-                        adoption.setAdopted(animal.isAdopted());
+                        adoption.setIdLjubimca(animal.getIdLjubimca());
+                        adoption.setImeLjubimca(animal.getImeLjubimca());
+                        adoption.setTipLjubimca(animal.getTipLjubimca());
+                        adoption.setDatum(animal.getDatum());
+                        adoption.setOpisLjubimca(animal.getOpisLjubimca());
+                        adoption.setImgUrl(animal.getImgUrl());
                         cartModelList.add(adoption);
                     }
                     cartAdapter.notifyDataSetChanged();
@@ -91,4 +84,3 @@ public class MyAnimalsFragment extends Fragment {
         });
     }
 }
-*/

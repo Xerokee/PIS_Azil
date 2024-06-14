@@ -50,13 +50,12 @@ public class DetailedActivity extends AppCompatActivity {
         if (animalModel != null) {
             Glide.with(getApplicationContext())
                     .load(animalModel.getImgUrl())
-                    .placeholder(R.drawable.paw) // Placeholder image
-                    .error(R.drawable.milk2) // Error image
+                    .placeholder(R.drawable.paw)
+                    .error(R.drawable.milk2)
                     .into(detailedImg);
             name.setText(animalModel.getImeLjubimca());
             description.setText(animalModel.getOpisLjubimca());
         } else {
-            // Set placeholder image if animalModel is null
             detailedImg.setImageResource(R.drawable.fruits);
         }
 
@@ -65,24 +64,15 @@ public class DetailedActivity extends AppCompatActivity {
     }
 
     private void addedToCart() {
-        String saveCurrentDate, saveCurrentTime;
-        Calendar calForDate = Calendar.getInstance();
+        MyAdoptionModel adoptionModel = new MyAdoptionModel();
+        adoptionModel.setIdLjubimca(animalModel.getIdLjubimca());
+        adoptionModel.setImeLjubimca(animalModel.getImeLjubimca());
+        adoptionModel.setTipLjubimca(animalModel.getTipLjubimca());
+        adoptionModel.setOpisLjubimca(animalModel.getOpisLjubimca());
+        adoptionModel.setDatum(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().getTime()));
+        adoptionModel.setImgUrl(animalModel.getImgUrl());
 
-        SimpleDateFormat currentDate = new SimpleDateFormat("dd. MM. yyyy", new Locale("hr", "HR"));
-        saveCurrentDate = currentDate.format(calForDate.getTime());
-
-        SimpleDateFormat currentTime = new SimpleDateFormat("HH:mm:ss", new Locale("hr", "HR"));
-        saveCurrentTime = currentTime.format(calForDate.getTime()) + " sati";
-
-        MyAdoptionModel cartModel = new MyAdoptionModel();
-        cartModel.setAnimalId(UUID.randomUUID().toString());
-        cartModel.setAnimalName(animalModel.getImeLjubimca());
-        cartModel.setAnimalType(animalModel.getTipLjubimca());
-        cartModel.setCurrentDate(saveCurrentDate);
-        cartModel.setCurrentTime(saveCurrentTime);
-        cartModel.setImg_url(animalModel.getImgUrl());
-
-        apiService.addAdoption(cartModel).enqueue(new Callback<Void>() {
+        apiService.addAdoption(adoptionModel).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {

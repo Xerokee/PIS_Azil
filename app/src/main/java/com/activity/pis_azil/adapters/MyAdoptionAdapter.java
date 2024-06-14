@@ -1,4 +1,3 @@
-/*
 package com.activity.pis_azil.adapters;
 
 import android.app.AlertDialog;
@@ -12,22 +11,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.models.MyAdoptionModel;
 import com.activity.pis_azil.models.UserModel;
 import com.bumptech.glide.Glide;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -55,16 +50,15 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         MyAdoptionModel cartModel = cartModelList.get(position);
 
-        if (cartModel.getImg_url() != null && !cartModel.getImg_url().isEmpty()) {
-            Glide.with(context).load(cartModel.getImg_url()).into(holder.imgUrl);
+        if (cartModel.getImgUrl() != null && !cartModel.getImgUrl().isEmpty()) {
+            Glide.with(context).load(cartModel.getImgUrl()).into(holder.imgUrl);
         } else {
             holder.imgUrl.setImageResource(R.drawable.profile);
         }
 
-        holder.name.setText(cartModel.getAnimalName());
-        holder.type.setText(cartModel.getAnimalType());
-        holder.date.setText(cartModel.getCurrentDate());
-        holder.time.setText(cartModel.getCurrentTime());
+        holder.name.setText(cartModel.getImeLjubimca());
+        holder.type.setText(cartModel.getTipLjubimca());
+        holder.date.setText(cartModel.getDatum());
 
         holder.deleteItem.setOnClickListener(v -> checkIfUserIsAdminThenRun(
                 () -> showDeleteConfirmationDialog(position),
@@ -76,7 +70,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 () -> Toast.makeText(context, "Samo admini mogu ažurirati životinje.", Toast.LENGTH_SHORT).show()
         ));
 
-        if (cartModel.isAdopted()) {
+        if (cartModel.isUdomljen()) {
             holder.adoptButton.setEnabled(false);
             holder.adoptButton.setText("Udomljeno");
         } else {
@@ -86,7 +80,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 int adapterPosition = holder.getAdapterPosition();
                 if (adapterPosition != RecyclerView.NO_POSITION) {
                     MyAdoptionModel selectedAnimal = cartModelList.get(adapterPosition);
-                    if (!selectedAnimal.isAdopted()) {
+                    if (!selectedAnimal.isUdomljen()) {
                         checkIfUserIsAdmin(selectedAnimal, adapterPosition);
                     } else {
                         Toast.makeText(context, "Životinja je već udomljena.", Toast.LENGTH_SHORT).show();
@@ -127,7 +121,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
     }
 
     private void deleteItem(int position) {
-        apiService.deleteAnimal(cartModelList.get(position).getAnimalId()).enqueue(new Callback<Void>() {
+        apiService.deleteAnimal(String.valueOf(cartModelList.get(position).getIdLjubimca())).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -154,27 +148,24 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         EditText edtName = view.findViewById(R.id.edt_updated_name);
         EditText edtType = view.findViewById(R.id.edt_updated_type);
         EditText edtDate = view.findViewById(R.id.edt_updated_date);
-        EditText edtTime = view.findViewById(R.id.edt_updated_time);
         EditText edtImgUrl = view.findViewById(R.id.edt_updated_img_url);
 
         MyAdoptionModel cartModel = cartModelList.get(position);
-        edtName.setText(cartModel.getAnimalName());
-        edtType.setText(cartModel.getAnimalType());
-        edtDate.setText(cartModel.getCurrentDate());
-        edtTime.setText(cartModel.getCurrentTime());
-        edtImgUrl.setText(cartModel.getImg_url());
+        edtName.setText(cartModel.getImeLjubimca());
+        edtType.setText(cartModel.getTipLjubimca());
+        edtDate.setText(cartModel.getDatum());
+        edtImgUrl.setText(cartModel.getImgUrl());
 
         builder.setPositiveButton("Ažuriraj", (dialog, which) -> {
             String updatedName = edtName.getText().toString().trim();
             String updatedType = edtType.getText().toString().trim();
             String updatedDate = edtDate.getText().toString().trim();
-            String updatedTime = edtTime.getText().toString().trim();
             String updatedImgUrl = edtImgUrl.getText().toString().trim();
 
-            if (TextUtils.isEmpty(updatedName) || TextUtils.isEmpty(updatedType) || TextUtils.isEmpty(updatedDate) || TextUtils.isEmpty(updatedTime)) {
+            if (TextUtils.isEmpty(updatedName) || TextUtils.isEmpty(updatedType) || TextUtils.isEmpty(updatedDate)) {
                 Toast.makeText(context, "Molimo popunite sva polja", Toast.LENGTH_SHORT).show();
             } else {
-                updateAnimalDocument(position, updatedName, updatedType, updatedDate, updatedTime, updatedImgUrl);
+                updateAnimalDocument(position, updatedName, updatedType, updatedDate, updatedImgUrl);
             }
         });
 
@@ -183,25 +174,23 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         builder.create().show();
     }
 
-    private void updateAnimalDocument(int position, String updatedName, String updatedType, String updatedDate, String updatedTime, String updatedImgUrl) {
+    private void updateAnimalDocument(int position, String updatedName, String updatedType, String updatedDate, String updatedImgUrl) {
         MyAdoptionModel cartModel = cartModelList.get(position);
 
         Map<String, Object> updateData = new HashMap<>();
         updateData.put("animalName", updatedName);
         updateData.put("animalType", updatedType);
         updateData.put("currentDate", updatedDate);
-        updateData.put("currentTime", updatedTime);
         updateData.put("img_url", updatedImgUrl);
 
-        apiService.updateAnimal(cartModel.getAnimalId(), updateData).enqueue(new Callback<Void>() {
+        apiService.updateAnimal(String.valueOf(cartModel.getIdLjubimca()), updateData).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    cartModel.setAnimalName(updatedName);
-                    cartModel.setAnimalType(updatedType);
-                    cartModel.setCurrentDate(updatedDate);
-                    cartModel.setCurrentTime(updatedTime);
-                    cartModel.setImg_url(updatedImgUrl);
+                    cartModel.setImeLjubimca(updatedName);
+                    cartModel.setTipLjubimca(updatedType);
+                    cartModel.setDatum(updatedDate);
+                    cartModel.setImgUrl(updatedImgUrl);
                     notifyDataSetChanged();
                     Toast.makeText(context, "Lista ažurirana", Toast.LENGTH_SHORT).show();
                 } else {
@@ -259,7 +248,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                             .setTitle("Odaberite udomitelja")
                             .setItems(adoptersArray, (dialog, which) -> {
                                 String selectedUserId = adopterIds.get(which);
-                                adoptAnimal(selectedAnimal.getAnimalId(), selectedUserId, adopterNames.get(which));
+                                adoptAnimal(selectedAnimal.getIdLjubimca(), selectedUserId, adopterNames.get(which));
                             })
                             .show();
                 }
@@ -272,13 +261,13 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         });
     }
 
-    private void adoptAnimal(String animalId, String adopterId, String adopterName) {
+    private void adoptAnimal(int idLjubimca, String adopterId, String adopterName) {
         Map<String, Object> adoptionUpdates = new HashMap<>();
         adoptionUpdates.put("adopted", true);
         adoptionUpdates.put("adopterId", adopterId);
         adoptionUpdates.put("adopterName", adopterName);
 
-        apiService.updateAnimal(animalId, adoptionUpdates).enqueue(new Callback<Void>() {
+        apiService.updateAnimal(String.valueOf(idLjubimca), adoptionUpdates).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -302,7 +291,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView name, type, date, time;
+        TextView name, type, date;
         ImageView imgUrl;
         ImageView deleteItem, updateItem;
         Button adoptButton;
@@ -313,7 +302,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             name = itemView.findViewById(R.id.product_name);
             type = itemView.findViewById(R.id.product_type);
             date = itemView.findViewById(R.id.current_date);
-            time = itemView.findViewById(R.id.current_time);
             imgUrl = itemView.findViewById(R.id.img_url);
             deleteItem = itemView.findViewById(R.id.delete);
             updateItem = itemView.findViewById(R.id.update);
@@ -321,4 +309,3 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         }
     }
 }
-*/

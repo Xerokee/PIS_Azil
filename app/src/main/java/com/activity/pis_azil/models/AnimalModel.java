@@ -9,22 +9,23 @@ public class AnimalModel implements Serializable {
     private String tip_ljubimca;
     private String opis_ljubimca;
     private boolean udomljen;
+    private String datum; // Added
     private String imgUrl;
 
     // Constructors, getters, and setters
     public AnimalModel() {}
 
-    public AnimalModel(int id_ljubimca, int id_udomitelja, String ime_ljubimca, String tip_ljubimca, String opis_ljubimca, boolean udomljen, String imgUrl) {
+    public AnimalModel(int id_ljubimca, int id_udomitelja, String ime_ljubimca, String tip_ljubimca, String opis_ljubimca, boolean udomljen, String datum, String imgUrl) {
         this.id_ljubimca = id_ljubimca;
         this.id_udomitelja = id_udomitelja;
         this.ime_ljubimca = ime_ljubimca;
         this.tip_ljubimca = tip_ljubimca;
         this.opis_ljubimca = opis_ljubimca;
         this.udomljen = udomljen;
+        this.datum = datum;
         this.imgUrl = imgUrl;
     }
 
-    // Getteri i setteri
     public int getIdLjubimca() {
         return id_ljubimca;
     }
@@ -71,6 +72,14 @@ public class AnimalModel implements Serializable {
 
     public void setUdomljen(boolean udomljen) {
         this.udomljen = udomljen;
+    }
+
+    public String getDatum() {
+        return datum;
+    }
+
+    public void setDatum(String datum) {
+        this.datum = datum;
     }
 
     public String getImgUrl() {

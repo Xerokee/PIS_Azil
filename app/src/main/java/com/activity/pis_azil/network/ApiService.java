@@ -65,8 +65,8 @@ public interface ApiService {
     @POST("AdoptedAnimals/adopters")
     Call<List<AnimalModel>> getAnimalsForAdopters(@Body List<String> adopterIds);
 
-    @POST("AdoptedAnimals/add")
-    Call<Void> addAdoption(@Body MyAdoptionModel adoption);
+    @POST("DnevnikUdomljavanja/add")
+    Call<Void> addAdoption(@Body MyAdoptionModel adoptionModel);
 
     @GET("SearchAnimals")
     Call<List<AnimalModel>> searchAnimals(@Query("keyword") String keyword);

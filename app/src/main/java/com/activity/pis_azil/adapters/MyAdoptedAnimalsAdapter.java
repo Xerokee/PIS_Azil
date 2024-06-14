@@ -1,4 +1,4 @@
-/*package com.activity.pis_azil.adapters;
+package com.activity.pis_azil.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -49,25 +49,22 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         AnimalModel animal = adoptedAnimalsList.get(position);
-        holder.animalName.setText(animal.getAnimalName());
-        holder.animalType.setText(animal.getAnimalType());
+        holder.animalName.setText(animal.getImeLjubimca());
+        holder.animalType.setText(animal.getTipLjubimca());
         Glide.with(context).load(animal.getImgUrl()).into(holder.animalImage);
 
-        if (animal.isAdopted()) {
+        if (animal.isUdomljen()) {
             holder.tvAdoptedStatus.setText("Udomljeno");
-            holder.adopterName.setText(animal.getAdopterName());
+            getAdopterNameById(animal.getIdUdomitelja(), holder.adopterName);
         } else {
             holder.tvAdoptedStatus.setText("Dostupno za udomljavanje");
             holder.adopterName.setText("");
         }
 
-        holder.tvAdoptedStatus.setText(animal.isAdopted() ? "Udomljeno" : "Dostupno za udomljavanje");
         holder.returnButton.setOnClickListener(v -> {
-            String documentId = adoptedAnimalsList.get(position).getAnimalId(); // Koristite documentId
-            checkIfUserIsAdmin(documentId, position, () -> returnAnimal(documentId, position));
+            int animalId = animal.getIdLjubimca();
+            checkIfUserIsAdmin(animalId, position, () -> returnAnimal(animalId, position));
         });
-
-        getAdopterNameById(animal.getAdopterId(), holder.adopterName);
     }
 
     @Override
@@ -91,7 +88,7 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
         }
     }
 
-    private void checkIfUserIsAdmin(String documentId, int position, Runnable onAdminAction) {
+    private void checkIfUserIsAdmin(int animalId, int position, Runnable onAdminAction) {
         apiService.getUserById(1).enqueue(new Callback<UserModel>() { // Pretpostavimo da je admin provjeren pomoću ID 1
             @Override
             public void onResponse(Call<UserModel> call, Response<UserModel> response) {
@@ -117,13 +114,13 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
                 .show();
     }
 
-    private void getAdopterNameById(String adopterId, final TextView adopterNameTextView) {
-        if (adopterId == null || adopterId.trim().isEmpty()) {
+    private void getAdopterNameById(int adopterId, final TextView adopterNameTextView) {
+        if (adopterId == 0) {
             adopterNameTextView.setText("Nepoznato");
             return;
         }
 
-        apiService.getUserById(Integer.parseInt(adopterId)).enqueue(new Callback<UserModel>() {
+        apiService.getUserById(adopterId).enqueue(new Callback<UserModel>() {
             @Override
             public void onResponse(Call<UserModel> call, Response<UserModel> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -140,13 +137,12 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
         });
     }
 
-    private void returnAnimal(String documentId, int position) {
+    private void returnAnimal(int animalId, int position) {
         Map<String, Object> updateData = new HashMap<>();
-        updateData.put("adopted", false);
-        updateData.put("adopterId", null);
-        updateData.put("adopterName", null);
+        updateData.put("udomljen", false);
+        updateData.put("id_udomitelja", 0);
 
-        apiService.updateAnimal(documentId, updateData).enqueue(new Callback<Void>() {
+        apiService.updateAnimal(String.valueOf(animalId), updateData).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -171,4 +167,3 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
         notifyDataSetChanged();
     }
 }
-*/
