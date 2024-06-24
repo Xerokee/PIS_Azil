@@ -9,6 +9,7 @@ public class UserModel implements Serializable {
     private String lozinka;
     public boolean admin;
     public String profileImg;
+    private UserRoleModel userRole;
 
     public UserModel(int id_korisnika, String ime, String email, String lozinka, boolean admin, String profileImg) {
         this.id_korisnika = id_korisnika;
@@ -69,5 +70,13 @@ public class UserModel implements Serializable {
 
     public void setProfileImg(String profileImg) {
         this.profileImg = profileImg;
+    }
+
+    public UserRoleModel getUserRole() {
+        return userRole;
+    }
+
+    public void setUserRole(UserRoleModel userRole) {
+        this.userRole = userRole;
     }
 }

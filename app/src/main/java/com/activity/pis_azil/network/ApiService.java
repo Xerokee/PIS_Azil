@@ -4,6 +4,7 @@ import com.activity.pis_azil.models.UserByEmailResponseModel;
 import com.activity.pis_azil.models.MyAdoptionModel;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.models.AnimalModel;
+import com.activity.pis_azil.models.UserRoleModel;
 import com.activity.pis_azil.models.ViewAllModel;
 
 import java.util.List;
@@ -35,6 +36,9 @@ public interface ApiService {
 
     @GET("Korisnici/user_id/{id_korisnika}")
     Call<UserModel> getUserById(@Header("RequestUserId") int userId, @Path("id_korisnika") int id);
+
+    @GET("Korisnici/role/{id_korisnika}")
+    Call<UserRoleModel> getUserRoleById(@Path("id_korisnika") int userId);
 
     @PUT("Korisnici/update/{id_korisnika}")
     Call<Void> updateUser(@Header("RequestUserId") int requestUserId, @Path("id_korisnika") int id, @Body Map<String, Object> updates);

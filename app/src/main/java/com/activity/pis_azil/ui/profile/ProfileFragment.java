@@ -28,6 +28,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.activities.HomeActivity;
 import com.activity.pis_azil.models.UserModel;
+import com.activity.pis_azil.models.UserRoleModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 import com.bumptech.glide.Glide;
@@ -47,6 +48,7 @@ public class ProfileFragment extends Fragment {
     EditText ime, email, lozinka;
     Button update, logout;
     ApiService apiService;
+    SharedPreferences preferences;
 
     public static final String ACTION_PROFILE_UPDATED = "com.activity.vuv_azil_navigation.PROFILE_UPDATED";
     private static final int CAMERA_REQUEST_CODE = 100;
@@ -60,6 +62,7 @@ public class ProfileFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
 
         apiService = ApiClient.getClient().create(ApiService.class);
+        preferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
 
         profileImage = root.findViewById(R.id.profileImage);
         ime = root.findViewById(R.id.profileName);
@@ -80,7 +83,6 @@ public class ProfileFragment extends Fragment {
     }
 
     private void logoutUser() {
-        SharedPreferences preferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.clear();
         editor.apply();
@@ -152,7 +154,6 @@ public class ProfileFragment extends Fragment {
     }
 
     private void loadUserProfile() {
-        SharedPreferences preferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         int userId = preferences.getInt("id_korisnika", -1);
 
         if (userId == -1) {
@@ -171,16 +172,40 @@ public class ProfileFragment extends Fragment {
                     if (userModel.getProfileImg() != null) {
                         Glide.with(getContext()).load(userModel.getProfileImg()).into(profileImage);
                     }
+                    // Fetch and display user role
+                    fetchUserRole(userId);
+                    // Save current admin status
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putBoolean("admin", userModel.isAdmin());
+                    editor.apply();
                 } else {
                     Toast.makeText(getContext(), "Error fetching user data: " + response.message(), Toast.LENGTH_SHORT).show();
-                    Log.e("ProfileFragment", "Error fetching user data: " + response.message());
                 }
             }
 
             @Override
             public void onFailure(Call<UserModel> call, Throwable t) {
                 Toast.makeText(getContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("ProfileFragment", "Network error: ", t);
+            }
+        });
+    }
+
+    private void fetchUserRole(int userId) {
+        apiService.getUserRoleById(userId).enqueue(new Callback<UserRoleModel>() {
+            @Override
+            public void onResponse(Call<UserRoleModel> call, Response<UserRoleModel> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    UserRoleModel userRole = response.body();
+                    // Display user role
+                    if (userRole != null && "Admin".equals(userRole.getNazivUloge())) {
+                        Toast.makeText(getContext(), "User is an Admin", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserRoleModel> call, Throwable t) {
+                Toast.makeText(getContext(), "Failed to fetch user role: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -189,15 +214,14 @@ public class ProfileFragment extends Fragment {
         String Ime = ime.getText().toString().trim();
         String Mail = email.getText().toString().trim();
         String Lozinka = lozinka.getText().toString().trim();
+        boolean admin = preferences.getBoolean("admin", false);
 
         if (Ime.isEmpty() || Mail.isEmpty() || Lozinka.isEmpty()) {
             Toast.makeText(getContext(), "Sva polja su obavezna", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        SharedPreferences preferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         int userId = preferences.getInt("id_korisnika", -1);
-        boolean admin = preferences.getBoolean("admin", false);
 
         if (userId == -1) {
             Toast.makeText(getContext(), "User ID not found", Toast.LENGTH_SHORT).show();
@@ -208,7 +232,11 @@ public class ProfileFragment extends Fragment {
         userUpdates.put("ime", Ime);
         userUpdates.put("email", Mail);
         userUpdates.put("lozinka", Lozinka);
-        userUpdates.put("admin", admin);
+
+        // Ensure admin status is not changed for the user with ID 1
+        if (userId != 1) {
+            userUpdates.put("admin", admin);
+        }
 
         apiService.updateUser(userId, userId, userUpdates).enqueue(new Callback<Void>() {
             @Override

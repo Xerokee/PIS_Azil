@@ -2,6 +2,7 @@ package com.activity.pis_azil.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -86,6 +87,18 @@ public class LoginActivity extends AppCompatActivity {
                                         UserModel user = userByEmailResponseModel.getResult();
                                         if (user != null) {
                                             Log.d("LoginActivity", "Dohvaćeni podaci korisnika - ID: " + user.getIdKorisnika() + ", Ime: " + user.getIme() + ", Mail: " + user.getEmail() + ", Slika profila: " + user.getProfileImg());
+
+                                            // Save user data in SharedPreferences
+                                            SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+                                            SharedPreferences.Editor editor = preferences.edit();
+                                            editor.putInt("id_korisnika", user.getIdKorisnika());
+                                            editor.putString("ime", user.getIme());
+                                            editor.putString("email", user.getEmail());
+                                            editor.putString("lozinka", user.getLozinka());
+                                            editor.putBoolean("admin", user.isAdmin());
+                                            editor.putString("profileImg", user.getProfileImg());
+                                            editor.apply();
+
                                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                             intent.putExtra("user_data", user); // pass user data to MainActivity
                                             startActivity(intent);
