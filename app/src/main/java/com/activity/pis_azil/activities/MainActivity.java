@@ -3,6 +3,8 @@ package com.activity.pis_azil.activities;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -65,7 +67,8 @@ public class MainActivity extends AppCompatActivity {
             updateNavigationHeader(user, headerName, headerEmail, headerImg);
         } else {
             // If user data is not available in the intent, fetch from ViewModel
-            userEmail = "email@example.com"; // Set default or fetch from saved preferences
+            SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+            userEmail = preferences.getString("email", "email@example.com"); // Fetch from saved preferences
             userViewModel = new ViewModelProvider(this).get(UserViewModel.class);
             userViewModel.getUser().observe(this, new Observer<UserModel>() {
                 @Override
@@ -75,6 +78,10 @@ public class MainActivity extends AppCompatActivity {
             });
             userViewModel.fetchUserData(userEmail);
         }
+
+        // Listen for profile updates
+        LocalBroadcastManager.getInstance(this).registerReceiver(profileUpdatedReceiver,
+                new IntentFilter(ProfileFragment.ACTION_PROFILE_UPDATED));
     }
 
     private void updateNavigationHeader(UserModel user, TextView headerName, TextView headerEmail, CircleImageView headerImg) {
@@ -87,6 +94,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private final BroadcastReceiver profileUpdatedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Update the navigation header when profile is updated
+            SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+            String name = preferences.getString("ime", "");
+            String email = preferences.getString("email", "");
+            String profileImg = preferences.getString("profileImg", "");
+
+            TextView headerName = findViewById(R.id.profileNam);
+            TextView headerEmail = findViewById(R.id.profileEml);
+            CircleImageView headerImg = findViewById(R.id.profileImg);
+
+            headerName.setText(name);
+            headerEmail.setText(email);
+            if (!profileImg.isEmpty()) {
+                Glide.with(context).load(profileImg).into(headerImg);
+            } else {
+                headerImg.setImageResource(R.drawable.fruits);
+            }
+        }
+    };
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
@@ -98,5 +128,12 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration) || super.onSupportNavigateUp();
     }
+
+    @Override
+    protected void onDestroy() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(profileUpdatedReceiver);
+        super.onDestroy();
+    }
 }
+
 

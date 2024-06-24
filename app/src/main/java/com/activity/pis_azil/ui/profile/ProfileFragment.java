@@ -197,6 +197,7 @@ public class ProfileFragment extends Fragment {
 
         SharedPreferences preferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         int userId = preferences.getInt("id_korisnika", -1);
+        boolean admin = preferences.getBoolean("admin", false);
 
         if (userId == -1) {
             Toast.makeText(getContext(), "User ID not found", Toast.LENGTH_SHORT).show();
@@ -207,6 +208,7 @@ public class ProfileFragment extends Fragment {
         userUpdates.put("ime", Ime);
         userUpdates.put("email", Mail);
         userUpdates.put("lozinka", Lozinka);
+        userUpdates.put("admin", admin);
 
         apiService.updateUser(userId, userId, userUpdates).enqueue(new Callback<Void>() {
             @Override
@@ -214,6 +216,14 @@ public class ProfileFragment extends Fragment {
                 if (response.isSuccessful()) {
                     Toast.makeText(getContext(), "Profil ažuriran", Toast.LENGTH_SHORT).show();
                     LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(ACTION_PROFILE_UPDATED));
+                    // Update local preferences
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putString("ime", Ime);
+                    editor.putString("email", Mail);
+                    editor.putString("lozinka", Lozinka);
+                    editor.apply();
+                    // Update UI
+                    loadUserProfile();
                 } else {
                     try {
                         String errorBody = response.errorBody().string();
