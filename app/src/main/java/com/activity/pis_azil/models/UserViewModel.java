@@ -33,20 +33,29 @@ public class UserViewModel extends ViewModel {
     }
 
     public void fetchUserData(String email) {
-        apiService.getUserByIdEmail(email).enqueue(new Callback<UserModel>() {
+        apiService.getUserByIdEmail(email).enqueue(new Callback<UserByEmailResponseModel>() {
             @Override
-            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
+            public void onResponse(Call<UserByEmailResponseModel> call, Response<UserByEmailResponseModel> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    userLiveData.setValue(response.body());
+                    UserByEmailResponseModel userByEmailResponseModel = response.body();
+                    UserModel user = userByEmailResponseModel.getResult();
+                    if (user != null) {
+                        userLiveData.setValue(user);
+                    } else {
+                        // Handle case where user is not found in the result
+                    }
+                } else {
+                    // Handle unsuccessful response
                 }
             }
 
             @Override
-            public void onFailure(Call<UserModel> call, Throwable t) {
+            public void onFailure(Call<UserByEmailResponseModel> call, Throwable t) {
                 // Handle error
             }
         });
     }
+
 
     public void fetchAllUsers() {
         apiService.getAllUsers().enqueue(new Callback<List<UserModel>>() {

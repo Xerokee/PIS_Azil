@@ -1,5 +1,6 @@
 package com.activity.pis_azil.network;
 
+import com.activity.pis_azil.models.UserByEmailResponseModel;
 import com.activity.pis_azil.models.MyAdoptionModel;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.models.AnimalModel;
@@ -27,7 +28,7 @@ public interface ApiService {
     Call<UserModel> getUserById(@Path("id_korisnika") int id);
 
     @GET("Korisnici/email/{email}")
-    Call<UserModel> getUserByIdEmail(@Path("email") String email);
+    Call<UserByEmailResponseModel> getUserByIdEmail(@Path("email") String email);
 
     @GET("Korisnici/lozinka/{email}")
     Call<ResponseBody> getPasswordByEmail(@Path("email") String email);

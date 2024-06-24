@@ -10,6 +10,18 @@ public class UserModel implements Serializable {
     public boolean admin;
     public String profileImg;
 
+    public UserModel(int id_korisnika, String ime, String email, String lozinka, boolean admin, String profileImg) {
+        this.id_korisnika = id_korisnika;
+        this.ime = ime;
+        this.email = email;
+        this.lozinka = lozinka;
+        this.admin = admin;
+        this.profileImg = profileImg;
+    }
+
+    public UserModel() {
+    }
+
     // Getters and setters
     public int getIdKorisnika() {
         return id_korisnika;

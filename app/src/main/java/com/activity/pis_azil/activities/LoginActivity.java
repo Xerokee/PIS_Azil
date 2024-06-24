@@ -11,6 +11,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.activity.pis_azil.R;
+import com.activity.pis_azil.models.UserByEmailResponseModel;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
@@ -76,28 +77,37 @@ public class LoginActivity extends AppCompatActivity {
                         if (dbPassword.equals(userPassword)) {
                             Toast.makeText(LoginActivity.this, "Prijava je uspješna!", Toast.LENGTH_SHORT).show();
                             // Fetch user data by email
-                            apiService.getUserByIdEmail(userEmail).enqueue(new Callback<UserModel>() {
+                            apiService.getUserByIdEmail(userEmail).enqueue(new Callback<UserByEmailResponseModel>() {
                                 @Override
-                                public void onResponse(Call<UserModel> call, Response<UserModel> response) {
+                                public void onResponse(Call<UserByEmailResponseModel> call, Response<UserByEmailResponseModel> response) {
+                                    progressBar.setVisibility(View.GONE);
                                     if (response.isSuccessful() && response.body() != null) {
-                                        UserModel user = response.body();
-                                        Log.d("LoginActivity", "Dohvaćeni podaci korisnika - ID: " + user.getIdKorisnika() + ", Ime: " + user.getIme() + ", Mail: " + user.getEmail() + ", Slika profila: " + user.getProfileImg());
-                                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                        intent.putExtra("user_data", user); // pass user data to MainActivity
-                                        startActivity(intent);
-                                        finish();
+                                        UserByEmailResponseModel userByEmailResponseModel = response.body();
+                                        UserModel user = userByEmailResponseModel.getResult();
+                                        if (user != null) {
+                                            Log.d("LoginActivity", "Dohvaćeni podaci korisnika - ID: " + user.getIdKorisnika() + ", Ime: " + user.getIme() + ", Mail: " + user.getEmail() + ", Slika profila: " + user.getProfileImg());
+                                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                            intent.putExtra("user_data", user); // pass user data to MainActivity
+                                            startActivity(intent);
+                                            finish();
+                                        } else {
+                                            Toast.makeText(LoginActivity.this, "Korisnik nije pronađen", Toast.LENGTH_SHORT).show();
+                                            Log.e("LoginActivity", "User not found in result");
+                                        }
                                     } else {
+                                        Log.e("LoginActivity", "Error response: " + response.errorBody().toString());
                                         Toast.makeText(LoginActivity.this, "Korisnik nije pronađen", Toast.LENGTH_SHORT).show();
-                                        Log.e("LoginActivity", "User not found: " + response.errorBody());
                                     }
                                 }
 
                                 @Override
-                                public void onFailure(Call<UserModel> call, Throwable t) {
+                                public void onFailure(Call<UserByEmailResponseModel> call, Throwable t) {
+                                    progressBar.setVisibility(View.GONE);
                                     Toast.makeText(LoginActivity.this, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                                     Log.e("LoginActivity", "Error fetching user by email: ", t);
                                 }
                             });
+
                         } else {
                             Toast.makeText(LoginActivity.this, "Pogrešna lozinka", Toast.LENGTH_SHORT).show();
                             Log.e("LoginActivity", "Entered password does not match database password.");
