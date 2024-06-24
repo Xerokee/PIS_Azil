@@ -37,7 +37,7 @@ public interface ApiService {
     Call<UserModel> getUserById(@Header("RequestUserId") int userId, @Path("id_korisnika") int id);
 
     @PUT("Korisnici/update/{id_korisnika}")
-    Call<Void> updateUser(@Path("id_korisnika") int id, @Body Map<String, Object> updates);
+    Call<Void> updateUser(@Header("RequestUserId") int requestUserId, @Path("id_korisnika") int id, @Body Map<String, Object> updates);
 
     @POST("Korisnici/add")
     Call<Void> addUser(@Header("RequestUserId") int requestUserId, @Body UserModel user);

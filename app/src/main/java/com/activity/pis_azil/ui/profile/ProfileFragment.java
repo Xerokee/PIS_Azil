@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -24,7 +23,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.loader.content.CursorLoader;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.activity.pis_azil.R;
@@ -153,15 +151,6 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    private void uploadProfilePhoto(Uri uri) {
-        if (uri == null) {
-            Toast.makeText(getContext(), "Nije odabrana slika", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Implement profile photo upload logic
-    }
-
     private void loadUserProfile() {
         SharedPreferences preferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         int userId = preferences.getInt("id_korisnika", -1);
@@ -196,21 +185,15 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    private String getRealPathFromURI(Uri contentUri) {
-        String[] proj = { MediaStore.Images.Media.DATA };
-        CursorLoader loader = new CursorLoader(getContext(), contentUri, proj, null, null, null);
-        Cursor cursor = loader.loadInBackground();
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-        String result = cursor.getString(column_index);
-        cursor.close();
-        return result;
-    }
-
     private void updateUserProfile() {
         String Ime = ime.getText().toString().trim();
         String Mail = email.getText().toString().trim();
         String Lozinka = lozinka.getText().toString().trim();
+
+        if (Ime.isEmpty() || Mail.isEmpty() || Lozinka.isEmpty()) {
+            Toast.makeText(getContext(), "Sva polja su obavezna", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         SharedPreferences preferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         int userId = preferences.getInt("id_korisnika", -1);
@@ -221,22 +204,11 @@ public class ProfileFragment extends Fragment {
         }
 
         Map<String, Object> userUpdates = new HashMap<>();
-        if (!Ime.isEmpty()) {
-            userUpdates.put("ime", Ime);
-        }
-        if (!Mail.isEmpty()) {
-            userUpdates.put("email", Mail);
-        }
-        if (!Lozinka.isEmpty()) {
-            userUpdates.put("lozinka", Lozinka);
-        }
+        userUpdates.put("ime", Ime);
+        userUpdates.put("email", Mail);
+        userUpdates.put("lozinka", Lozinka);
 
-        if (userUpdates.isEmpty()) {
-            Toast.makeText(getContext(), "Nijedno polje nije ažurirano", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        apiService.updateUser(userId, userUpdates).enqueue(new Callback<Void>() {
+        apiService.updateUser(userId, userId, userUpdates).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -260,7 +232,6 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
