@@ -8,6 +8,8 @@ public class MyAdoptionModel {
     private String datum;
     private String imgUrl;
     private boolean udomljen;
+    private boolean stanjeZivotinje;
+    private int idKorisnika;
 
     // Getteri i setteri
 
@@ -65,5 +67,36 @@ public class MyAdoptionModel {
 
     public void setUdomljen(boolean udomljen) {
         this.udomljen = udomljen;
+    }
+
+    public boolean isStanjeZivotinje() {
+        return stanjeZivotinje;
+    }
+
+    public void setStanjeZivotinje(boolean stanjeZivotinje) {
+        this.stanjeZivotinje = stanjeZivotinje;
+    }
+
+    public int getIdKorisnika() {
+        return idKorisnika;
+    }
+
+    public void setIdKorisnika(int idKorisnika) {
+        this.idKorisnika = idKorisnika;
+    }
+
+    @Override
+    public String toString() {
+        return "MyAdoptionModel{" +
+                "idLjubimca=" + idLjubimca +
+                ", imeLjubimca='" + imeLjubimca + '\'' +
+                ", tipLjubimca='" + tipLjubimca + '\'' +
+                ", opisLjubimca='" + opisLjubimca + '\'' +
+                ", datum='" + datum + '\'' +
+                ", imgUrl='" + imgUrl + '\'' +
+                ", udomljen=" + udomljen +
+                ", stanjeZivotinje=" + stanjeZivotinje +
+                ", idKorisnika=" + idKorisnika +
+                '}';
     }
 }

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.os.Bundle;
+import android.util.Log; // Dodano za logiranje
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,13 +20,14 @@ import com.bumptech.glide.Glide;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
-import java.util.UUID;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class DetailedActivity extends AppCompatActivity {
+
+    private static final String TAG = "DetailedActivity"; // Dodano za logiranje
 
     ImageView detailedImg;
     TextView name, description;
@@ -64,6 +66,11 @@ public class DetailedActivity extends AppCompatActivity {
     }
 
     private void addedToCart() {
+        if (animalModel == null) {
+            Log.e(TAG, "AnimalModel is null");
+            return;
+        }
+
         MyAdoptionModel adoptionModel = new MyAdoptionModel();
         adoptionModel.setIdLjubimca(animalModel.getIdLjubimca());
         adoptionModel.setImeLjubimca(animalModel.getImeLjubimca());
@@ -71,20 +78,26 @@ public class DetailedActivity extends AppCompatActivity {
         adoptionModel.setOpisLjubimca(animalModel.getOpisLjubimca());
         adoptionModel.setDatum(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().getTime()));
         adoptionModel.setImgUrl(animalModel.getImgUrl());
+        adoptionModel.setIdKorisnika(1); // Pretpostavimo da je korisnik s ID 1 admin
+
+        Log.d(TAG, "Sending adoption model to API: " + adoptionModel);
 
         apiService.addAdoption(adoptionModel).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
+                    Log.d(TAG, "Adoption added successfully");
                     Toast.makeText(DetailedActivity.this, "Dodano u listu udomljavanja!", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
+                    Log.e(TAG, "Failed to add adoption: " + response.message());
                     Toast.makeText(DetailedActivity.this, "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                Log.e(TAG, "Error adding adoption: ", t);
                 Toast.makeText(DetailedActivity.this, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

@@ -1,8 +1,6 @@
 package com.activity.pis_azil.models;
 
-import java.io.Serializable;
-
-public class UserRoleModel implements Serializable {
+public class UserRoleModel {
     private int idUloge;
     private String nazivUloge;
 
@@ -21,5 +19,9 @@ public class UserRoleModel implements Serializable {
 
     public void setNazivUloge(String nazivUloge) {
         this.nazivUloge = nazivUloge;
+    }
+
+    public boolean isAdmin() {
+        return "admin".equalsIgnoreCase(nazivUloge);
     }
 }

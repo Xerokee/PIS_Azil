@@ -3,6 +3,7 @@ package com.activity.pis_azil.adapters;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,30 +14,38 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.activity.pis_azil.R;
+import com.activity.pis_azil.network.DataRefreshListener;
+import com.activity.pis_azil.models.UserModel;
+import com.activity.pis_azil.models.UserRoleModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
-import com.activity.pis_azil.R;
 import com.activity.pis_azil.models.MyAdoptionModel;
-import com.activity.pis_azil.models.UserModel;
 import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.ViewHolder> {
 
+    private static final String TAG = "MyAdoptionAdapter";
+    private DataRefreshListener dataRefreshListener;
     Context context;
     List<MyAdoptionModel> cartModelList;
     ApiService apiService;
 
-    public MyAdoptionAdapter(Context context, List<MyAdoptionModel> cartModelList) {
+    public MyAdoptionAdapter(Context context, List<MyAdoptionModel> cartModelList, DataRefreshListener listener) {
         this.context = context;
         this.cartModelList = cartModelList;
         this.apiService = ApiClient.getClient().create(ApiService.class);
+        this.dataRefreshListener = listener;
     }
 
     @NonNull
@@ -59,6 +68,9 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         holder.name.setText(cartModel.getImeLjubimca());
         holder.type.setText(cartModel.getTipLjubimca());
         holder.date.setText(cartModel.getDatum());
+        holder.state.setText(cartModel.isStanjeZivotinje() ? "Dobro" : "Loše");
+
+        Log.d(TAG, "Binding view holder for position: " + position + ", model: " + cartModel.toString());
 
         holder.deleteItem.setOnClickListener(v -> checkIfUserIsAdminThenRun(
                 () -> showDeleteConfirmationDialog(position),
@@ -91,18 +103,27 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
     }
 
     private void checkIfUserIsAdminThenRun(Runnable onAdmin, Runnable onNonAdmin) {
-        apiService.getUserById(1).enqueue(new Callback<UserModel>() { // Pretpostavimo da je admin provjeren pomoću ID 1
+        apiService.getUserRoleById(1).enqueue(new Callback<UserRoleModel>() { // Assume admin is checked with ID 1
             @Override
-            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isAdmin()) {
-                    onAdmin.run();
+            public void onResponse(Call<UserRoleModel> call, Response<UserRoleModel> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    UserRoleModel userRole = response.body();
+                    if (userRole.isAdmin()) {
+                        Log.d(TAG, "Korisnik je admin: " + userRole.toString());
+                        onAdmin.run();
+                    } else {
+                        Log.d(TAG, "Korisnik nije admin: " + userRole.toString());
+                        onNonAdmin.run();
+                    }
                 } else {
+                    Log.d(TAG, "Response body is null or not successful");
                     onNonAdmin.run();
                 }
             }
 
             @Override
-            public void onFailure(Call<UserModel> call, Throwable t) {
+            public void onFailure(Call<UserRoleModel> call, Throwable t) {
+                Log.e(TAG, "Error checking if user is admin: ", t);
                 Toast.makeText(context, "Greška pri provjeri statusa admina", Toast.LENGTH_SHORT).show();
             }
         });
@@ -112,11 +133,8 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Potvrda brisanja");
         builder.setMessage("Jeste li sigurni da želite izbrisati ovu stavku iz liste?");
-
         builder.setPositiveButton("Da", (dialog, which) -> deleteItem(position));
-
         builder.setNegativeButton("Ne", (dialog, which) -> dialog.dismiss());
-
         builder.show();
     }
 
@@ -125,16 +143,18 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
+                    Log.d(TAG, "Animal deleted successfully, position: " + position);
                     cartModelList.remove(position);
                     notifyDataSetChanged();
                     Toast.makeText(context, "Lista izbrisana", Toast.LENGTH_SHORT).show();
                 } else {
+                    Log.e(TAG, "Error deleting animal: " + response.message());
                     Toast.makeText(context, "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                Log.e(TAG, "Error deleting animal: ", t);
                 Toast.makeText(context, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -144,80 +164,94 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         View view = LayoutInflater.from(context).inflate(R.layout.update_dialog, null);
         builder.setView(view);
-
         EditText edtName = view.findViewById(R.id.edt_updated_name);
         EditText edtType = view.findViewById(R.id.edt_updated_type);
         EditText edtDate = view.findViewById(R.id.edt_updated_date);
         EditText edtImgUrl = view.findViewById(R.id.edt_updated_img_url);
+        EditText edtState = view.findViewById(R.id.edt_updated_state);
 
         MyAdoptionModel cartModel = cartModelList.get(position);
         edtName.setText(cartModel.getImeLjubimca());
         edtType.setText(cartModel.getTipLjubimca());
         edtDate.setText(cartModel.getDatum());
         edtImgUrl.setText(cartModel.getImgUrl());
+        edtState.setText(cartModel.isStanjeZivotinje() ? "Dobro" : "Loše");
 
         builder.setPositiveButton("Ažuriraj", (dialog, which) -> {
             String updatedName = edtName.getText().toString().trim();
             String updatedType = edtType.getText().toString().trim();
             String updatedDate = edtDate.getText().toString().trim();
             String updatedImgUrl = edtImgUrl.getText().toString().trim();
+            String updatedState = edtState.getText().toString().trim();
 
-            if (TextUtils.isEmpty(updatedName) || TextUtils.isEmpty(updatedType) || TextUtils.isEmpty(updatedDate)) {
+            if (TextUtils.isEmpty(updatedName) || TextUtils.isEmpty(updatedType) || TextUtils.isEmpty(updatedDate) || TextUtils.isEmpty(updatedState)) {
                 Toast.makeText(context, "Molimo popunite sva polja", Toast.LENGTH_SHORT).show();
             } else {
-                updateAnimalDocument(position, updatedName, updatedType, updatedDate, updatedImgUrl);
+                boolean stanjeZivotinje = updatedState.equalsIgnoreCase("Dobro");
+                updateAnimalDocument(position, updatedName, updatedType, updatedDate, updatedImgUrl, stanjeZivotinje);
             }
         });
 
         builder.setNegativeButton("Odustani", (dialog, which) -> dialog.dismiss());
-
         builder.create().show();
     }
 
-    private void updateAnimalDocument(int position, String updatedName, String updatedType, String updatedDate, String updatedImgUrl) {
+    // MyAdoptionAdapter.java
+    private void updateAnimalDocument(int position, String updatedName, String updatedType, String updatedDate, String updatedImgUrl, boolean stanjeZivotinje) {
         MyAdoptionModel cartModel = cartModelList.get(position);
 
+        Log.d(TAG, "Updating animal at position: " + position + " with data: " + updatedName + ", " + updatedType + ", " + updatedDate + ", " + updatedImgUrl + ", " + stanjeZivotinje);
+
         Map<String, Object> updateData = new HashMap<>();
-        updateData.put("animalName", updatedName);
-        updateData.put("animalType", updatedType);
-        updateData.put("currentDate", updatedDate);
-        updateData.put("img_url", updatedImgUrl);
+        updateData.put("ime_ljubimca", updatedName);
+        updateData.put("tip_ljubimca", updatedType);
+        updateData.put("datum", updatedDate);
+        updateData.put("imgUrl", updatedImgUrl);
+        updateData.put("stanje_zivotinje", stanjeZivotinje);
 
         apiService.updateAnimal(String.valueOf(cartModel.getIdLjubimca()), updateData).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
+                    Log.d(TAG, "Animal updated successfully, position: " + position);
                     cartModel.setImeLjubimca(updatedName);
                     cartModel.setTipLjubimca(updatedType);
                     cartModel.setDatum(updatedDate);
                     cartModel.setImgUrl(updatedImgUrl);
+                    cartModel.setStanjeZivotinje(stanjeZivotinje);
                     notifyDataSetChanged();
                     Toast.makeText(context, "Lista ažurirana", Toast.LENGTH_SHORT).show();
                 } else {
+                    Log.e(TAG, "Error updating animal: " + response.message() + ", code: " + response.code());
+                    Log.e(TAG, "Response body: " + response.errorBody().toString());
                     Toast.makeText(context, "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                Log.e(TAG, "Error updating animal: ", t);
                 Toast.makeText(context, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private void checkIfUserIsAdmin(final MyAdoptionModel selectedAnimal, final int adapterPosition) {
+        Log.d(TAG, "Provjera ako je korisnik admin za udomljavanje");
         apiService.getUserById(1).enqueue(new Callback<UserModel>() { // Pretpostavimo da je admin provjeren pomoću ID 1
             @Override
             public void onResponse(Call<UserModel> call, Response<UserModel> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isAdmin()) {
+                    Log.d(TAG, "Korisnik je admin, prikazivanje dijaloga za udomljavanje");
                     showAdoptionDialog(selectedAnimal, adapterPosition);
                 } else {
+                    Log.d(TAG, "Korisnik nije admin, ne može se udomiti životinja");
                     Toast.makeText(context, "Samo admini mogu udomljavati životinje.", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<UserModel> call, Throwable t) {
+                Log.e(TAG, "Greška u provjeri ako je korisnik admin: ", t);
                 Toast.makeText(context, "Greška pri provjeri statusa admina", Toast.LENGTH_SHORT).show();
             }
         });
@@ -230,32 +264,30 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 if (response.isSuccessful() && response.body() != null) {
                     List<String> adopterNames = new ArrayList<>();
                     List<String> adopterIds = new ArrayList<>();
-
                     for (UserModel userModel : response.body()) {
                         if (!userModel.isAdmin()) {
                             adopterNames.add(userModel.getIme());
                             adopterIds.add(String.valueOf(userModel.getIdKorisnika()));
                         }
                     }
-
                     if (adopterNames.isEmpty()) {
                         Toast.makeText(context, "Trenutno nema dostupnih udomitelja.", Toast.LENGTH_SHORT).show();
                         return; // Exit if there are no adopters
                     }
-
                     CharSequence[] adoptersArray = adopterNames.toArray(new CharSequence[0]);
                     new AlertDialog.Builder(context)
                             .setTitle("Odaberite udomitelja")
                             .setItems(adoptersArray, (dialog, which) -> {
                                 String selectedUserId = adopterIds.get(which);
+                                Log.d(TAG, "Odabrani udomitelj ID: " + selectedUserId + ", Name: " + adopterNames.get(which));
                                 adoptAnimal(selectedAnimal.getIdLjubimca(), selectedUserId, adopterNames.get(which));
                             })
                             .show();
                 }
             }
-
             @Override
             public void onFailure(Call<List<UserModel>> call, Throwable t) {
+                Log.e(TAG, "Ne može se dohvatiti lista udomitelja: ", t);
                 Toast.makeText(context, "Ne može se dohvatiti lista udomitelja: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -263,22 +295,23 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
     private void adoptAnimal(int idLjubimca, String adopterId, String adopterName) {
         Map<String, Object> adoptionUpdates = new HashMap<>();
-        adoptionUpdates.put("adopted", true);
-        adoptionUpdates.put("adopterId", adopterId);
-        adoptionUpdates.put("adopterName", adopterName);
+        adoptionUpdates.put("udomljen", true);
+        adoptionUpdates.put("id_udomitelja", adopterId);
 
         apiService.updateAnimal(String.valueOf(idLjubimca), adoptionUpdates).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
+                    Log.d(TAG, "Animal adopted successfully: " + idLjubimca + ", adopterId: " + adopterId + ", adopterName: " + adopterName);
                     Toast.makeText(context, "Životinja je udomljena za korisnika " + adopterName, Toast.LENGTH_SHORT).show();
                 } else {
+                    Log.e(TAG, "Error adopting animal: " + response.message());
                     Toast.makeText(context, "Udomljavanje nije uspjelo: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                Log.e(TAG, "Error adopting animal: ", t);
                 Toast.makeText(context, "Udomljavanje nije uspjelo: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -291,7 +324,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView name, type, date;
+        TextView name, type, date, state;
         ImageView imgUrl;
         ImageView deleteItem, updateItem;
         Button adoptButton;
@@ -302,6 +335,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             name = itemView.findViewById(R.id.product_name);
             type = itemView.findViewById(R.id.product_type);
             date = itemView.findViewById(R.id.current_date);
+            state = itemView.findViewById(R.id.product_state);
             imgUrl = itemView.findViewById(R.id.img_url);
             deleteItem = itemView.findViewById(R.id.delete);
             updateItem = itemView.findViewById(R.id.update);

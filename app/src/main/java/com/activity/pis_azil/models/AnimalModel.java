@@ -9,13 +9,14 @@ public class AnimalModel implements Serializable {
     private String tip_ljubimca;
     private String opis_ljubimca;
     private boolean udomljen;
-    private String datum; // Added
+    private String datum;
     private String imgUrl;
+    private boolean stanje_zivotinje;
 
     // Constructors, getters, and setters
     public AnimalModel() {}
 
-    public AnimalModel(int id_ljubimca, int id_udomitelja, String ime_ljubimca, String tip_ljubimca, String opis_ljubimca, boolean udomljen, String datum, String imgUrl) {
+    public AnimalModel(int id_ljubimca, int id_udomitelja, String ime_ljubimca, String tip_ljubimca, String opis_ljubimca, boolean udomljen, String datum, String imgUrl, Boolean stanje_zivotinje) {
         this.id_ljubimca = id_ljubimca;
         this.id_udomitelja = id_udomitelja;
         this.ime_ljubimca = ime_ljubimca;
@@ -24,6 +25,7 @@ public class AnimalModel implements Serializable {
         this.udomljen = udomljen;
         this.datum = datum;
         this.imgUrl = imgUrl;
+        this.stanje_zivotinje = stanje_zivotinje;
     }
 
     public int getIdLjubimca() {
@@ -88,5 +90,28 @@ public class AnimalModel implements Serializable {
 
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
+    }
+
+    public boolean isStanje_zivotinje() {
+        return stanje_zivotinje;
+    }
+
+    public void setStanje_zivotinje(boolean stanje_zivotinje) {
+        this.stanje_zivotinje = stanje_zivotinje;
+    }
+
+    @Override
+    public String toString() {
+        return "AnimalModel{" +
+                "id_ljubimca=" + id_ljubimca +
+                ", id_udomitelja=" + id_udomitelja +
+                ", ime_ljubimca='" + ime_ljubimca + '\'' +
+                ", tip_ljubimca='" + tip_ljubimca + '\'' +
+                ", opis_ljubimca='" + opis_ljubimca + '\'' +
+                ", udomljen=" + udomljen +
+                ", datum='" + datum + '\'' +
+                ", imgUrl='" + imgUrl + '\'' +
+                ", stanje_zivotinje=" + stanje_zivotinje +
+                '}';
     }
 }

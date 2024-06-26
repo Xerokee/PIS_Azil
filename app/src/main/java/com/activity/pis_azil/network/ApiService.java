@@ -58,6 +58,9 @@ public interface ApiService {
     @GET("KucniLjubimci/{type}")
     Call<List<AnimalModel>> getAnimalsByType(@Path("type") String type);
 
+    @GET("KucniLjubimci/{id}")
+    Call<AnimalModel> getAnimalById(@Path("id") int id);
+
     @POST("KucniLjubimci/add")
     Call<Void> addAnimal(@Body ViewAllModel animal);
 
