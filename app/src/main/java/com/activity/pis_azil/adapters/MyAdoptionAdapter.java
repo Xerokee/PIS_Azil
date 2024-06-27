@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.pis_azil.R;
+import com.activity.pis_azil.models.UserByEmailResponseModel;
 import com.activity.pis_azil.network.DataRefreshListener;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.models.UserRoleModel;
@@ -237,10 +238,10 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
     private void checkIfUserIsAdmin(final MyAdoptionModel selectedAnimal, final int adapterPosition) {
         Log.d(TAG, "Provjera ako je korisnik admin za udomljavanje");
-        apiService.getUserById(1).enqueue(new Callback<UserModel>() { // Pretpostavimo da je admin provjeren pomoću ID 1
+        apiService.getUserById(1).enqueue(new Callback<UserByEmailResponseModel>() { // Pretpostavimo da je admin provjeren pomoću ID 1
             @Override
-            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isAdmin()) {
+            public void onResponse(Call<UserByEmailResponseModel> call, Response<UserByEmailResponseModel> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getResult().isAdmin()) {
                     Log.d(TAG, "Korisnik je admin, prikazivanje dijaloga za udomljavanje");
                     showAdoptionDialog(selectedAnimal, adapterPosition);
                 } else {
@@ -250,7 +251,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             }
 
             @Override
-            public void onFailure(Call<UserModel> call, Throwable t) {
+            public void onFailure(Call<UserByEmailResponseModel> call, Throwable t) {
                 Log.e(TAG, "Greška u provjeri ako je korisnik admin: ", t);
                 Toast.makeText(context, "Greška pri provjeri statusa admina", Toast.LENGTH_SHORT).show();
             }

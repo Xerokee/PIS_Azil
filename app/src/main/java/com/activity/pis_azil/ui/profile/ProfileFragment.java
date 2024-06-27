@@ -27,6 +27,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.activities.HomeActivity;
+import com.activity.pis_azil.models.UserByEmailResponseModel;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.models.UserRoleModel;
 import com.activity.pis_azil.network.ApiClient;
@@ -161,22 +162,22 @@ public class ProfileFragment extends Fragment {
             return;
         }
 
-        apiService.getUserById(userId).enqueue(new Callback<UserModel>() {
+        apiService.getUserById(userId).enqueue(new Callback<UserByEmailResponseModel>() {
             @Override
-            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
+            public void onResponse(Call<UserByEmailResponseModel> call, Response<UserByEmailResponseModel> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    UserModel userModel = response.body();
-                    ime.setText(userModel.getIme());
-                    email.setText(userModel.getEmail());
-                    lozinka.setText(userModel.getLozinka());
-                    if (userModel.getProfileImg() != null) {
-                        Glide.with(getContext()).load(userModel.getProfileImg()).into(profileImage);
+                    UserByEmailResponseModel userModel = response.body();
+                    ime.setText(userModel.getResult().getIme());
+                    email.setText(userModel.getResult().getEmail());
+                    lozinka.setText(userModel.getResult().getLozinka());
+                    if (userModel.getResult().getProfileImg() != null) {
+                        Glide.with(getContext()).load(userModel.getResult().getProfileImg()).into(profileImage);
                     }
                     // Fetch and display user role
                     fetchUserRole(userId);
                     // Save current admin status
                     SharedPreferences.Editor editor = preferences.edit();
-                    editor.putBoolean("admin", userModel.isAdmin());
+                    editor.putBoolean("admin", userModel.getResult().isAdmin());
                     editor.apply();
                 } else {
                     Toast.makeText(getContext(), "Error fetching user data: " + response.message(), Toast.LENGTH_SHORT).show();
@@ -184,7 +185,7 @@ public class ProfileFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<UserModel> call, Throwable t) {
+            public void onFailure(Call<UserByEmailResponseModel> call, Throwable t) {
                 Toast.makeText(getContext(), "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -214,7 +215,7 @@ public class ProfileFragment extends Fragment {
         String Ime = ime.getText().toString().trim();
         String Mail = email.getText().toString().trim();
         String Lozinka = lozinka.getText().toString().trim();
-        boolean admin = preferences.getBoolean("admin", false);
+        boolean admin = preferences.getBoolean("admin", true);
 
         if (Ime.isEmpty() || Mail.isEmpty() || Lozinka.isEmpty()) {
             Toast.makeText(getContext(), "Sva polja su obavezna", Toast.LENGTH_SHORT).show();
@@ -233,10 +234,7 @@ public class ProfileFragment extends Fragment {
         userUpdates.put("email", Mail);
         userUpdates.put("lozinka", Lozinka);
 
-        // Ensure admin status is not changed for the user with ID 1
-        if (userId != 1) {
-            userUpdates.put("admin", admin);
-        }
+        userUpdates.put("admin", admin);
 
         apiService.updateUser(userId, userId, userUpdates).enqueue(new Callback<Void>() {
             @Override

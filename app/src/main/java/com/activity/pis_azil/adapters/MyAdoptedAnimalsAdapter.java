@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.activity.pis_azil.models.UserByEmailResponseModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.R;
@@ -89,10 +90,10 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
     }
 
     private void checkIfUserIsAdmin(int animalId, int position, Runnable onAdminAction) {
-        apiService.getUserById(1).enqueue(new Callback<UserModel>() { // Pretpostavimo da je admin provjeren pomoću ID 1
+        apiService.getUserById(1).enqueue(new Callback<UserByEmailResponseModel>() { // Pretpostavimo da je admin provjeren pomoću ID 1
             @Override
-            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isAdmin()) {
+            public void onResponse(Call<UserByEmailResponseModel> call, Response<UserByEmailResponseModel> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getResult().isAdmin()) {
                     onAdminAction.run();
                 } else {
                     showAdminOnlyDialog();
@@ -100,7 +101,7 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
             }
 
             @Override
-            public void onFailure(Call<UserModel> call, Throwable t) {
+            public void onFailure(Call<UserByEmailResponseModel> call, Throwable t) {
                 Toast.makeText(context, "Greška pri provjeri statusa admina", Toast.LENGTH_SHORT).show();
             }
         });
@@ -120,18 +121,18 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
             return;
         }
 
-        apiService.getUserById(adopterId).enqueue(new Callback<UserModel>() {
+        apiService.getUserById(adopterId).enqueue(new Callback<UserByEmailResponseModel>() {
             @Override
-            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
+            public void onResponse(Call<UserByEmailResponseModel> call, Response<UserByEmailResponseModel> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    adopterNameTextView.setText(response.body().getIme());
+                    adopterNameTextView.setText(response.body().getResult().getIme());
                 } else {
                     adopterNameTextView.setText("Udomitelj: Nepoznato");
                 }
             }
 
             @Override
-            public void onFailure(Call<UserModel> call, Throwable t) {
+            public void onFailure(Call<UserByEmailResponseModel> call, Throwable t) {
                 adopterNameTextView.setText("Udomitelj: Greška u dohvatu podataka");
             }
         });

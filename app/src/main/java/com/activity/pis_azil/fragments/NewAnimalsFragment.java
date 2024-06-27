@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.activity.pis_azil.R;
+import com.activity.pis_azil.models.UserByEmailResponseModel;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.models.ViewAllModel;
 import com.activity.pis_azil.network.ApiClient;
@@ -151,10 +152,10 @@ public class NewAnimalsFragment extends Fragment {
             return;
         }
 
-        apiService.getUserById(userId).enqueue(new Callback<UserModel>() {
+        apiService.getUserById(userId).enqueue(new Callback<UserByEmailResponseModel>() {
             @Override
-            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().isAdmin()) {
+            public void onResponse(Call<UserByEmailResponseModel> call, Response<UserByEmailResponseModel> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getResult().isAdmin()) {
                     fabAddAnimal.setVisibility(View.VISIBLE);
                 } else {
                     fabAddAnimal.setVisibility(View.GONE);
@@ -162,7 +163,7 @@ public class NewAnimalsFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<UserModel> call, Throwable t) {
+            public void onFailure(Call<UserByEmailResponseModel> call, Throwable t) {
                 Log.e("NewAnimalsFragment", "Error getting user admin status", t);
                 fabAddAnimal.setVisibility(View.GONE);
             }

@@ -79,6 +79,8 @@ public class DetailedActivity extends AppCompatActivity {
         adoptionModel.setDatum(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().getTime()));
         adoptionModel.setImgUrl(animalModel.getImgUrl());
         adoptionModel.setIdKorisnika(1); // Pretpostavimo da je korisnik s ID 1 admin
+        adoptionModel.setUdomljen(true);
+        adoptionModel.setStanjeZivotinje(true);
 
         Log.d(TAG, "Sending adoption model to API: " + adoptionModel);
 

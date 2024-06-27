@@ -26,16 +26,13 @@ public interface ApiService {
     Call<List<UserModel>> getAllUsers();
 
     @GET("Korisnici/user_id/{id_korisnika}")
-    Call<UserModel> getUserById(@Path("id_korisnika") int id);
+    Call<UserByEmailResponseModel> getUserById(@Path("id_korisnika") int id);
 
     @GET("Korisnici/email/{email}")
     Call<UserByEmailResponseModel> getUserByIdEmail(@Path("email") String email);
 
     @GET("Korisnici/lozinka/{email}")
     Call<ResponseBody> getPasswordByEmail(@Path("email") String email);
-
-    @GET("Korisnici/user_id/{id_korisnika}")
-    Call<UserModel> getUserById(@Header("RequestUserId") int userId, @Path("id_korisnika") int id);
 
     @GET("Korisnici/role/{id_korisnika}")
     Call<UserRoleModel> getUserRoleById(@Path("id_korisnika") int userId);
