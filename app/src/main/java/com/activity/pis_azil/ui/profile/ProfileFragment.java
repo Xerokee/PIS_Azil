@@ -1,5 +1,7 @@
 package com.activity.pis_azil.ui.profile;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -19,6 +21,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
@@ -42,6 +45,19 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class ProfileFragment extends Fragment {
 
@@ -56,6 +72,7 @@ public class ProfileFragment extends Fragment {
     private static final int IMAGE_PICK_GALLERY_CODE = 101;
     private static final int IMAGE_PICK_CAMERA_CODE = 102;
     private Uri imageUri;
+    private ActivityResultLauncher<Intent> galleryLauncher;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -132,26 +149,27 @@ public class ProfileFragment extends Fragment {
         startActivityForResult(cameraIntent, IMAGE_PICK_CAMERA_CODE);
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        galleryLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri selectedImage = result.getData().getData();
+                        Log.d("TAG", selectedImage.toString());
+                        profileImage.setImageURI(selectedImage);
+                        imageUri = selectedImage;
+                    }
+                }
+        );
+    }
+
     private void pickFromGallery() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK);
         galleryIntent.setType("image/*");
-        startActivityForResult(galleryIntent, IMAGE_PICK_GALLERY_CODE);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == IMAGE_PICK_GALLERY_CODE) {
-                imageUri = data != null ? data.getData() : null;
-                if (imageUri != null) {
-                    profileImage.setImageURI(imageUri);
-                }
-            } else if (requestCode == IMAGE_PICK_CAMERA_CODE) {
-                profileImage.setImageURI(imageUri);
-            }
-        }
+        galleryLauncher.launch(galleryIntent);
     }
 
     private void loadUserProfile() {
@@ -215,6 +233,7 @@ public class ProfileFragment extends Fragment {
         String Ime = ime.getText().toString().trim();
         String Mail = email.getText().toString().trim();
         String Lozinka = lozinka.getText().toString().trim();
+        String ImgUrl = imageUri.toString();
         boolean admin = preferences.getBoolean("admin", true);
 
         if (Ime.isEmpty() || Mail.isEmpty() || Lozinka.isEmpty()) {
@@ -233,6 +252,7 @@ public class ProfileFragment extends Fragment {
         userUpdates.put("ime", Ime);
         userUpdates.put("email", Mail);
         userUpdates.put("lozinka", Lozinka);
+        userUpdates.put("profileImg", ImgUrl);
 
         userUpdates.put("admin", admin);
 

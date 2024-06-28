@@ -23,7 +23,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // Provjera statusa prijave korisnika
         SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        boolean isLoggedIn = preferences.getBoolean("is_logged_in", false);
+        boolean isLoggedIn = preferences.getBoolean("is_logged_in", true);
         int userId = preferences.getInt("id_korisnika", -1);
 
         if (isLoggedIn && userId != -1) {
