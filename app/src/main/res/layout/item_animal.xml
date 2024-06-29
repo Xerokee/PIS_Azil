@@ -19,7 +19,7 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/fruits" />
+            android:src="@drawable/paw" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -34,21 +34,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Ime ljubimca"
-                android:textColor="@android:color/holo_green_dark"
-                android:textSize="20sp"
+                android:textColor="@color/green_200"
+                android:textSize="22sp"
                 android:textStyle="bold"
-                android:gravity="center" />
+                android:gravity="center"
+                android:layout_marginBottom="5dp" />
 
             <TextView
                 android:id="@+id/animal_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Opis ljubimca"
-                android:textColor="@android:color/holo_green_dark"
-                android:textSize="15sp"
+                android:textColor="@color/green_200"
+                android:textSize="16sp"
                 android:maxLines="3"
                 android:ellipsize="end"
-                android:gravity="center"/>
+                android:gravity="center"
+                android:layout_marginTop="5dp"/>
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

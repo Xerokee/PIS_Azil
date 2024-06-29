@@ -1,5 +1,8 @@
 package com.activity.pis_azil.activities;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import android.Manifest;
@@ -7,7 +10,9 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -24,8 +29,6 @@ import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.models.UserModel;
 import com.google.gson.Gson;
-
-import org.jetbrains.annotations.Nullable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -41,9 +44,11 @@ public class RegistrationActivity extends AppCompatActivity {
     ProgressBar progressBar;
     private Uri imageUri;
 
+    private ActivityResultLauncher<Intent> galleryLauncher;
+    private ActivityResultLauncher<Intent> cameraLauncher;
+    private ActivityResultLauncher<String> requestPermissionLauncher;
+
     private static final int CAMERA_REQUEST_CODE = 100;
-    private static final int IMAGE_PICK_GALLERY_CODE = 101;
-    private static final int IMAGE_PICK_CAMERA_CODE = 102;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +75,52 @@ public class RegistrationActivity extends AppCompatActivity {
             createUser();
             progressBar.setVisibility(View.VISIBLE);
         });
+
+        // Inicijalizacija ActivityResultLauncher-a
+        galleryLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri selectedImage = result.getData().getData();
+                        if (selectedImage != null) {
+                            try (Cursor cursor = getContentResolver().query(selectedImage, null, null, null, null)) {
+                                if (cursor != null && cursor.moveToFirst()) {
+                                    int columnIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+                                    if (columnIndex != -1) {
+                                        long imageId = cursor.getLong(columnIndex);
+                                        imageUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, String.valueOf(imageId));
+                                        regProfileImg.setImageURI(imageUri);
+                                    }
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Toast.makeText(this, "Došlo je do greške pri odabiru slike", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                }
+        );
+
+        cameraLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK) {
+                        regProfileImg.setImageURI(imageUri);
+                    }
+                }
+        );
+
+        // Inicijalizacija ActivityResultLauncher-a za traženje dozvola
+        requestPermissionLauncher = registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(),
+                isGranted -> {
+                    if (isGranted) {
+                        pickFromGallery();
+                    } else {
+                        Toast.makeText(this, "Dozvola za čitanje pohrane nije dodijeljena", Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
     }
 
     private void showImagePickDialog() {
@@ -84,7 +135,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     pickFromCamera();
                 }
             } else {
-                pickFromGallery();
+                checkGalleryPermission();
             }
         });
         builder.create().show();
@@ -108,29 +159,20 @@ public class RegistrationActivity extends AppCompatActivity {
 
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        startActivityForResult(cameraIntent, IMAGE_PICK_CAMERA_CODE);
+        cameraLauncher.launch(cameraIntent);
+    }
+
+    private void checkGalleryPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            pickFromGallery();
+        } else {
+            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
     }
 
     private void pickFromGallery() {
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK);
-        galleryIntent.setType("image/*");
-        startActivityForResult(galleryIntent, IMAGE_PICK_GALLERY_CODE);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data); // Pozivamo super.onActivityResult
-
-        if (resultCode == RESULT_OK) {
-            if (requestCode == IMAGE_PICK_GALLERY_CODE) {
-                imageUri = data != null ? data.getData() : null;
-                if (imageUri != null) {
-                    regProfileImg.setImageURI(imageUri);
-                }
-            } else if (requestCode == IMAGE_PICK_CAMERA_CODE) {
-                regProfileImg.setImageURI(imageUri);
-            }
-        }
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        galleryLauncher.launch(galleryIntent);
     }
 
     private void createUser() {
@@ -150,7 +192,12 @@ public class RegistrationActivity extends AppCompatActivity {
         userModel.setLozinka(userPassword);
         userModel.setAdmin(false);
         if (imageUri != null) {
-            userModel.setProfileImg(imageUri.toString());
+            String realPath = getRealPathFromURI(imageUri);
+            if (realPath != null) {
+                userModel.setProfileImg(realPath);
+            } else {
+                userModel.setProfileImg(imageUri.toString());
+            }
         }
 
         Log.d("RegistrationActivity", "Slanje podataka: " + new Gson().toJson(userModel));
@@ -187,5 +234,30 @@ public class RegistrationActivity extends AppCompatActivity {
                 Log.e("RegistrationActivity", "Registracija neuspješna: " + errorMessage, t);
             }
         });
+    }
+
+    private String getRealPathFromURI(Uri uri) {
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null) {
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            String path = cursor.getString(column_index);
+            cursor.close();
+            return path;
+        }
+        return null;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                pickFromCamera();
+            } else {
+                Toast.makeText(this, "Dozvola za kameru nije dodijeljena", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }

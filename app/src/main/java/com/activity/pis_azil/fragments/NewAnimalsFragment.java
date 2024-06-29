@@ -175,6 +175,6 @@ public class NewAnimalsFragment extends Fragment {
         etName.setText("");
         etDescription.setText("");
         etType.setText("");
-        ivAnimalImage.setImageResource(R.drawable.fruits);
+        ivAnimalImage.setImageResource(R.drawable.paw);
     }
 }

@@ -126,7 +126,6 @@ public class HomeFragment extends Fragment {
                     animalsAdapter.notifyDataSetChanged();
                 } else {
                     Log.e(TAG, "Error searching animals by type. Response code: " + response.code() + ", Message: " + response.message());
-                    Toast.makeText(getContext(), "Nema pronađenih životinja", Toast.LENGTH_SHORT).show();
                 }
             }
 
