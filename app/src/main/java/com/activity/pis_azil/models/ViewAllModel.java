@@ -10,10 +10,9 @@ public class ViewAllModel {
     private String adopterId;
     private String adopterName;
 
-    public ViewAllModel(String name, String description, String rating, String img_url, String type) {
+    public ViewAllModel(String name, String description, String img_url, String type) {
         this.name = name;
         this.description = description;
-        this.rating = rating;
         this.img_url = img_url;
         this.type = type;
     }

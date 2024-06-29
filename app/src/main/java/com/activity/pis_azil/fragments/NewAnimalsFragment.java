@@ -120,7 +120,7 @@ public class NewAnimalsFragment extends Fragment {
         // Pretvaranje URI slike u URL (u stvarnom scenariju biste trebali uploadati sliku na server i dobiti URL)
         String imgUrl = imageUri.toString();
 
-        ViewAllModel newAnimal = new ViewAllModel(name, description, "N/A", imgUrl, type);
+        ViewAllModel newAnimal = new ViewAllModel(name, description, imgUrl, type);
         apiService.addAnimal(newAnimal).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
