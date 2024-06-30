@@ -4,8 +4,6 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log; // Dodano za logiranje
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,51 +65,50 @@ public class MyAnimalsFragment extends Fragment implements DataRefreshListener {
 
     private void fetchAdoptedAnimals() {
         Log.d(TAG, "Fetching adopted animals");
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            apiService.getAdoptedAnimals().enqueue(new Callback<List<AnimalModel>>() {
-                @Override
-                public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        Log.d(TAG, "Successfully fetched adopted animals, size: " + response.body().size());
-                        cartModelList.clear();
-                        for (AnimalModel animal : response.body()) {
-                            Log.d(TAG, "Animal fetched: " + animal.toString());
-                            MyAdoptionModel adoption = new MyAdoptionModel();
-                            adoption.setIdLjubimca(animal.getIdLjubimca());
-                            adoption.setImeLjubimca(animal.getImeLjubimca() != null ? animal.getImeLjubimca() : "N/A");
-                            adoption.setTipLjubimca(animal.getTipLjubimca() != null ? animal.getTipLjubimca() : "N/A");
-                            adoption.setDatum(animal.getDatum());
-                            adoption.setVrijeme(animal.getVrijeme());
-                            adoption.setImgUrl(animal.getImgUrl());
-                            adoption.setStanjeZivotinje(animal.isStanje_zivotinje());
-                            adoption.setIdKorisnika(animal.getIdUdomitelja()); // Dodavanje korisnika iz API odgovora
-                            cartModelList.add(adoption);
-                        }
 
-                        // Provjera i prikazivanje prazne liste ili podataka
-                        if (cartModelList.isEmpty()) {
-                            Log.d(TAG, "No animals to display, showing empty state message");
-                            recyclerView.setVisibility(View.GONE);
-                            emptyStateTextView.setVisibility(View.VISIBLE); // Prikaz poruke kada je lista prazna
-                        } else {
-                            Log.d(TAG, "Displaying fetched animals in RecyclerView");
-                            recyclerView.setVisibility(View.VISIBLE);
-                            emptyStateTextView.setVisibility(View.GONE);
-                        }
-
-                        cartAdapter.notifyDataSetChanged();
-                    } else {
-                        Log.e(TAG, "Failed to fetch adopted animals: " + response.message());
-                        Toast.makeText(getActivity(), "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
+        apiService.getAdoptedAnimals().enqueue(new Callback<List<AnimalModel>>() {
+            @Override
+            public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d(TAG, "Successfully fetched adopted animals, size: " + response.body().size());
+                    cartModelList.clear();
+                    for (AnimalModel animal : response.body()) {
+                        Log.d(TAG, "Animal fetched: " + animal.toString());
+                        MyAdoptionModel adoption = new MyAdoptionModel();
+                        adoption.setIdLjubimca(animal.getIdLjubimca());
+                        adoption.setImeLjubimca(animal.getImeLjubimca() != null ? animal.getImeLjubimca() : "N/A");
+                        adoption.setTipLjubimca(animal.getTipLjubimca() != null ? animal.getTipLjubimca() : "N/A");
+                        adoption.setDatum(animal.getDatum());
+                        adoption.setVrijeme(animal.getVrijeme());
+                        adoption.setImgUrl(animal.getImgUrl());
+                        adoption.setStanjeZivotinje(animal.isStanje_zivotinje());
+                        adoption.setIdKorisnika(animal.getIdUdomitelja()); // Dodavanje korisnika iz API odgovora
+                        cartModelList.add(adoption);
                     }
-                }
 
-                @Override
-                public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
-                    Log.e(TAG, "Error fetching adopted animals: ", t);
-                    Toast.makeText(getActivity(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    // Provjera i prikazivanje prazne liste ili podataka
+                    if (cartModelList.isEmpty()) {
+                        Log.d(TAG, "No animals to display, showing empty state message");
+                        recyclerView.setVisibility(View.GONE);
+                        emptyStateTextView.setVisibility(View.VISIBLE); // Prikaz poruke kada je lista prazna
+                    } else {
+                        Log.d(TAG, "Displaying fetched animals in RecyclerView");
+                        recyclerView.setVisibility(View.VISIBLE);
+                        emptyStateTextView.setVisibility(View.GONE);
+                    }
+
+                    cartAdapter.notifyDataSetChanged();
+                } else {
+                    Log.e(TAG, "Failed to fetch adopted animals: " + response.message());
+                    Toast.makeText(getActivity(), "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
-            });
-        }, 1000); // Dodaj kašnjenje od 1 sekunde
+            }
+
+            @Override
+            public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
+                Log.e(TAG, "Error fetching adopted animals: ", t);
+                Toast.makeText(getActivity(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

@@ -46,7 +46,6 @@ public class RegistrationActivity extends AppCompatActivity {
 
     private ActivityResultLauncher<Intent> galleryLauncher;
     private ActivityResultLauncher<Intent> cameraLauncher;
-    private ActivityResultLauncher<String> requestPermissionLauncher;
 
     private static final int CAMERA_REQUEST_CODE = 100;
 
@@ -109,18 +108,6 @@ public class RegistrationActivity extends AppCompatActivity {
                     }
                 }
         );
-
-        // Inicijalizacija ActivityResultLauncher-a za traženje dozvola
-        requestPermissionLauncher = registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(),
-                isGranted -> {
-                    if (isGranted) {
-                        pickFromGallery();
-                    } else {
-                        Toast.makeText(this, "Dozvola za čitanje pohrane nije dodijeljena", Toast.LENGTH_SHORT).show();
-                    }
-                }
-        );
     }
 
     private void showImagePickDialog() {
@@ -135,7 +122,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     pickFromCamera();
                 }
             } else {
-                checkGalleryPermission();
+                pickFromGallery();
             }
         });
         builder.create().show();
@@ -160,14 +147,6 @@ public class RegistrationActivity extends AppCompatActivity {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
         cameraLauncher.launch(cameraIntent);
-    }
-
-    private void checkGalleryPermission() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            pickFromGallery();
-        } else {
-            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
-        }
     }
 
     private void pickFromGallery() {

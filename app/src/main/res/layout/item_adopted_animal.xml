@@ -36,6 +36,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/alice"
                 android:text="Ime Životinje"
+                android:textColor="@android:color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -63,6 +64,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/alice"
                 android:text="Tip Životinje"
+                android:textColor="@android:color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -117,6 +119,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/alice"
                 android:text="Ime Udomitelja"
+                android:textColor="@android:color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
