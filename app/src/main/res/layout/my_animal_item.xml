@@ -36,6 +36,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/alice"
                 android:text="Ime Životinje"
+                android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -63,6 +64,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/alice"
                 android:text="Tip Životinje"
+                android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -90,6 +92,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/alice"
                 android:text="Datum dodavanja"
+                android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -117,6 +120,7 @@
                 android:layout_weight="1"
                 android:fontFamily="@font/alice"
                 android:text="Vrijeme dodavanja"
+                android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -145,6 +149,7 @@
                 android:fontFamily="@font/alice"
                 android:text="Stanje Životinje"
                 android:textSize="16sp"
+                android:textColor="@color/black"
                 android:textStyle="bold" />
 
         </LinearLayout>
@@ -195,16 +200,18 @@
             <ImageView
                 android:id="@+id/update"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_weight="1"
-                android:src="@drawable/baseline_edit_24" />
+                android:src="@drawable/baseline_edit_24"
+                android:padding="8dp" />
 
             <ImageView
                 android:id="@+id/delete"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_weight="1"
-                android:src="@drawable/ic_baseline_delete_24" />
+                android:src="@drawable/ic_baseline_delete_24"
+                android:padding="8dp" />
         </LinearLayout>
 
     <LinearLayout

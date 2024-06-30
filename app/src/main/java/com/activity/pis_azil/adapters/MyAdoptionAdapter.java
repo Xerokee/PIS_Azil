@@ -18,7 +18,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.activity.pis_azil.EmailService;
 import com.activity.pis_azil.R;
+import com.activity.pis_azil.models.AnimalModel;
 import com.activity.pis_azil.models.UserByEmailResponseModel;
 import com.activity.pis_azil.network.DataRefreshListener;
 import com.activity.pis_azil.models.UserModel;
@@ -30,6 +32,7 @@ import com.bumptech.glide.Glide;
 
 import androidx.core.app.NotificationCompat;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -356,6 +359,20 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 if (response.isSuccessful()) {
                     Log.d(TAG, "Animal adopted successfully: " + idLjubimca + ", adopterId: " + adopterId + ", adopterName: " + adopterName);
                     Toast.makeText(context, "Životinja je udomljena za korisnika " + adopterName, Toast.LENGTH_SHORT).show();
+
+                    getEmailById(Integer.parseInt(adopterId), email -> {
+                        if (email != null) {
+                            getAnimalNameById(idLjubimca, animalName -> {
+                                if (animalName != null) {
+                                    try {
+                                        EmailService.sendAdoptionEmail(email, adopterName, animalName);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            });
+                        }
+                    });
                 } else {
                     Log.e(TAG, "Error adopting animal: " + response.message());
                     Toast.makeText(context, "Udomljavanje nije uspjelo: " + response.message(), Toast.LENGTH_SHORT).show();
@@ -367,6 +384,57 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 Toast.makeText(context, "Udomljavanje nije uspjelo: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void getEmailById(int userId, OnEmailFetchedListener listener) {
+        apiService.getUserById(userId).enqueue(new Callback<UserByEmailResponseModel>() {
+            @Override
+            public void onResponse(Call<UserByEmailResponseModel> call, Response<UserByEmailResponseModel> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    String email = response.body().getResult().getEmail();
+                    listener.onEmailFetched(email);
+                } else {
+                    Log.e(TAG, "Failed to fetch email: " + response.message());
+                    listener.onEmailFetched(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserByEmailResponseModel> call, Throwable t) {
+                Log.e(TAG, "Error fetching email: ", t);
+                listener.onEmailFetched(null);
+            }
+        });
+    }
+
+    interface OnEmailFetchedListener {
+        void onEmailFetched(String email);
+    }
+
+
+    private void getAnimalNameById(int animalId, OnAnimalNameFetchedListener listener) {
+        apiService.getAnimalById(animalId).enqueue(new Callback<AnimalModel>() {
+            @Override
+            public void onResponse(Call<AnimalModel> call, Response<AnimalModel> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    String animalName = response.body().getImeLjubimca();
+                    listener.onAnimalNameFetched(animalName);
+                } else {
+                    Log.e(TAG, "Failed to fetch animal name: " + response.message());
+                    listener.onAnimalNameFetched(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AnimalModel> call, Throwable t) {
+                Log.e(TAG, "Error fetching animal name: ", t);
+                listener.onAnimalNameFetched(null);
+            }
+        });
+    }
+
+    interface OnAnimalNameFetchedListener {
+        void onAnimalNameFetched(String animalName);
     }
 
     @Override

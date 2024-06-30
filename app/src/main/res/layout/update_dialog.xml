@@ -23,6 +23,12 @@
         android:hint="Ažurirani Datum"/>
 
     <EditText
+        android:id="@+id/edt_updated_time"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Ažurirano Vrijeme"/>
+
+    <EditText
         android:id="@+id/edt_updated_img_url"
         android:layout_width="match_parent"
         android:layout_height="48dp"
