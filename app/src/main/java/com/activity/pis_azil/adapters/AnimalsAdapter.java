@@ -44,10 +44,10 @@ public class AnimalsAdapter extends RecyclerView.Adapter<AnimalsAdapter.AnimalVi
             Glide.with(context)
                     .load(animal.getImgUrl())
                     .placeholder(R.drawable.paw)
-                    .error(R.drawable.fruits)
+                    .error(R.drawable.paw)
                     .into(holder.animalImage);
         } else {
-            holder.animalImage.setImageResource(R.drawable.milk2);
+            holder.animalImage.setImageResource(R.drawable.paw);
         }
 
         holder.itemView.setOnClickListener(v -> {

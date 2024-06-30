@@ -1,84 +1,90 @@
 package com.activity.pis_azil.models;
 
-public class ViewAllModel {
-    private String name;
-    private String description;
-    private String rating;
-    private String img_url;
-    private String type;
-    private boolean adopted;
-    private String adopterId;
-    private String adopterName;
+import com.google.gson.annotations.SerializedName;
 
-    public ViewAllModel(String name, String description, String img_url, String type) {
-        this.name = name;
-        this.description = description;
-        this.img_url = img_url;
-        this.type = type;
+public class ViewAllModel {
+    @SerializedName("ImeLjubimca")
+    private String imeLjubimca;
+
+    @SerializedName("OpisLjubimca")
+    private String opisLjubimca;
+
+    @SerializedName("ImgUrl")
+    private String imgUrl;
+
+    @SerializedName("TipLjubimca")
+    private String tipLjubimca;
+
+    @SerializedName("Udomljen")
+    private boolean udomljen;
+
+    @SerializedName("IdUdomitelja")
+    private String idUdomitelja;
+
+    @SerializedName("IdLjubimca")
+    private String idLjubimca;
+
+    public ViewAllModel(String imeLjubimca, String opisLjubimca, String imgUrl, String tipLjubimca) {
+        this.imeLjubimca = imeLjubimca;
+        this.opisLjubimca = opisLjubimca;
+        this.imgUrl = imgUrl;
+        this.tipLjubimca = tipLjubimca;
     }
 
     // Getters and setters
-    public String getName() {
-        return name;
+    public String getImeLjubimca() {
+        return imeLjubimca;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setImeLjubimca(String imeLjubimca) {
+        this.imeLjubimca = imeLjubimca;
     }
 
-    public String getDescription() {
-        return description;
+    public String getOpisLjubimca() {
+        return opisLjubimca;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setOpisLjubimca(String opisLjubimca) {
+        this.opisLjubimca = opisLjubimca;
     }
 
-    public String getRating() {
-        return rating;
+    public String getImgUrl() {
+        return imgUrl;
     }
 
-    public void setRating(String rating) {
-        this.rating = rating;
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 
-    public String getImg_url() {
-        return img_url;
+    public String getTipLjubimca() {
+        return tipLjubimca;
     }
 
-    public void setImg_url(String img_url) {
-        this.img_url = img_url;
+    public void setTipLjubimca(String tipLjubimca) {
+        this.tipLjubimca = tipLjubimca;
     }
 
-    public String getType() {
-        return type;
+    public boolean isUdomljen() {
+        return udomljen;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setUdomljen(boolean udomljen) {
+        this.udomljen = udomljen;
     }
 
-    public boolean isAdopted() {
-        return adopted;
+    public String getIdUdomitelja() {
+        return idUdomitelja;
     }
 
-    public void setAdopted(boolean adopted) {
-        this.adopted = adopted;
+    public void setIdUdomitelja(String idUdomitelja) {
+        this.idUdomitelja = idUdomitelja;
     }
 
-    public String getAdopterId() {
-        return adopterId;
+    public String getIdLjubimca() {
+        return idLjubimca;
     }
 
-    public void setAdopterId(String adopterId) {
-        this.adopterId = adopterId;
-    }
-
-    public String getAdopterName() {
-        return adopterName;
-    }
-
-    public void setAdopterName(String adopterName) {
-        this.adopterName = adopterName;
+    public void setIdLjubimca(String idLjubimca) {
+        this.idLjubimca = idLjubimca;
     }
 }

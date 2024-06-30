@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import android.util.Log;
@@ -19,12 +22,12 @@ import android.widget.Toast;
 
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.models.UserByEmailResponseModel;
-import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.models.ViewAllModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -32,9 +35,12 @@ import retrofit2.Response;
 
 import static android.app.Activity.RESULT_OK;
 
+import java.io.IOException;
+
 public class NewAnimalsFragment extends Fragment {
 
     private static final int PICK_IMAGE_REQUEST = 1;
+    private static final int REQUEST_ANIMAL_ID = 1; // Ovdje definiramo RequestAnimalId
 
     private EditText etName, etDescription, etType;
     private ImageView ivAnimalImage;
@@ -42,6 +48,7 @@ public class NewAnimalsFragment extends Fragment {
     private LinearLayout animalFormContainer;
     private FloatingActionButton fabAddAnimal;
     private ApiService apiService;
+    private ActivityResultLauncher<Intent> galleryLauncher;
 
     public NewAnimalsFragment() {
     }
@@ -75,6 +82,23 @@ public class NewAnimalsFragment extends Fragment {
         return root;
     }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        galleryLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri selectedImage = result.getData().getData();
+                        Log.d("NewAnimalsFragment", selectedImage.toString());
+                        ivAnimalImage.setImageURI(selectedImage);
+                        imageUri = selectedImage;
+                    }
+                }
+        );
+    }
+
     private void toggleFormVisibility() {
         if (animalFormContainer.getVisibility() == View.GONE) {
             Log.d("NewAnimalsFragment", "Prikazivanje obrasca");
@@ -87,41 +111,37 @@ public class NewAnimalsFragment extends Fragment {
     }
 
     private void openImageChooser() {
-        Intent intent = new Intent();
+        Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Odaberite sliku"), PICK_IMAGE_REQUEST);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            imageUri = data.getData();
-            Glide.with(this).load(imageUri).into(ivAnimalImage);
-        }
+        galleryLauncher.launch(intent);
     }
 
     private void addNewAnimal() {
-        String name = etName.getText().toString().trim();
-        String description = etDescription.getText().toString().trim();
-        String type = etType.getText().toString().trim();
+        String ime_ljubimca = etName.getText().toString().trim();
+        String opis_ljubimca = etDescription.getText().toString().trim();
+        String tip_ljubimca = etType.getText().toString().trim();
 
         Log.d("NewAnimalsFragment", "Uneseni podaci: " +
-                "Ime: " + name +
-                ", Opis: " + description +
-                ", Tip: " + type);
+                "Ime: " + ime_ljubimca +
+                ", Opis: " + opis_ljubimca +
+                ", Tip: " + tip_ljubimca);
 
-        if (name.isEmpty() || description.isEmpty() || type.isEmpty() || imageUri == null) {
+        if (ime_ljubimca.isEmpty() || opis_ljubimca.isEmpty() || tip_ljubimca.isEmpty() || imageUri == null) {
             Toast.makeText(getContext(), "Molimo ispunite sve podatke", Toast.LENGTH_SHORT).show();
             return;
         }
 
         // Pretvaranje URI slike u URL (u stvarnom scenariju biste trebali uploadati sliku na server i dobiti URL)
         String imgUrl = imageUri.toString();
+        Log.d("NewAnimalsFragment", "Image URL: " + imgUrl);
 
-        ViewAllModel newAnimal = new ViewAllModel(name, description, imgUrl, type);
-        apiService.addAnimal(newAnimal).enqueue(new Callback<Void>() {
+        ViewAllModel newAnimal = new ViewAllModel(ime_ljubimca, opis_ljubimca, imgUrl, tip_ljubimca);
+        Log.d("NewAnimalsFragment", "Podaci koje šaljemo: " + new Gson().toJson(newAnimal));
+
+        SharedPreferences preferences = getContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        int userId = preferences.getInt("id_korisnika", -1);
+
+        apiService.addAnimal(userId, newAnimal).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -129,8 +149,13 @@ public class NewAnimalsFragment extends Fragment {
                     Toast.makeText(getContext(), "Životinja uspješno dodana", Toast.LENGTH_SHORT).show();
                     toggleFormVisibility();
                 } else {
-                    Log.e("NewAnimalsFragment", "Greška pri dodavanju životinje: " + response.message());
-                    Toast.makeText(getContext(), "Došlo je do greške: " + response.message(), Toast.LENGTH_SHORT).show();
+                    try {
+                        String errorBody = response.errorBody().string();
+                        Log.e("NewAnimalsFragment", "Greška pri dodavanju životinje: " + response.message() + " - " + errorBody);
+                        Toast.makeText(getContext(), "Došlo je do greške: " + response.message(), Toast.LENGTH_SHORT).show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -169,7 +194,6 @@ public class NewAnimalsFragment extends Fragment {
             }
         });
     }
-
 
     private void clearForm() {
         etName.setText("");

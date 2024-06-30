@@ -96,7 +96,9 @@
                         android:layout_height="48dp"
                         android:layout_marginTop="16dp"
                         android:text="Potvrdi dodavanje"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:background="@color/green_200"/>
 
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -111,6 +113,7 @@
         android:layout_margin="16dp"
         android:layout_marginBottom="32dp"
         android:src="@drawable/paw"
+        app:backgroundTint="@color/green_200"
         app:layout_anchor="@id/scrollView2"
         app:layout_anchorGravity="bottom|end" />
 

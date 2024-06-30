@@ -59,7 +59,7 @@ public interface ApiService {
     Call<AnimalModel> getAnimalById(@Path("id") int id);
 
     @POST("KucniLjubimci/add")
-    Call<Void> addAnimal(@Body ViewAllModel animal);
+    Call<Void> addAnimal(@Header("RequestAnimalId") int requestAnimalId, @Body ViewAllModel animal);
 
     @GET("AdoptedAnimals")
     Call<List<AnimalModel>> getAdoptedAnimals();
