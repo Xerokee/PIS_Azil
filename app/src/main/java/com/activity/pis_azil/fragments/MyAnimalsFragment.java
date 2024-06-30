@@ -81,6 +81,7 @@ public class MyAnimalsFragment extends Fragment implements DataRefreshListener {
                             adoption.setImeLjubimca(animal.getImeLjubimca() != null ? animal.getImeLjubimca() : "N/A");
                             adoption.setTipLjubimca(animal.getTipLjubimca() != null ? animal.getTipLjubimca() : "N/A");
                             adoption.setDatum(animal.getDatum());
+                            adoption.setVrijeme(animal.getVrijeme());
                             adoption.setImgUrl(animal.getImgUrl());
                             adoption.setStanjeZivotinje(animal.isStanje_zivotinje());
                             adoption.setIdKorisnika(animal.getIdUdomitelja()); // Dodavanje korisnika iz API odgovora

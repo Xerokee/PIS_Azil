@@ -1,7 +1,10 @@
 package com.activity.pis_azil.adapters;
 
 import android.app.AlertDialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,7 +28,14 @@ import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.models.MyAdoptionModel;
 import com.bumptech.glide.Glide;
 
+import androidx.core.app.NotificationCompat;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +79,27 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         holder.name.setText(cartModel.getImeLjubimca());
         holder.type.setText(cartModel.getTipLjubimca());
         holder.date.setText(cartModel.getDatum());
+        holder.time.setText(cartModel.getVrijeme());
         holder.state.setText(cartModel.isStanjeZivotinje() ? "Dobro" : "Loše");
+
+        if (cartModel.getDatum() != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                Date lastUpdateDate = sdf.parse(cartModel.getDatum());
+                Calendar currentDate = Calendar.getInstance();
+                Calendar lastUpdateCalendar = Calendar.getInstance();
+                lastUpdateCalendar.setTime(lastUpdateDate);
+
+                long diff = currentDate.getTimeInMillis() - lastUpdateCalendar.getTimeInMillis();
+                long daysBetween = diff / (24 * 60 * 60 * 1000);
+
+                if (daysBetween > 7) {
+                    sendNotification(context, cartModel.getImeLjubimca());
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
 
         Log.d(TAG, "Binding view holder for position: " + position + ", model: " + cartModel.toString());
 
@@ -101,6 +131,24 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 }
             });
         }
+    }
+
+    private void sendNotification(Context context, String animalName) {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        String channelId = "animal_status_channel";
+        String channelName = "Animal Status Notifications";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
+                .setSmallIcon(R.drawable.paw)
+                .setContentTitle("Nema zapisa o stanju životinje")
+                .setContentText("Nema zapisa o stanju životinje " + animalName + " u posljednjih tjedan dana.")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        notificationManager.notify(animalName.hashCode(), builder.build());
     }
 
     private void checkIfUserIsAdminThenRun(Runnable onAdmin, Runnable onNonAdmin) {
@@ -182,6 +230,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             String updatedName = edtName.getText().toString().trim();
             String updatedType = edtType.getText().toString().trim();
             String updatedDate = edtDate.getText().toString().trim();
+            String updatedTime = edtDate.getText().toString().trim();
             String updatedImgUrl = edtImgUrl.getText().toString().trim();
             String updatedState = edtState.getText().toString().trim();
 
@@ -189,7 +238,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 Toast.makeText(context, "Molimo popunite sva polja", Toast.LENGTH_SHORT).show();
             } else {
                 boolean stanjeZivotinje = updatedState.equalsIgnoreCase("Dobro");
-                updateAnimalDocument(position, updatedName, updatedType, updatedDate, updatedImgUrl, stanjeZivotinje);
+                updateAnimalDocument(position, updatedName, updatedType, updatedDate, updatedTime, updatedImgUrl, stanjeZivotinje);
             }
         });
 
@@ -198,7 +247,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
     }
 
     // MyAdoptionAdapter.java
-    private void updateAnimalDocument(int position, String updatedName, String updatedType, String updatedDate, String updatedImgUrl, boolean stanjeZivotinje) {
+    private void updateAnimalDocument(int position, String updatedName, String updatedType, String updatedDate, String updatedTime, String updatedImgUrl, boolean stanjeZivotinje) {
         MyAdoptionModel cartModel = cartModelList.get(position);
 
         Log.d(TAG, "Updating animal at position: " + position + " with data: " + updatedName + ", " + updatedType + ", " + updatedDate + ", " + updatedImgUrl + ", " + stanjeZivotinje);
@@ -207,6 +256,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         updateData.put("ime_ljubimca", updatedName);
         updateData.put("tip_ljubimca", updatedType);
         updateData.put("datum", updatedDate);
+        updateData.put("vrijeme", updatedTime);
         updateData.put("imgUrl", updatedImgUrl);
         updateData.put("stanje_zivotinje", stanjeZivotinje);
 
@@ -218,6 +268,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                     cartModel.setImeLjubimca(updatedName);
                     cartModel.setTipLjubimca(updatedType);
                     cartModel.setDatum(updatedDate);
+                    cartModel.setVrijeme(updatedTime);
                     cartModel.setImgUrl(updatedImgUrl);
                     cartModel.setStanjeZivotinje(stanjeZivotinje);
                     notifyDataSetChanged();
@@ -325,7 +376,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView name, type, date, state;
+        TextView name, type, date, time, state;
         ImageView imgUrl;
         ImageView deleteItem, updateItem;
         Button adoptButton;
@@ -336,6 +387,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             name = itemView.findViewById(R.id.product_name);
             type = itemView.findViewById(R.id.product_type);
             date = itemView.findViewById(R.id.current_date);
+            time = itemView.findViewById(R.id.current_time);
             state = itemView.findViewById(R.id.product_state);
             imgUrl = itemView.findViewById(R.id.img_url);
             deleteItem = itemView.findViewById(R.id.delete);

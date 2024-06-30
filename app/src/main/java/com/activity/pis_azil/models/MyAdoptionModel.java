@@ -6,6 +6,7 @@ public class MyAdoptionModel {
     private String tipLjubimca;
     private String opisLjubimca;
     private String datum;
+    private String vrijeme;
     private String imgUrl;
     private boolean udomljen;
     private boolean stanjeZivotinje;
@@ -53,6 +54,14 @@ public class MyAdoptionModel {
         this.datum = datum;
     }
 
+    public String getVrijeme() {
+        return vrijeme;
+    }
+
+    public void setVrijeme(String vrijeme) {
+        this.vrijeme = vrijeme;
+    }
+
     public String getImgUrl() {
         return imgUrl;
     }
@@ -93,6 +102,8 @@ public class MyAdoptionModel {
                 ", tipLjubimca='" + tipLjubimca + '\'' +
                 ", opisLjubimca='" + opisLjubimca + '\'' +
                 ", datum='" + datum + '\'' +
+                ", vrijeme='" + vrijeme + '\'' +
+                '}' +
                 ", imgUrl='" + imgUrl + '\'' +
                 ", udomljen=" + udomljen +
                 ", stanjeZivotinje=" + stanjeZivotinje +

@@ -10,13 +10,14 @@ public class AnimalModel implements Serializable {
     private String opis_ljubimca;
     private boolean udomljen;
     private String datum;
+    private String vrijeme;
     private String imgUrl;
     private boolean stanje_zivotinje;
 
     // Constructors, getters, and setters
     public AnimalModel() {}
 
-    public AnimalModel(int id_ljubimca, int id_udomitelja, String ime_ljubimca, String tip_ljubimca, String opis_ljubimca, boolean udomljen, String datum, String imgUrl, Boolean stanje_zivotinje) {
+    public AnimalModel(int id_ljubimca, int id_udomitelja, String ime_ljubimca, String tip_ljubimca, String opis_ljubimca, boolean udomljen, String datum, String vrijeme, String imgUrl, Boolean stanje_zivotinje) {
         this.id_ljubimca = id_ljubimca;
         this.id_udomitelja = id_udomitelja;
         this.ime_ljubimca = ime_ljubimca;
@@ -24,6 +25,7 @@ public class AnimalModel implements Serializable {
         this.opis_ljubimca = opis_ljubimca;
         this.udomljen = udomljen;
         this.datum = datum;
+        this.vrijeme = vrijeme;
         this.imgUrl = imgUrl;
         this.stanje_zivotinje = stanje_zivotinje;
     }
@@ -84,6 +86,14 @@ public class AnimalModel implements Serializable {
         this.datum = datum;
     }
 
+    public String getVrijeme() {
+        return vrijeme;
+    }
+
+    public void setVrijeme(String vrijeme) {
+        this.vrijeme = vrijeme;
+    }
+
     public String getImgUrl() {
         return imgUrl;
     }
@@ -110,6 +120,8 @@ public class AnimalModel implements Serializable {
                 ", opis_ljubimca='" + opis_ljubimca + '\'' +
                 ", udomljen=" + udomljen +
                 ", datum='" + datum + '\'' +
+                ", vrijeme='" + vrijeme + '\'' +
+                '}' +
                 ", imgUrl='" + imgUrl + '\'' +
                 ", stanje_zivotinje=" + stanje_zivotinje +
                 '}';
