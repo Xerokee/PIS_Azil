@@ -102,12 +102,13 @@ public class AnimalModel implements Serializable {
         this.imgUrl = imgUrl;
     }
 
-    public boolean isStanje_zivotinje() {
+    public boolean StanjeZivotinje() {
         return stanje_zivotinje;
     }
 
-    public void setStanje_zivotinje(boolean stanje_zivotinje) {
+    public boolean setStanjeZivotinje(boolean stanje_zivotinje) {
         this.stanje_zivotinje = stanje_zivotinje;
+        return stanje_zivotinje;
     }
 
     @Override

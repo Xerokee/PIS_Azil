@@ -219,6 +219,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         EditText edtName = view.findViewById(R.id.edt_updated_name);
         EditText edtType = view.findViewById(R.id.edt_updated_type);
         EditText edtDate = view.findViewById(R.id.edt_updated_date);
+        EditText edtTime = view.findViewById(R.id.edt_updated_date);
         EditText edtImgUrl = view.findViewById(R.id.edt_updated_img_url);
         EditText edtState = view.findViewById(R.id.edt_updated_state);
 
@@ -226,6 +227,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         edtName.setText(cartModel.getImeLjubimca());
         edtType.setText(cartModel.getTipLjubimca());
         edtDate.setText(cartModel.getDatum());
+        edtTime.setText(cartModel.getVrijeme());
         edtImgUrl.setText(cartModel.getImgUrl());
         edtState.setText(cartModel.isStanjeZivotinje() ? "Dobro" : "Loše");
 
@@ -233,7 +235,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             String updatedName = edtName.getText().toString().trim();
             String updatedType = edtType.getText().toString().trim();
             String updatedDate = edtDate.getText().toString().trim();
-            String updatedTime = edtDate.getText().toString().trim();
+            String updatedTime = edtTime.getText().toString().trim();
             String updatedImgUrl = edtImgUrl.getText().toString().trim();
             String updatedState = edtState.getText().toString().trim();
 

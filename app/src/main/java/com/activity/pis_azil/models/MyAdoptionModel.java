@@ -2,15 +2,15 @@ package com.activity.pis_azil.models;
 
 public class MyAdoptionModel {
     private int idLjubimca;
-    private String imeLjubimca;
-    private String tipLjubimca;
+    private String ime_ljubimca;
+    private String tip_ljubimca;
     private String opisLjubimca;
     private String datum;
     private String vrijeme;
     private String imgUrl;
     private boolean udomljen;
-    private boolean stanjeZivotinje;
-    private int idKorisnika;
+    private boolean stanje_zivotinje;
+    private int id_korisnika;
 
     // Getteri i setteri
 
@@ -23,19 +23,19 @@ public class MyAdoptionModel {
     }
 
     public String getImeLjubimca() {
-        return imeLjubimca;
+        return ime_ljubimca;
     }
 
-    public void setImeLjubimca(String imeLjubimca) {
-        this.imeLjubimca = imeLjubimca;
+    public void setImeLjubimca(String ime_ljubimca) {
+        this.ime_ljubimca = ime_ljubimca;
     }
 
     public String getTipLjubimca() {
-        return tipLjubimca;
+        return tip_ljubimca;
     }
 
-    public void setTipLjubimca(String tipLjubimca) {
-        this.tipLjubimca = tipLjubimca;
+    public void setTipLjubimca(String tip_ljubimca) {
+        this.tip_ljubimca = tip_ljubimca;
     }
 
     public String getOpisLjubimca() {
@@ -79,35 +79,35 @@ public class MyAdoptionModel {
     }
 
     public boolean isStanjeZivotinje() {
-        return stanjeZivotinje;
+        return stanje_zivotinje;
     }
 
-    public void setStanjeZivotinje(boolean stanjeZivotinje) {
-        this.stanjeZivotinje = stanjeZivotinje;
+    public void setStanjeZivotinje(boolean stanje_zivotinje) {
+        this.stanje_zivotinje = stanje_zivotinje;
     }
 
     public int getIdKorisnika() {
-        return idKorisnika;
+        return id_korisnika;
     }
 
-    public void setIdKorisnika(int idKorisnika) {
-        this.idKorisnika = idKorisnika;
+    public void setIdKorisnika(int id_korisnika) {
+        this.id_korisnika = id_korisnika;
     }
 
     @Override
     public String toString() {
         return "MyAdoptionModel{" +
                 "idLjubimca=" + idLjubimca +
-                ", imeLjubimca='" + imeLjubimca + '\'' +
-                ", tipLjubimca='" + tipLjubimca + '\'' +
+                ", ime_ljubimca='" + ime_ljubimca + '\'' +
+                ", tip_tjubimca='" + tip_ljubimca + '\'' +
                 ", opisLjubimca='" + opisLjubimca + '\'' +
                 ", datum='" + datum + '\'' +
                 ", vrijeme='" + vrijeme + '\'' +
                 '}' +
                 ", imgUrl='" + imgUrl + '\'' +
                 ", udomljen=" + udomljen +
-                ", stanjeZivotinje=" + stanjeZivotinje +
-                ", idKorisnika=" + idKorisnika +
+                ", stanje_zivotinje=" + stanje_zivotinje +
+                ", id_korisnika=" + id_korisnika +
                 '}';
     }
 }

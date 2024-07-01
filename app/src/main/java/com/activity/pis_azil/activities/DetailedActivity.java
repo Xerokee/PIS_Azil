@@ -20,6 +20,7 @@ import com.bumptech.glide.Glide;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -73,14 +74,39 @@ public class DetailedActivity extends AppCompatActivity {
 
         MyAdoptionModel adoptionModel = new MyAdoptionModel();
         adoptionModel.setIdLjubimca(animalModel.getIdLjubimca());
-        adoptionModel.setImeLjubimca(animalModel.getImeLjubimca());
-        adoptionModel.setTipLjubimca(animalModel.getTipLjubimca());
+
+        // Postavljanje imena ljubimca
+        if (animalModel.getImeLjubimca() != null && !animalModel.getImeLjubimca().isEmpty()) {
+            adoptionModel.setImeLjubimca(animalModel.getImeLjubimca());
+        } else {
+            adoptionModel.setImeLjubimca("Nepoznato ime");
+        }
+
+        // Postavljanje tipa ljubimca
+        if (animalModel.getTipLjubimca() != null && !animalModel.getTipLjubimca().isEmpty()) {
+            adoptionModel.setTipLjubimca(animalModel.getTipLjubimca());
+        } else {
+            adoptionModel.setTipLjubimca("Nepoznato tip");
+        }
+
         adoptionModel.setOpisLjubimca(animalModel.getOpisLjubimca());
-        adoptionModel.setDatum(new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Calendar.getInstance().getTime()));
+
+        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+
+        // Adjust timezone to Croatian timezone
+        sdfDate.setTimeZone(TimeZone.getTimeZone("Europe/Zagreb"));
+        sdfTime.setTimeZone(TimeZone.getTimeZone("Europe/Zagreb"));
+
+        // Postavljanje datuma i vremena
+        String currentDate = sdfDate.format(Calendar.getInstance().getTime());
+        String currentTime = sdfTime.format(Calendar.getInstance().getTime());
+        adoptionModel.setDatum(currentDate);
+        adoptionModel.setVrijeme(currentTime);
         adoptionModel.setImgUrl(animalModel.getImgUrl());
         adoptionModel.setIdKorisnika(1); // Pretpostavimo da je korisnik s ID 1 admin
-        adoptionModel.setUdomljen(true);
-        adoptionModel.setStanjeZivotinje(true);
+        adoptionModel.setUdomljen(false);
+        adoptionModel.setStanjeZivotinje(false);
 
         Log.d(TAG, "Sending adoption model to API: " + adoptionModel);
 
