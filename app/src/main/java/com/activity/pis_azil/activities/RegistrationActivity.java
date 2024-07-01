@@ -82,19 +82,8 @@ public class RegistrationActivity extends AppCompatActivity {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Uri selectedImage = result.getData().getData();
                         if (selectedImage != null) {
-                            try (Cursor cursor = getContentResolver().query(selectedImage, null, null, null, null)) {
-                                if (cursor != null && cursor.moveToFirst()) {
-                                    int columnIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
-                                    if (columnIndex != -1) {
-                                        long imageId = cursor.getLong(columnIndex);
-                                        imageUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, String.valueOf(imageId));
-                                        regProfileImg.setImageURI(imageUri);
-                                    }
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                Toast.makeText(this, "Došlo je do greške pri odabiru slike", Toast.LENGTH_SHORT).show();
-                            }
+                            imageUri = selectedImage;
+                            regProfileImg.setImageURI(imageUri);
                         }
                     }
                 }
@@ -150,9 +139,11 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     private void pickFromGallery() {
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent galleryIntent = new Intent(Intent.ACTION_PICK);
+        galleryIntent.setType("image/*");
         galleryLauncher.launch(galleryIntent);
     }
+
 
     private void createUser() {
         String userName = ime.getText().toString();
@@ -171,12 +162,7 @@ public class RegistrationActivity extends AppCompatActivity {
         userModel.setLozinka(userPassword);
         userModel.setAdmin(false);
         if (imageUri != null) {
-            String realPath = getRealPathFromURI(imageUri);
-            if (realPath != null) {
-                userModel.setProfileImg(realPath);
-            } else {
-                userModel.setProfileImg(imageUri.toString());
-            }
+            userModel.setProfileImg(imageUri.toString());
         }
 
         Log.d("RegistrationActivity", "Slanje podataka: " + new Gson().toJson(userModel));
@@ -213,19 +199,6 @@ public class RegistrationActivity extends AppCompatActivity {
                 Log.e("RegistrationActivity", "Registracija neuspješna: " + errorMessage, t);
             }
         });
-    }
-
-    private String getRealPathFromURI(Uri uri) {
-        String[] projection = {MediaStore.Images.Media.DATA};
-        Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
-        if (cursor != null) {
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            String path = cursor.getString(column_index);
-            cursor.close();
-            return path;
-        }
-        return null;
     }
 
     @Override
