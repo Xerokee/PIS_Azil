@@ -66,13 +66,16 @@ public class MyAnimalsFragment extends Fragment implements DataRefreshListener {
     private void fetchAdoptedAnimals() {
         Log.d(TAG, "Fetching adopted animals");
 
-        apiService.getAdoptedAnimals().enqueue(new Callback<List<AnimalModel>>() {
+        apiService.getDnevnikUdomljavanja().enqueue(new Callback<List<AnimalModel>>() {
             @Override
             public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d(TAG, "Successfully fetched adopted animals, size: " + response.body().size());
                     cartModelList.clear();
                     for (AnimalModel animal : response.body()) {
+                        if(animal.isUdomljen() == true) {
+                            continue;
+                        }
                         Log.d(TAG, "Animal fetched: " + animal.toString());
                         MyAdoptionModel adoption = new MyAdoptionModel();
                         adoption.setIdLjubimca(animal.getIdLjubimca());

@@ -64,6 +64,9 @@ public interface ApiService {
     @GET("AdoptedAnimals")
     Call<List<AnimalModel>> getAdoptedAnimals();
 
+    @GET("dnevnik_udomljavanja")
+    Call<List<AnimalModel>> getDnevnikUdomljavanja();
+
     @GET("AdoptedAnimals/search")
     Call<List<UserModel>> searchUsersByName(@Query("startText") String startText, @Query("endText") String endText);
 
