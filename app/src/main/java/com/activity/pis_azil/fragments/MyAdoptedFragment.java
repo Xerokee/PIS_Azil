@@ -18,11 +18,13 @@ import android.widget.Toast;
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.adapters.MyAdoptedAnimalsAdapter;
 import com.activity.pis_azil.models.AnimalModel;
+import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,7 +35,7 @@ public class MyAdoptedFragment extends Fragment {
     private ApiService apiService;
     private MyAdoptedAnimalsAdapter adapter;
     private RecyclerView recyclerView;
-    private List<AnimalModel> adoptedAnimalsList;
+    private List<UpdateDnevnikModel> adoptedAnimalsList;
     private TextView newAnimalsTextView;
     private ImageView newAnimalsImageView;
 
@@ -63,12 +65,13 @@ public class MyAdoptedFragment extends Fragment {
     }
 
     private void fetchAdoptedAnimals() {
-        apiService.getAdoptedAnimals().enqueue(new Callback<List<AnimalModel>>() {
+        apiService.getDnevnikUdomljavanja().enqueue(new Callback<List<UpdateDnevnikModel>>() {
             @Override
-            public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
+            public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     adoptedAnimalsList.clear();
-                    adoptedAnimalsList.addAll(response.body());
+                    List<UpdateDnevnikModel> list = response.body().stream().filter(UpdateDnevnikModel::isUdomljen).collect(Collectors.toList());
+                    adoptedAnimalsList.addAll(list);
                     adapter.notifyDataSetChanged();
                     updateEmptyState();
                 } else {
@@ -77,7 +80,7 @@ public class MyAdoptedFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
+            public void onFailure(Call<List<UpdateDnevnikModel>> call, Throwable t) {
                 Log.e("MyAdoptedFragment", "Error fetching documents: ", t);
                 Toast.makeText(getActivity(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }

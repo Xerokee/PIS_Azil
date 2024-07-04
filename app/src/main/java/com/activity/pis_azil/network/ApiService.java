@@ -1,5 +1,6 @@
 package com.activity.pis_azil.network;
 
+import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserByEmailResponseModel;
 import com.activity.pis_azil.models.MyAdoptionModel;
 import com.activity.pis_azil.models.UserModel;
@@ -65,7 +66,7 @@ public interface ApiService {
     Call<List<AnimalModel>> getAdoptedAnimals();
 
     @GET("dnevnik_udomljavanja")
-    Call<List<AnimalModel>> getDnevnikUdomljavanja();
+    Call<List<UpdateDnevnikModel>> getDnevnikUdomljavanja();
 
     @GET("AdoptedAnimals/search")
     Call<List<UserModel>> searchUsersByName(@Query("startText") String startText, @Query("endText") String endText);
@@ -75,6 +76,12 @@ public interface ApiService {
 
     @POST("DnevnikUdomljavanja/add")
     Call<Void> addAdoption(@Body MyAdoptionModel adoptionModel);
+
+    @PUT("DnevnikUdomljavanja/update/{id}")
+    Call<Void> updateAdoption(@Header("RequestAnimalId") int requestAnimalId, @Path("id") int id, @Body UpdateDnevnikModel adoptionModel);
+
+    @DELETE("DnevnikUdomljavanja/delete/{id}")
+    Call<Void> deleteAdoption(@Header("RequestAnimalId") int requestAnimalId, @Path("id") int id);
 
     @GET("SearchAnimals")
     Call<List<AnimalModel>> searchAnimals(@Query("keyword") String keyword);

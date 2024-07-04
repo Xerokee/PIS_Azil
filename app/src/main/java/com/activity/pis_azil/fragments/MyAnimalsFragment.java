@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.activity.pis_azil.R;
+import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.adapters.MyAdoptionAdapter;
 import com.activity.pis_azil.models.MyAdoptionModel;
@@ -66,26 +67,33 @@ public class MyAnimalsFragment extends Fragment implements DataRefreshListener {
     private void fetchAdoptedAnimals() {
         Log.d(TAG, "Fetching adopted animals");
 
-        apiService.getDnevnikUdomljavanja().enqueue(new Callback<List<AnimalModel>>() {
+        apiService.getDnevnikUdomljavanja().enqueue(new Callback<List<UpdateDnevnikModel>>() {
             @Override
-            public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
+            public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d(TAG, "Successfully fetched adopted animals, size: " + response.body().size());
                     cartModelList.clear();
-                    for (AnimalModel animal : response.body()) {
+                    for (UpdateDnevnikModel animal : response.body()) {
                         if(animal.isUdomljen() == true) {
                             continue;
                         }
+
+                        if (!animal.isStanje_zivotinje()) {
+                            Toast.makeText(getActivity(), "Životinja " + (animal.getIme_ljubimca() != null ? animal.getIme_ljubimca() : "N/A") + " nema postavljeno stanje", Toast.LENGTH_SHORT).show();
+                        }
+
+
+
                         Log.d(TAG, "Animal fetched: " + animal.toString());
                         MyAdoptionModel adoption = new MyAdoptionModel();
-                        adoption.setIdLjubimca(animal.getIdLjubimca());
-                        adoption.setImeLjubimca(animal.getImeLjubimca() != null ? animal.getImeLjubimca() : "N/A");
-                        adoption.setTipLjubimca(animal.getTipLjubimca() != null ? animal.getTipLjubimca() : "N/A");
+                        adoption.setIdLjubimca(animal.getId_ljubimca());
+                        adoption.setImeLjubimca(animal.getIme_ljubimca() != null ? animal.getIme_ljubimca() : "N/A");
+                        adoption.setTipLjubimca(animal.getTip_ljubimca() != null ? animal.getTip_ljubimca() : "N/A");
                         adoption.setDatum(animal.getDatum());
                         adoption.setVrijeme(animal.getVrijeme());
                         adoption.setImgUrl(animal.getImgUrl());
-                        adoption.setStanjeZivotinje(animal.StanjeZivotinje());
-                        adoption.setIdKorisnika(animal.getIdUdomitelja()); // Dodavanje korisnika iz API odgovora
+                        adoption.setStanjeZivotinje(animal.isStanje_zivotinje());
+                        adoption.setIdKorisnika(animal.getId_korisnika()); // Dodavanje korisnika iz API odgovora
                         cartModelList.add(adoption);
                     }
 
@@ -108,7 +116,7 @@ public class MyAnimalsFragment extends Fragment implements DataRefreshListener {
             }
 
             @Override
-            public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
+            public void onFailure(Call<List<UpdateDnevnikModel>> call, Throwable t) {
                 Log.e(TAG, "Error fetching adopted animals: ", t);
                 Toast.makeText(getActivity(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }

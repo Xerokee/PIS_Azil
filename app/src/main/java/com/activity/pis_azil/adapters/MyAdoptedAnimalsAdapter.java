@@ -13,17 +13,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.activity.pis_azil.SendMail;
+import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserByEmailResponseModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.R;
-import com.activity.pis_azil.models.AnimalModel;
-import com.activity.pis_azil.models.UserModel;
 import com.bumptech.glide.Glide;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,10 +29,10 @@ import retrofit2.Response;
 
 public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnimalsAdapter.ViewHolder> {
     private Context context;
-    private List<AnimalModel> adoptedAnimalsList;
+    private List<UpdateDnevnikModel> adoptedAnimalsList;
     ApiService apiService;
 
-    public MyAdoptedAnimalsAdapter(Context context, List<AnimalModel> adoptedAnimalsList) {
+    public MyAdoptedAnimalsAdapter(Context context, List<UpdateDnevnikModel> adoptedAnimalsList) {
         this.context = context;
         this.adoptedAnimalsList = adoptedAnimalsList;
         this.apiService = ApiClient.getClient().create(ApiService.class);
@@ -49,22 +47,22 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        AnimalModel animal = adoptedAnimalsList.get(position);
-        holder.animalName.setText(animal.getImeLjubimca());
-        holder.animalType.setText(animal.getTipLjubimca());
+        UpdateDnevnikModel animal = adoptedAnimalsList.get(position);
+        holder.animalName.setText(animal.getIme_ljubimca());
+        holder.animalType.setText(animal.getTip_ljubimca());
         Glide.with(context).load(animal.getImgUrl()).into(holder.animalImage);
 
         if (animal.isUdomljen()) {
             holder.tvAdoptedStatus.setText("Udomljeno");
-            getAdopterNameById(animal.getIdUdomitelja(), holder.adopterName);
+            getAdopterNameById(animal.getId_korisnika(), holder.adopterName);
         } else {
             holder.tvAdoptedStatus.setText("Dostupno za udomljavanje");
             holder.adopterName.setText("");
         }
 
         holder.returnButton.setOnClickListener(v -> {
-            int animalId = animal.getIdLjubimca();
-            checkIfUserIsAdmin(animalId, position, () -> returnAnimal(animalId, position));
+            int animalId = animal.getId_ljubimca();
+            checkIfUserIsAdmin(animalId, position, () -> returnAnimal(animal, position));
         });
     }
 
@@ -138,18 +136,26 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
         });
     }
 
-    private void returnAnimal(int animalId, int position) {
-        Map<String, Object> updateData = new HashMap<>();
-        updateData.put("udomljen", false);
-        updateData.put("id_udomitelja", 0);
+    private void returnAnimal(UpdateDnevnikModel animal, int position) {
+        animal.setId_korisnika(0);
+        animal.setUdomljen(false);
 
-        apiService.updateAnimal(String.valueOf(animalId), updateData).enqueue(new Callback<Void>() {
+        apiService.updateAdoption(1, animal.getId_ljubimca(), animal).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     adoptedAnimalsList.remove(position);
                     notifyItemRemoved(position);
                     Toast.makeText(context, "Životinja je vraćena u azil", Toast.LENGTH_SHORT).show();
+                    String subject = "Životinja je vraćena";
+                    String body = "Poštovani, životinja: " + animal.getIme_ljubimca() + " je vracena";
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            SendMail.sendEmail("matija.margeta@vuv.hr", subject, body);
+                        }
+                    }).start();
                 } else {
                     Toast.makeText(context, "Greška pri vraćanju: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
@@ -162,7 +168,7 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
         });
     }
 
-    public void updateList(List<AnimalModel> newList) {
+    public void updateList(List<UpdateDnevnikModel> newList) {
         adoptedAnimalsList.clear();
         adoptedAnimalsList.addAll(newList);
         notifyDataSetChanged();

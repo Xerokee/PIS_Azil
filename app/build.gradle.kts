@@ -43,6 +43,10 @@ android {
         exclude("META-INF/NOTICE")
         exclude("META-INF/NOTICE.txt")
         exclude("META-INF/notice.txt")
+        exclude("META-INF/LICENSE.md")
+        exclude("META-INF/LICENSE")
+        exclude ("META-INF/NOTICE")
+        exclude ("META-INF/NOTICE.md")
     }
 }
 
@@ -69,6 +73,8 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("com.sendgrid:sendgrid-java:4.7.1")
+    implementation("com.sun.mail:android-mail:1.6.7")
+    implementation("com.sun.mail:android-activation:1.6.7")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
