@@ -82,8 +82,6 @@ public class MyAnimalsFragment extends Fragment implements DataRefreshListener {
                             Toast.makeText(getActivity(), "Životinja " + (animal.getIme_ljubimca() != null ? animal.getIme_ljubimca() : "N/A") + " nema postavljeno stanje", Toast.LENGTH_SHORT).show();
                         }
 
-
-
                         Log.d(TAG, "Animal fetched: " + animal.toString());
                         MyAdoptionModel adoption = new MyAdoptionModel();
                         adoption.setIdLjubimca(animal.getId_ljubimca());
