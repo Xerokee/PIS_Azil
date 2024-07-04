@@ -1,45 +1,65 @@
 package com.activity.pis_azil;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Properties;
-import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
-import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import com.google.api.client.auth.oauth2.BearerToken;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.json.JsonFactory;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.services.gmail.Gmail;
+import com.google.api.services.gmail.model.Message;
+import com.google.api.client.util.Base64;
+
 public class SendMail {
-    public static void sendEmail(String to, String subject, String body) {
-        final String username = "no-reply@instrukcije365.com";
-        final String password = "nemojOdgovarati123.jesicuo";
+
+    private static final String APPLICATION_NAME = "Your Application Name";
+    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
+    private static final String ACCESS_TOKEN = "ya29.a0AXooCgskGUDD3nsKLupt-nqPDHK69ElvK1exZXj6dI5eVpXFENPrTT4GU6J6iXAvtyWM9xFyzXYZqTkvDd47AQNZ9q1nLBi0k0D9sP_h_OCYvPtYEqf6ugdAjBR1ak1si0WFTkyhldbMYUf4Zio1PcbjFiibEoMznf56aCgYKASQSARISFQHGX2MiIC3pLLQJEOiPSAq3tERdog0171";
+
+    public static void sendEmail(String to, String subject, String body) throws GeneralSecurityException, IOException, MessagingException {
+        Gmail service = getGmailService(ACCESS_TOKEN);
+        MimeMessage email = createEmail(to, "me", subject, body);
+        sendMessage(service, "me", email);
+    }
+
+    private static Gmail getGmailService(String accessToken) throws GeneralSecurityException, IOException {
+        HttpTransport httpTransport = AndroidHttp.newCompatibleTransport();
+        Credential credential = new Credential(BearerToken.authorizationHeaderAccessMethod()).setAccessToken(accessToken);
+
+        return new Gmail.Builder(httpTransport, JSON_FACTORY, credential)
+                .setApplicationName(APPLICATION_NAME)
+                .build();
+    }
+
+    private static MimeMessage createEmail(String to, String from, String subject, String bodyText) throws MessagingException {
         Properties props = new Properties();
+        Session session = Session.getDefaultInstance(props, null);
 
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.ssl.enable", "true");
-        props.put("mail.smtp.host", "mail.instrukcije365.com");
-        props.put("mail.smtp.port", "465");
+        MimeMessage email = new MimeMessage(session);
+        email.setFrom(new InternetAddress(from));
+        email.addRecipient(javax.mail.Message.RecipientType.TO, new InternetAddress(to));
+        email.setSubject(subject);
+        email.setText(bodyText);
+        return email;
+    }
 
+    private static void sendMessage(Gmail service, String userId, MimeMessage email) throws MessagingException, IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        email.writeTo(buffer);
+        byte[] bytes = buffer.toByteArray();
+        String encodedEmail = Base64.encodeBase64URLSafeString(bytes);
+        Message message = new Message();
+        message.setRaw(encodedEmail);
 
-        Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(username, password);
-            }
-        });
-
-        try {
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(username));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-            message.setSubject(subject);
-            message.setText(body);
-
-            Transport.send(message);
-
-            System.out.println("Email sent successfully");
-
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        }
+        service.users().messages().send(userId, message).execute();
     }
 }

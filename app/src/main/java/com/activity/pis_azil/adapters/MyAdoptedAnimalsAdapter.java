@@ -21,7 +21,11 @@ import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.R;
 import com.bumptech.glide.Glide;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.List;
+
+import javax.mail.MessagingException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -153,7 +157,15 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            SendMail.sendEmail("matija.margeta@vuv.hr", subject, body);
+                            try {
+                                SendMail.sendEmail("matija.margeta@vuv.hr", subject, body);
+                            } catch (GeneralSecurityException e) {
+                                throw new RuntimeException(e);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            } catch (MessagingException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
                     }).start();
                 } else {

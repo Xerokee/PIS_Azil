@@ -15,12 +15,15 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.pis_azil.EmailService;
 import com.activity.pis_azil.R;
+import com.activity.pis_azil.SendMail;
 import com.activity.pis_azil.models.AnimalModel;
+import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserByEmailResponseModel;
 import com.activity.pis_azil.network.DataRefreshListener;
 import com.activity.pis_azil.models.UserModel;
@@ -33,15 +36,19 @@ import com.bumptech.glide.Glide;
 import androidx.core.app.NotificationCompat;
 
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.mail.MessagingException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -191,7 +198,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
     }
 
     private void deleteItem(int position) {
-        apiService.deleteAnimal(String.valueOf(cartModelList.get(position).getIdLjubimca())).enqueue(new Callback<Void>() {
+        apiService.deleteAdoption(1, cartModelList.get(position).getIdLjubimca()).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -204,6 +211,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                     Toast.makeText(context, "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
+
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 Log.e(TAG, "Error deleting animal: ", t);
@@ -219,7 +227,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         EditText edtName = view.findViewById(R.id.edt_updated_name);
         EditText edtType = view.findViewById(R.id.edt_updated_type);
         EditText edtDate = view.findViewById(R.id.edt_updated_date);
-        EditText edtTime = view.findViewById(R.id.edt_updated_date);
+        EditText edtTime = view.findViewById(R.id.edt_updated_time);
         EditText edtImgUrl = view.findViewById(R.id.edt_updated_img_url);
         EditText edtState = view.findViewById(R.id.edt_updated_state);
 
@@ -257,15 +265,20 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
         Log.d(TAG, "Updating animal at position: " + position + " with data: " + updatedName + ", " + updatedType + ", " + updatedDate + ", " + updatedImgUrl + ", " + stanjeZivotinje);
 
-        Map<String, Object> updateData = new HashMap<>();
-        updateData.put("ime_ljubimca", updatedName);
-        updateData.put("tip_ljubimca", updatedType);
-        updateData.put("datum", updatedDate);
-        updateData.put("vrijeme", updatedTime);
-        updateData.put("imgUrl", updatedImgUrl);
-        updateData.put("stanje_zivotinje", stanjeZivotinje);
+        UpdateDnevnikModel model = new UpdateDnevnikModel();
 
-        apiService.updateAnimal(String.valueOf(cartModel.getIdLjubimca()), updateData).enqueue(new Callback<Void>() {
+        model.setId_korisnika(cartModel.getIdKorisnika());
+        model.setUdomljen(cartModel.isUdomljen());
+        model.setId_ljubimca(cartModel.getIdLjubimca());
+        model.setDatum(updatedDate);
+        model.setImgUrl(updatedImgUrl);
+        model.setVrijeme(updatedTime);
+        model.setStanje_zivotinje(stanjeZivotinje);
+        model.setTip_ljubimca(updatedType);
+        model.setIme_ljubimca(updatedName);
+
+
+        apiService.updateAdoption(1, cartModel.getIdLjubimca(), model).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -284,6 +297,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                     Toast.makeText(context, "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
+
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 Log.e(TAG, "Error updating animal: ", t);
@@ -337,11 +351,12 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                             .setItems(adoptersArray, (dialog, which) -> {
                                 String selectedUserId = adopterIds.get(which);
                                 Log.d(TAG, "Odabrani udomitelj ID: " + selectedUserId + ", Name: " + adopterNames.get(which));
-                                adoptAnimal(selectedAnimal.getIdLjubimca(), selectedUserId, adopterNames.get(which));
+                                adoptAnimal(selectedAnimal, selectedUserId, adopterNames.get(which));
                             })
                             .show();
                 }
             }
+
             @Override
             public void onFailure(Call<List<UserModel>> call, Throwable t) {
                 Log.e(TAG, "Ne može se dohvatiti lista udomitelja: ", t);
@@ -350,29 +365,57 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         });
     }
 
-    private void adoptAnimal(int idLjubimca, String adopterId, String adopterName) {
-        Map<String, Object> adoptionUpdates = new HashMap<>();
-        adoptionUpdates.put("udomljen", true);
-        adoptionUpdates.put("id_udomitelja", adopterId);
+    private void adoptAnimal(MyAdoptionModel selectedAnimal, String adopterId, String adopterName) {
 
-        apiService.updateAnimal(String.valueOf(idLjubimca), adoptionUpdates).enqueue(new Callback<Void>() {
+        UpdateDnevnikModel model = new UpdateDnevnikModel();
+
+        model.setId_korisnika(Integer.parseInt(adopterId));
+        model.setUdomljen(true);
+        model.setId_ljubimca(selectedAnimal.getIdLjubimca());
+
+        Date now = new Date();
+        // Format za datum
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String currentDate = dateFormat.format(now);
+        model.setDatum(currentDate);
+
+        // Format za vrijeme
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+        String currentTime = timeFormat.format(now);
+        model.setVrijeme(currentTime);
+
+        model.setIme_ljubimca(selectedAnimal.getImeLjubimca());
+        model.setStanje_zivotinje(selectedAnimal.isStanjeZivotinje());
+        model.setTip_ljubimca(selectedAnimal.getTipLjubimca());
+        model.setImgUrl(selectedAnimal.getImgUrl());
+
+        apiService.updateAdoption(1, selectedAnimal.getIdLjubimca(), model).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    Log.d(TAG, "Animal adopted successfully: " + idLjubimca + ", adopterId: " + adopterId + ", adopterName: " + adopterName);
+                    Log.d(TAG, "Animal adopted successfully: " + selectedAnimal.getIdLjubimca() + ", adopterId: " + adopterId + ", adopterName: " + adopterName);
                     Toast.makeText(context, "Životinja je udomljena za korisnika " + adopterName, Toast.LENGTH_SHORT).show();
-
+                    notifyDataSetChanged();
                     getEmailById(Integer.parseInt(adopterId), email -> {
                         if (email != null) {
-                            getAnimalNameById(idLjubimca, animalName -> {
-                                if (animalName != null) {
+
+                            String subject = "Životinja je posvojena";
+                            String body = adopterName + " je posvojio " + selectedAnimal.getImeLjubimca();
+
+                            new Thread(new Runnable() {
+                                @Override
+                                public void run() {
                                     try {
-                                        EmailService.sendAdoptionEmail(email, adopterName, animalName);
+                                        SendMail.sendEmail("matija.margeta@vuv.hr", subject, body);
+                                    } catch (GeneralSecurityException e) {
+                                        throw new RuntimeException(e);
                                     } catch (IOException e) {
-                                        e.printStackTrace();
+                                        throw new RuntimeException(e);
+                                    } catch (MessagingException e) {
+                                        throw new RuntimeException(e);
                                     }
                                 }
-                            });
+                            }).start();
                         }
                     });
                 } else {
@@ -380,6 +423,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                     Toast.makeText(context, "Udomljavanje nije uspjelo: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
+
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 Log.e(TAG, "Error adopting animal: ", t);

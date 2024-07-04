@@ -1,5 +1,3 @@
-import com.android.build.api.dsl.Packaging
-
 plugins {
     id("com.android.application")
 }
@@ -36,17 +34,18 @@ android {
     }
 
     packagingOptions {
-        exclude("META-INF/DEPENDENCIES")
-        exclude("META-INF/LICENSE")
-        exclude("META-INF/LICENSE.txt")
-        exclude("META-INF/license.txt")
-        exclude("META-INF/NOTICE")
-        exclude("META-INF/NOTICE.txt")
-        exclude("META-INF/notice.txt")
-        exclude("META-INF/LICENSE.md")
-        exclude("META-INF/LICENSE")
-        exclude ("META-INF/NOTICE")
-        exclude ("META-INF/NOTICE.md")
+        resources {
+            excludes += "META-INF/DEPENDENCIES"
+            excludes += "META-INF/LICENSE"
+            excludes += "META-INF/LICENSE.txt"
+            excludes += "META-INF/license.txt"
+            excludes += "META-INF/NOTICE"
+            excludes += "META-INF/NOTICE.txt"
+            excludes += "META-INF/notice.txt"
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/NOTICE.md"
+            excludes += "META-INF/*.kotlin_module"
+        }
     }
 }
 
@@ -73,8 +72,14 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("com.sendgrid:sendgrid-java:4.7.1")
+
     implementation("com.sun.mail:android-mail:1.6.7")
     implementation("com.sun.mail:android-activation:1.6.7")
+    implementation("com.google.api-client:google-api-client-android:1.31.1")
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.1.0")
+    implementation("com.google.api-client:google-api-client:1.31.1")
+    implementation("com.google.oauth-client:google-oauth-client-jetty:1.31.1")
+    implementation("com.google.apis:google-api-services-gmail:v1-rev110-1.25.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
