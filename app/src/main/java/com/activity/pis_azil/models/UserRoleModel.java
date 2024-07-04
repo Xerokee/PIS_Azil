@@ -1,27 +1,27 @@
 package com.activity.pis_azil.models;
 
 public class UserRoleModel {
-    private int id_uloge;
-    private String naziv_uloge;
+    private int idUloge;
+    private String nazivUloge;
 
     // Getters and setters
     public int getIdUloge() {
-        return id_uloge;
+        return idUloge;
     }
 
-    public void setIdUloge(int id_uloge) {
-        this.id_uloge = id_uloge;
+    public void setIdUloge(int idUloge) {
+        this.idUloge = idUloge;
     }
 
     public String getNazivUloge() {
-        return naziv_uloge;
+        return nazivUloge;
     }
 
     public void setNazivUloge(String nazivUloge) {
-        this.naziv_uloge = naziv_uloge;
+        this.nazivUloge = nazivUloge;
     }
 
     public boolean isAdmin() {
-        return "admin".equalsIgnoreCase(naziv_uloge);
+        return "admin".equalsIgnoreCase(nazivUloge);
     }
 }
