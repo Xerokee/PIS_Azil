@@ -406,7 +406,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                                 @Override
                                 public void run() {
                                     try {
-                                        SendMail.sendEmail("matija.margeta@vuv.hr", subject, body);
+                                        SendMail.sendEmail("margeta.matija@gmail.com", subject, body);
                                     } catch (GeneralSecurityException e) {
                                         throw new RuntimeException(e);
                                     } catch (IOException e) {

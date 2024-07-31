@@ -16,6 +16,7 @@ import com.activity.pis_azil.network.ApiService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -46,6 +47,7 @@ public class ViewAllActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
                     if (response.isSuccessful() && response.body() != null) {
+                        List<AnimalModel> availableAnimals = filterAvailableAnimals(response.body());
                         animalModelList.addAll(response.body());
                         animalsAdapter.notifyDataSetChanged();
                     } else {
@@ -80,5 +82,11 @@ public class ViewAllActivity extends AppCompatActivity {
                 Toast.makeText(ViewAllActivity.this, "Greška u učitavanju životinja", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private List<AnimalModel> filterAvailableAnimals(List<AnimalModel> animals) {
+        return animals.stream()
+                .filter(animal -> !animal.isUdomljen())
+                .collect(Collectors.toList());
     }
 }
