@@ -399,8 +399,8 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                     getEmailById(Integer.parseInt(adopterId), email -> {
                         if (email != null) {
 
-                            String subject = "Životinja je posvojena";
-                            String body = adopterName + " je posvojio " + selectedAnimal.getImeLjubimca();
+                            String subject = "Životinja je posvojena!";
+                            String body = "Poštovani, " + adopterName + " je posvojio/posvojila životinju " + selectedAnimal.getImeLjubimca() + "!";
 
                             new Thread(new Runnable() {
                                 @Override

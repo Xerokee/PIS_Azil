@@ -151,8 +151,8 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
                     adoptedAnimalsList.remove(position);
                     notifyItemRemoved(position);
                     Toast.makeText(context, "Životinja je vraćena u azil", Toast.LENGTH_SHORT).show();
-                    String subject = "Životinja je vraćena";
-                    String body = "Poštovani, životinja: " + animal.getIme_ljubimca() + " je vracena";
+                    String subject = "Životinja je vraćena!";
+                    String body = "Poštovani, životinja " + animal.getIme_ljubimca() + " je vraćena!";
 
                     new Thread(new Runnable() {
                         @Override
