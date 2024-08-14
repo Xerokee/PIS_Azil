@@ -78,5 +78,6 @@ public class UserModel implements Serializable {
 
     public void setUserRole(UserRoleModel userRole) {
         this.userRole = userRole;
+        this.admin = userRole.isAdmin();
     }
 }

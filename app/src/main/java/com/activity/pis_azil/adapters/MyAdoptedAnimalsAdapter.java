@@ -2,6 +2,7 @@ package com.activity.pis_azil.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +17,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.activity.pis_azil.SendMail;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserByEmailResponseModel;
+import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.R;
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -64,10 +67,13 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
             holder.adopterName.setText("");
         }
 
-        holder.returnButton.setOnClickListener(v -> {
-            int animalId = animal.getId_ljubimca();
-            checkIfUserIsAdmin(animalId, position, () -> returnAnimal(animal, position));
-        });
+        // Provjeri da li je korisnik admin i sakrij gumb ako nije
+        if (!checkIfUserIsAdmin()) {
+            holder.returnButton.setVisibility(View.GONE);
+        } else {
+            holder.returnButton.setVisibility(View.VISIBLE);
+            holder.returnButton.setOnClickListener(v -> returnAnimal(animal, position));
+        }
     }
 
     @Override
@@ -91,23 +97,17 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
         }
     }
 
-    private void checkIfUserIsAdmin(int animalId, int position, Runnable onAdminAction) {
-        apiService.getUserById(1).enqueue(new Callback<UserByEmailResponseModel>() { // Pretpostavimo da je admin provjeren pomoću ID 1
-            @Override
-            public void onResponse(Call<UserByEmailResponseModel> call, Response<UserByEmailResponseModel> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getResult().isAdmin()) {
-                    onAdminAction.run();
-                } else {
-                    showAdminOnlyDialog();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserByEmailResponseModel> call, Throwable t) {
-                Toast.makeText(context, "Greška pri provjeri statusa admina", Toast.LENGTH_SHORT).show();
-            }
-        });
+    private boolean checkIfUserIsAdmin() {
+        SharedPreferences prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        String userJson = prefs.getString("current_user", null);
+        if (userJson != null) {
+            Gson gson = new Gson();
+            UserModel currentUser = gson.fromJson(userJson, UserModel.class);
+            return currentUser != null && currentUser.isAdmin();
+        }
+        return false;
     }
+
 
     private void showAdminOnlyDialog() {
         new AlertDialog.Builder(context)

@@ -31,6 +31,7 @@ import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.ui.profile.ProfileFragment;
 import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
+import com.google.gson.Gson;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import retrofit2.Call;
@@ -123,7 +124,15 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     UserModel user = response.body().getResult();
                     if (user != null) {
+                        // Postavi admin status na temelju uloge
+                        if (user.getUserRole() != null) {
+                            user.setAdmin(user.getUserRole().isAdmin());
+                        }
+
                         currentUser = user;
+                        // Spremi korisnika u SharedPreferences
+                        saveUserToSharedPreferences(user);
+
                         // Update navigation header
                         View headerView = ((NavigationView) findViewById(R.id.nav_view)).getHeaderView(0);
                         updateNavigationHeader(user,
@@ -139,6 +148,15 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Failed to fetch user data: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void saveUserToSharedPreferences(UserModel user) {
+        SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        Gson gson = new Gson();
+        String userJson = gson.toJson(user);
+        editor.putString("current_user", userJson);
+        editor.apply();
     }
 
     @Override

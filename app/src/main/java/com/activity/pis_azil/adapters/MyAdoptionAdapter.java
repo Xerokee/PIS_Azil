@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
@@ -32,6 +33,7 @@ import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.models.MyAdoptionModel;
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 
 import androidx.core.app.NotificationCompat;
 
@@ -113,35 +115,58 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
         Log.d(TAG, "Binding view holder for position: " + position + ", model: " + cartModel.toString());
 
-        holder.deleteItem.setOnClickListener(v -> checkIfUserIsAdminThenRun(
-                () -> showDeleteConfirmationDialog(position),
-                () -> Toast.makeText(context, "Samo admini mogu brisati životinje.", Toast.LENGTH_SHORT).show()
-        ));
+        // Provjera je li trenutni korisnik admin
+        boolean isAdmin = checkIfUserIsAdmin();
 
-        holder.updateItem.setOnClickListener(v -> checkIfUserIsAdminThenRun(
-                () -> showUpdateDialog(position),
-                () -> Toast.makeText(context, "Samo admini mogu ažurirati životinje.", Toast.LENGTH_SHORT).show()
-        ));
-
-        if (cartModel.isUdomljen()) {
-            holder.adoptButton.setEnabled(false);
-            holder.adoptButton.setText("Udomljeno");
+        if (!isAdmin) {
+            // Sakrijte gumbe za normalne korisnike
+            holder.deleteItem.setVisibility(View.GONE);
+            holder.updateItem.setVisibility(View.GONE);
+            holder.adoptButton.setVisibility(View.GONE);
         } else {
-            holder.adoptButton.setEnabled(true);
-            holder.adoptButton.setText("Udomi sad");
-            holder.adoptButton.setOnClickListener(view -> {
-                int adapterPosition = holder.getAdapterPosition();
-                if (adapterPosition != RecyclerView.NO_POSITION) {
-                    MyAdoptionModel selectedAnimal = cartModelList.get(adapterPosition);
-                    if (!selectedAnimal.isUdomljen()) {
-                        checkIfUserIsAdmin(selectedAnimal, adapterPosition);
-                    } else {
-                        Toast.makeText(context, "Životinja je već udomljena.", Toast.LENGTH_SHORT).show();
+            // Postavite gumbe za administratore
+            holder.deleteItem.setOnClickListener(v -> showDeleteConfirmationDialog(position));
+
+            holder.updateItem.setOnClickListener(v -> showUpdateDialog(position));
+
+            if (cartModel.isUdomljen()) {
+                holder.adoptButton.setEnabled(false);
+                holder.adoptButton.setText("Udomljeno");
+            } else {
+                holder.adoptButton.setEnabled(true);
+                holder.adoptButton.setText("Udomi sad");
+                holder.adoptButton.setOnClickListener(view -> {
+                    int adapterPosition = holder.getAdapterPosition();
+                    if (adapterPosition != RecyclerView.NO_POSITION) {
+                        MyAdoptionModel selectedAnimal = cartModelList.get(adapterPosition);
+                        if (!selectedAnimal.isUdomljen()) {
+                            if (isAdmin) {
+                                showAdoptionDialog(selectedAnimal, adapterPosition);
+                            } else {
+                                adoptAnimal(selectedAnimal, String.valueOf(cartModel.getIdKorisnika()), "Admin");
+                            }
+                        } else {
+                            Toast.makeText(context, "Životinja je već udomljena.", Toast.LENGTH_SHORT).show();
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     }
+
+    private boolean checkIfUserIsAdmin() {
+        // Ovdje pretpostavljamo da imate spremljenog korisnika u SharedPreferences
+        SharedPreferences prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        String userJson = prefs.getString("current_user", null);
+        if (userJson != null) {
+            Gson gson = new Gson();
+            UserModel currentUser = gson.fromJson(userJson, UserModel.class);
+            Log.d(TAG, "Provjera je li korisnik admin: " + currentUser.isAdmin());
+            return currentUser != null && currentUser.isAdmin();
+        }
+        return false;
+    }
+
 
     private void sendNotification(Context context, String animalName) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

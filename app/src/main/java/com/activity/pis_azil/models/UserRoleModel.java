@@ -1,8 +1,8 @@
 package com.activity.pis_azil.models;
 
 public class UserRoleModel {
-    private int idUloge;
-    private String nazivUloge;
+    public int idUloge;
+    public String nazivUloge;
 
     // Getters and setters
     public int getIdUloge() {
