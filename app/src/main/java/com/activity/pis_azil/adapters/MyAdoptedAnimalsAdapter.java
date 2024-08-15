@@ -108,15 +108,6 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
         return false;
     }
 
-
-    private void showAdminOnlyDialog() {
-        new AlertDialog.Builder(context)
-                .setTitle("Administratorska Akcija")
-                .setMessage("Samo admini mogu vraćati životinje.")
-                .setPositiveButton("OK", (dialogInterface, i) -> dialogInterface.dismiss())
-                .show();
-    }
-
     private void getAdopterNameById(int adopterId, final TextView adopterNameTextView) {
         if (adopterId == 0) {
             adopterNameTextView.setText("Nepoznato");
@@ -178,11 +169,5 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
                 Toast.makeText(context, "Greška pri vraćanju: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    public void updateList(List<UpdateDnevnikModel> newList) {
-        adoptedAnimalsList.clear();
-        adoptedAnimalsList.addAll(newList);
-        notifyDataSetChanged();
     }
 }

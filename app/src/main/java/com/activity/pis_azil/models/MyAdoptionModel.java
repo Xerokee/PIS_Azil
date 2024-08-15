@@ -11,6 +11,7 @@ public class MyAdoptionModel {
     private boolean udomljen;
     private boolean stanje_zivotinje;
     private int id_korisnika;
+    private boolean status_udomljavanja;
 
     // Getteri i setteri
 
@@ -94,6 +95,14 @@ public class MyAdoptionModel {
         this.id_korisnika = id_korisnika;
     }
 
+    public boolean isStatusUdomljavanja() {
+        return status_udomljavanja;
+    }
+
+    public void setStatusUdomljavanja(boolean status_udomljavanja) {
+        this.status_udomljavanja = status_udomljavanja;
+    }
+
     @Override
     public String toString() {
         return "MyAdoptionModel{" +
@@ -108,6 +117,7 @@ public class MyAdoptionModel {
                 ", udomljen=" + udomljen +
                 ", stanje_zivotinje=" + stanje_zivotinje +
                 ", id_korisnika=" + id_korisnika +
+                ", status_udomljavanja=" + status_udomljavanja +
                 '}';
     }
 }

@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
@@ -69,6 +70,8 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         this.cartModelList = cartModelList;
         this.apiService = ApiClient.getClient().create(ApiService.class);
         this.dataRefreshListener = listener;
+
+        fetchAdoptionData();
     }
 
     @NonNull
@@ -82,10 +85,21 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         MyAdoptionModel cartModel = cartModelList.get(position);
 
+        holder.rejectButton.setOnClickListener(v -> {
+            rejectAdoption(position);
+        });
+
         if (cartModel.getImgUrl() != null && !cartModel.getImgUrl().isEmpty()) {
             Glide.with(context).load(cartModel.getImgUrl()).into(holder.imgUrl);
         } else {
             holder.imgUrl.setImageResource(R.drawable.profile);
+        }
+
+        // Postavljanje boje pozadine ovisno o statusu udomljavanja
+        if (!cartModel.isStatusUdomljavanja()) {
+            holder.itemView.setBackgroundColor(Color.GRAY); // Siva boja za odbijeno udomljavanje
+        } else {
+            holder.itemView.setBackgroundColor(Color.WHITE); // Bijela boja za prihvaćeno udomljavanje
         }
 
         holder.name.setText(cartModel.getImeLjubimca());
@@ -123,6 +137,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             holder.deleteItem.setVisibility(View.GONE);
             holder.updateItem.setVisibility(View.GONE);
             holder.adoptButton.setVisibility(View.GONE);
+            holder.rejectButton.setVisibility(View.GONE);
         } else {
             // Postavite gumbe za administratore
             holder.deleteItem.setOnClickListener(v -> showDeleteConfirmationDialog(position));
@@ -167,6 +182,134 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         return false;
     }
 
+    private void fetchAdoptionData() {
+        SharedPreferences prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        String userJson = prefs.getString("current_user", null);
+        final UserModel currentUser;
+
+        if (userJson != null) {
+            Gson gson = new Gson();
+            currentUser = gson.fromJson(userJson, UserModel.class);
+        } else {
+            currentUser = null; // Dodavanje kako bi izbjegli NullPointerException
+        }
+
+        if (currentUser != null && currentUser.isAdmin()) {
+            // Ako je admin, prikazujemo sve stavke
+            apiService.getDnevnikUdomljavanja().enqueue(new Callback<List<UpdateDnevnikModel>>() {
+                @Override
+                public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
+                    if (response.isSuccessful()) {
+                        // Pretvorite Listu UpdateDnevnikModel u Listu MyAdoptionModel, ako je potrebno
+                        cartModelList = convertToMyAdoptionModel(response.body());
+                        notifyDataSetChanged();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<UpdateDnevnikModel>> call, Throwable t) {
+                    Toast.makeText(context, "Greška pri dohvaćanju podataka", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            // Ako nije admin, filtriramo zapise za trenutnog korisnika
+            apiService.getDnevnikUdomljavanja().enqueue(new Callback<List<UpdateDnevnikModel>>() {
+                @Override
+                public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
+                    if (response.isSuccessful()) {
+                        List<UpdateDnevnikModel> allAdoptions = response.body();
+                        List<MyAdoptionModel> userAdoptions = new ArrayList<>();
+
+                        for (UpdateDnevnikModel adoption : allAdoptions) {
+                            if (adoption.getId_korisnika() == currentUser.getIdKorisnika()) {
+                                userAdoptions.add(convertToMyAdoptionModel(adoption));
+                            }
+                        }
+
+                        cartModelList = userAdoptions;
+                        notifyDataSetChanged();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<UpdateDnevnikModel>> call, Throwable t) {
+                    Toast.makeText(context, "Greška pri dohvaćanju podataka", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    private List<MyAdoptionModel> convertToMyAdoptionModel(List<UpdateDnevnikModel> dnevnikModels) {
+        List<MyAdoptionModel> myAdoptionModels = new ArrayList<>();
+        for (UpdateDnevnikModel dnevnikModel : dnevnikModels) {
+            MyAdoptionModel myAdoptionModel = new MyAdoptionModel();
+            myAdoptionModel.setIdLjubimca(dnevnikModel.getId_ljubimca());
+            myAdoptionModel.setImeLjubimca(dnevnikModel.getIme_ljubimca());
+            myAdoptionModel.setTipLjubimca(dnevnikModel.getTip_ljubimca());
+            myAdoptionModel.setOpisLjubimca("");  // Možete prilagoditi prema potrebi
+            myAdoptionModel.setDatum(dnevnikModel.getDatum());
+            myAdoptionModel.setVrijeme(dnevnikModel.getVrijeme());
+            myAdoptionModel.setImgUrl(dnevnikModel.getImgUrl());
+            myAdoptionModel.setUdomljen(dnevnikModel.isUdomljen());
+            myAdoptionModel.setStanjeZivotinje(dnevnikModel.isStanje_zivotinje());
+            myAdoptionModel.setIdKorisnika(dnevnikModel.getId_korisnika());
+            myAdoptionModel.setStatusUdomljavanja(dnevnikModel.isStatus_udomljavanja());
+            myAdoptionModels.add(myAdoptionModel);
+        }
+        return myAdoptionModels;
+    }
+
+    private MyAdoptionModel convertToMyAdoptionModel(UpdateDnevnikModel dnevnikModel) {
+        MyAdoptionModel myAdoptionModel = new MyAdoptionModel();
+        myAdoptionModel.setIdLjubimca(dnevnikModel.getId_ljubimca());
+        myAdoptionModel.setImeLjubimca(dnevnikModel.getIme_ljubimca());
+        myAdoptionModel.setTipLjubimca(dnevnikModel.getTip_ljubimca());
+        myAdoptionModel.setOpisLjubimca("");  // Možete prilagoditi prema potrebi
+        myAdoptionModel.setDatum(dnevnikModel.getDatum());
+        myAdoptionModel.setVrijeme(dnevnikModel.getVrijeme());
+        myAdoptionModel.setImgUrl(dnevnikModel.getImgUrl());
+        myAdoptionModel.setUdomljen(dnevnikModel.isUdomljen());
+        myAdoptionModel.setStanjeZivotinje(dnevnikModel.isStanje_zivotinje());
+        myAdoptionModel.setIdKorisnika(dnevnikModel.getId_korisnika());
+        myAdoptionModel.setStatusUdomljavanja(dnevnikModel.isStatus_udomljavanja());
+        return myAdoptionModel;
+    }
+
+    private void rejectAdoption(int position) {
+        MyAdoptionModel cartModel = cartModelList.get(position);
+        cartModel.setStatusUdomljavanja(false); // Postavi status udomljavanja na false
+
+        UpdateDnevnikModel model = new UpdateDnevnikModel();
+        model.setId_korisnika(cartModel.getIdKorisnika());
+        model.setUdomljen(cartModel.isUdomljen());
+        model.setId_ljubimca(cartModel.getIdLjubimca());
+        model.setDatum(cartModel.getDatum());
+        model.setImgUrl(cartModel.getImgUrl());
+        model.setVrijeme(cartModel.getVrijeme());
+        model.setStanje_zivotinje(cartModel.isStanjeZivotinje());
+        model.setTip_ljubimca(cartModel.getTipLjubimca());
+        model.setIme_ljubimca(cartModel.getImeLjubimca());
+        model.setStatus_udomljavanja(cartModel.isStatusUdomljavanja());
+
+        // Ažuriraj zapis u bazi podataka
+        apiService.updateAdoption(1, cartModel.getIdLjubimca(), model).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    notifyDataSetChanged();
+                    Toast.makeText(context, "Udomljavanje odbijeno", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(context, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 
     private void sendNotification(Context context, String animalName) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -184,33 +327,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         notificationManager.notify(animalName.hashCode(), builder.build());
-    }
-
-    private void checkIfUserIsAdminThenRun(Runnable onAdmin, Runnable onNonAdmin) {
-        apiService.getUserRoleById(1).enqueue(new Callback<UserRoleModel>() { // Assume admin is checked with ID 1
-            @Override
-            public void onResponse(Call<UserRoleModel> call, Response<UserRoleModel> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    UserRoleModel userRole = response.body();
-                    if (userRole.isAdmin()) {
-                        Log.d(TAG, "Korisnik je admin: " + userRole.toString());
-                        onAdmin.run();
-                    } else {
-                        Log.d(TAG, "Korisnik nije admin: " + userRole.toString());
-                        onNonAdmin.run();
-                    }
-                } else {
-                    Log.d(TAG, "Response body is null or not successful");
-                    onNonAdmin.run();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserRoleModel> call, Throwable t) {
-                Log.e(TAG, "Error checking if user is admin: ", t);
-                Toast.makeText(context, "Greška pri provjeri statusa admina", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void showDeleteConfirmationDialog(int position) {
@@ -327,28 +443,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             public void onFailure(Call<Void> call, Throwable t) {
                 Log.e(TAG, "Error updating animal: ", t);
                 Toast.makeText(context, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void checkIfUserIsAdmin(final MyAdoptionModel selectedAnimal, final int adapterPosition) {
-        Log.d(TAG, "Provjera ako je korisnik admin za udomljavanje");
-        apiService.getUserById(1).enqueue(new Callback<UserByEmailResponseModel>() { // Pretpostavimo da je admin provjeren pomoću ID 1
-            @Override
-            public void onResponse(Call<UserByEmailResponseModel> call, Response<UserByEmailResponseModel> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getResult().isAdmin()) {
-                    Log.d(TAG, "Korisnik je admin, prikazivanje dijaloga za udomljavanje");
-                    showAdoptionDialog(selectedAnimal, adapterPosition);
-                } else {
-                    Log.d(TAG, "Korisnik nije admin, ne može se udomiti životinja");
-                    Toast.makeText(context, "Samo admini mogu udomljavati životinje.", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserByEmailResponseModel> call, Throwable t) {
-                Log.e(TAG, "Greška u provjeri ako je korisnik admin: ", t);
-                Toast.makeText(context, "Greška pri provjeri statusa admina", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -482,28 +576,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         void onEmailFetched(String email);
     }
 
-
-    private void getAnimalNameById(int animalId, OnAnimalNameFetchedListener listener) {
-        apiService.getAnimalById(animalId).enqueue(new Callback<AnimalModel>() {
-            @Override
-            public void onResponse(Call<AnimalModel> call, Response<AnimalModel> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    String animalName = response.body().getImeLjubimca();
-                    listener.onAnimalNameFetched(animalName);
-                } else {
-                    Log.e(TAG, "Failed to fetch animal name: " + response.message());
-                    listener.onAnimalNameFetched(null);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<AnimalModel> call, Throwable t) {
-                Log.e(TAG, "Error fetching animal name: ", t);
-                listener.onAnimalNameFetched(null);
-            }
-        });
-    }
-
     interface OnAnimalNameFetchedListener {
         void onAnimalNameFetched(String animalName);
     }
@@ -519,6 +591,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         ImageView imgUrl;
         ImageView deleteItem, updateItem;
         Button adoptButton;
+        Button rejectButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -532,6 +605,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             deleteItem = itemView.findViewById(R.id.delete);
             updateItem = itemView.findViewById(R.id.update);
             adoptButton = itemView.findViewById(R.id.adoptButton);
+            rejectButton = itemView.findViewById(R.id.rejectButton);
         }
     }
 }

@@ -3,6 +3,8 @@ package com.activity.pis_azil.activities;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log; // Dodano za logiranje
 import android.widget.Button;
@@ -10,12 +12,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.models.AnimalModel;
 import com.activity.pis_azil.models.MyAdoptionModel;
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -72,6 +76,20 @@ public class DetailedActivity extends AppCompatActivity {
             return;
         }
 
+        SharedPreferences prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        String userJson = prefs.getString("current_user", null);
+        UserModel currentUser = null;
+
+        if (userJson != null) {
+            Gson gson = new Gson();
+            currentUser = gson.fromJson(userJson, UserModel.class);
+        }
+
+        if (currentUser == null) {
+            Toast.makeText(this, "Nije moguće prepoznati trenutnog korisnika", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         MyAdoptionModel adoptionModel = new MyAdoptionModel();
         adoptionModel.setIdLjubimca(animalModel.getIdLjubimca());
 
@@ -104,9 +122,10 @@ public class DetailedActivity extends AppCompatActivity {
         adoptionModel.setDatum(currentDate);
         adoptionModel.setVrijeme(currentTime);
         adoptionModel.setImgUrl(animalModel.getImgUrl());
-        adoptionModel.setIdKorisnika(1); // Pretpostavimo da je korisnik s ID 1 admin
+        adoptionModel.setIdKorisnika(currentUser.getIdKorisnika());
         adoptionModel.setUdomljen(false);
         adoptionModel.setStanjeZivotinje(false);
+        adoptionModel.setStatusUdomljavanja(false);
 
         Log.d(TAG, "Sending adoption model to API: " + adoptionModel);
 

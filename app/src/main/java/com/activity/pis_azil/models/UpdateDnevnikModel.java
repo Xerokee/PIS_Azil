@@ -11,13 +11,13 @@ public class UpdateDnevnikModel {
     private String vrijeme;
     private String imgUrl;
     private boolean stanje_zivotinje;
-
+    private boolean status_udomljavanja;
 
 
     public UpdateDnevnikModel() {
     }
 
-    public UpdateDnevnikModel(int id_ljubimca, int id_korisnika, String ime_ljubimca, String tip_ljubimca, boolean udomljen, String datum, String vrijeme, String imgUrl, boolean stanje_zivotinje) {
+    public UpdateDnevnikModel(int id_ljubimca, int id_korisnika, String ime_ljubimca, String tip_ljubimca, boolean udomljen, String datum, String vrijeme, String imgUrl, boolean stanje_zivotinje, boolean status_udomljavanja) {
         this.id_ljubimca = id_ljubimca;
         this.id_korisnika = id_korisnika;
         this.ime_ljubimca = ime_ljubimca;
@@ -27,6 +27,7 @@ public class UpdateDnevnikModel {
         this.vrijeme = vrijeme;
         this.imgUrl = imgUrl;
         this.stanje_zivotinje = stanje_zivotinje;
+        this.status_udomljavanja = status_udomljavanja;
     }
 
 
@@ -84,6 +85,14 @@ public class UpdateDnevnikModel {
 
     public void setStanje_zivotinje(boolean stanje_zivotinje) {
         this.stanje_zivotinje = stanje_zivotinje;
+    }
+
+    public boolean isStatus_udomljavanja() {
+        return status_udomljavanja;
+    }
+
+    public void setStatus_udomljavanja(boolean status_udomljavanja) {
+        this.status_udomljavanja = status_udomljavanja;
     }
 
     public int getId_korisnika() {

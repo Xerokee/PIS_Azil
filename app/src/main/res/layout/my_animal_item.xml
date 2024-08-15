@@ -239,6 +239,25 @@
             android:weightSum="2" />
 
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/rejectButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Odbij"
+                android:textColor="@color/black"
+                android:background="@color/red"
+                android:textStyle="bold"
+                android:textSize="20dp"
+                android:weightSum="2" />
+
+        </LinearLayout>
     </LinearLayout>
 
 </androidx.cardview.widget.CardView>
