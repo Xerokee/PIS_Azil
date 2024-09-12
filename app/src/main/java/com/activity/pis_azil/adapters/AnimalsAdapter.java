@@ -52,7 +52,7 @@ public class AnimalsAdapter extends RecyclerView.Adapter<AnimalsAdapter.AnimalVi
         }
 
         if (animal.isBlocked()) {
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, androidx.cardview.R.color.cardview_dark_background));
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.gray));
         } else {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.white));
         }
