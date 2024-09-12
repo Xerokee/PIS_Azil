@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.activity.pis_azil.models.IsBlockedAnimalModel;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
@@ -39,7 +40,7 @@ public class DetailedActivity extends AppCompatActivity {
     Button addToCart;
     Toolbar toolbar;
     ApiService apiService;
-    AnimalModel animalModel = null;
+    IsBlockedAnimalModel animalModel = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +49,7 @@ public class DetailedActivity extends AppCompatActivity {
 
         apiService = ApiClient.getClient().create(ApiService.class);
 
-        animalModel = (AnimalModel) getIntent().getSerializableExtra("animal");
+        animalModel = (IsBlockedAnimalModel) getIntent().getSerializableExtra("animal");
 
         detailedImg = findViewById(R.id.detailed_img);
         name = findViewById(R.id.detailed_name);

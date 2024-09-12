@@ -14,10 +14,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.adapters.AnimalsAdapter;
 import com.activity.pis_azil.models.AnimalModel;
+import com.activity.pis_azil.models.IsBlockedAnimalModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -49,7 +51,22 @@ public class AnimalListFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call<List<AnimalModel>> call, @NonNull Response<List<AnimalModel>> response) {
                 if (response.isSuccessful()) {
-                    List<AnimalModel> animals = response.body();
+                    List<IsBlockedAnimalModel> animals = response.body()
+                            .stream().map(item -> {
+                                return new IsBlockedAnimalModel(
+                                        item.getIdLjubimca(),
+                                        item.getIdUdomitelja(),
+                                        item.getImeLjubimca(),
+                                        item.getTipLjubimca(),
+                                        item.getOpisLjubimca(),
+                                        item.isUdomljen(),
+                                        item.getDatum(),
+                                        item.getVrijeme(),
+                                        item.getImgUrl(),
+                                        item.StanjeZivotinje(),
+                                        false
+                                );
+                            }).collect(Collectors.toList());
                     animalsAdapter = new AnimalsAdapter(animals, getContext());
                     recyclerView.setAdapter(animalsAdapter);
                     Log.d("AnimalListFragment", "Životinje učitane: " + animals.size());

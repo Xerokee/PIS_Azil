@@ -1,6 +1,5 @@
 package com.activity.pis_azil.ui.home;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -24,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.adapters.AnimalsAdapter;
 import com.activity.pis_azil.models.AnimalModel;
+import com.activity.pis_azil.models.IsBlockedAnimalModel;
 import com.activity.pis_azil.models.MyAdoptionModel;
 import com.activity.pis_azil.models.RejectAdoptionModelRead;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
@@ -34,7 +34,6 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import retrofit2.Call;
@@ -47,7 +46,7 @@ public class HomeFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private AnimalsAdapter animalsAdapter;
-    private List<AnimalModel> animalModelList = new ArrayList<>();
+    private List<IsBlockedAnimalModel> animalModelList = new ArrayList<>();
     private ApiService apiService;
     private ProgressBar progressBar;
     private EditText searchBox;
@@ -86,6 +85,7 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
+    // TODO
     private void searchAnimalsByType(String type) {
         progressBar.setVisibility(View.VISIBLE);
         Log.d(TAG, "Searching animals by type: " + type);
@@ -95,9 +95,23 @@ public class HomeFragment extends Fragment {
                 progressBar.setVisibility(View.GONE);
                 if (response.isSuccessful() && response.body() != null) {
                     animalModelList.clear();
-                    List<AnimalModel> animals = response.body();
+                    List<IsBlockedAnimalModel> animals = response.body().stream().map(animal -> {
+                        return new IsBlockedAnimalModel(
+                                animal.getIdLjubimca(),
+                                animal.getIdUdomitelja(),
+                                animal.getImeLjubimca(),
+                                animal.getTipLjubimca(),
+                                animal.getOpisLjubimca(),
+                                animal.isUdomljen(),
+                                animal.getDatum(),
+                                animal.getVrijeme(),
+                                animal.getImgUrl(),
+                                animal.StanjeZivotinje(),
+                                false
+                        );
+                    }).collect(Collectors.toList());
                     Log.d(TAG, "Found " + animals.size() + " animals of type: " + type);
-                    for (AnimalModel animal : animals) {
+                    for (IsBlockedAnimalModel animal : animals) {
                         Log.d(TAG, "Animal: " + animal.getImeLjubimca() + ", Type: " + animal.getTipLjubimca() + ", Image URL: " + animal.getImgUrl());
                     }
                     animalModelList.addAll(animals);
@@ -175,10 +189,6 @@ public class HomeFragment extends Fragment {
 
 
                     fetchBlokiranjeZivotinje(filteredAnimals);
-                    /*
-                    animalModelList.addAll(filteredAnimals);
-                    animalsAdapter.notifyDataSetChanged();
-                     */
 
                 } else {
                     Log.e(TAG, "Failed to fetch adopted animals: " + response.message());
@@ -195,7 +205,6 @@ public class HomeFragment extends Fragment {
     }
 
 
-
     private void fetchBlokiranjeZivotinje(List<AnimalModel> animals) {
         Log.d(TAG, "Fetching blocked animals");
 
@@ -209,31 +218,70 @@ public class HomeFragment extends Fragment {
                     if (userJson != null) {
                         Gson gson = new Gson();
                         UserModel currentUser = gson.fromJson(userJson, UserModel.class);
-                        if (currentUser != null ) {
+                        if (currentUser != null) {
+
                             if (currentUser.isAdmin()) {
-                                animalModelList.addAll(animals);
+
+                                animalModelList.clear();
+                                animalModelList.addAll(animals.stream()
+                                        .map(animal -> {
+                                            return new IsBlockedAnimalModel(
+                                                    animal.getIdLjubimca(),
+                                                    animal.getIdUdomitelja(),
+                                                    animal.getImeLjubimca(),
+                                                    animal.getTipLjubimca(),
+                                                    animal.getOpisLjubimca(),
+                                                    animal.isUdomljen(),
+                                                    animal.getDatum(),
+                                                    animal.getVrijeme(),
+                                                    animal.getImgUrl(),
+                                                    animal.StanjeZivotinje(),
+                                                    false
+                                            );
+                                        }).collect(Collectors.toList()));
                                 animalsAdapter.notifyDataSetChanged();
+
+
                             } else {
-                                animalModelList.addAll(
-                                        animals.stream()
-                                                .filter(animal -> {
-                                                    return response.body().stream()
-                                                            .noneMatch(blocked -> blocked.getIme_ljubimca().equals(animal.getImeLjubimca()) && blocked.getId_korisnika() == currentUser.getIdKorisnika());
-                                                })
-                                                .collect(Collectors.toList())
-                                );
+                                List<IsBlockedAnimalModel> mappedAnimals = animals.stream()
+                                        .map(animal -> {
+                                            boolean isBlocked = response.body().stream()
+                                                    .anyMatch(blocked -> blocked.getIme_ljubimca().equals(animal.getImeLjubimca())
+                                                            && blocked.getId_korisnika() == currentUser.getIdKorisnika());
+
+                                            // Mapiraj AnimalModel u IsBlockedAnimalModel
+                                            return new IsBlockedAnimalModel(
+                                                    animal.getIdLjubimca(),
+                                                    animal.getIdUdomitelja(),
+                                                    animal.getImeLjubimca(),
+                                                    animal.getTipLjubimca(),
+                                                    animal.getOpisLjubimca(),
+                                                    animal.isUdomljen(),
+                                                    animal.getDatum(),
+                                                    animal.getVrijeme(),
+                                                    animal.getImgUrl(),
+                                                    animal.StanjeZivotinje(),
+                                                    isBlocked
+                                            );
+                                        })
+                                        .collect(Collectors.toList());
+
+                                animalModelList.clear();
+                                animalModelList.addAll(mappedAnimals);
                                 animalsAdapter.notifyDataSetChanged();
                             }
-                        }
 
+                        }
                     }
                 }
             }
 
             @Override
             public void onFailure(Call<List<RejectAdoptionModelRead>> call, Throwable t) {
+                Log.e(TAG, "Failed to fetch blocked animals", t);
             }
         });
     }
+
 
 }

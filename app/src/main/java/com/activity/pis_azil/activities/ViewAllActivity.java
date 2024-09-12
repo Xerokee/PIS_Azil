@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.adapters.AnimalsAdapter;
 import com.activity.pis_azil.models.AnimalModel;
+import com.activity.pis_azil.models.IsBlockedAnimalModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 
@@ -36,7 +37,22 @@ public class ViewAllActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.view_all_rec);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        animalsAdapter = new AnimalsAdapter(animalModelList, this);
+        animalsAdapter = new AnimalsAdapter(animalModelList
+                .stream().map(item -> {
+                    return new IsBlockedAnimalModel(
+                            item.getIdLjubimca(),
+                            item.getIdUdomitelja(),
+                            item.getImeLjubimca(),
+                            item.getTipLjubimca(),
+                            item.getOpisLjubimca(),
+                            item.isUdomljen(),
+                            item.getDatum(),
+                            item.getVrijeme(),
+                            item.getImgUrl(),
+                            item.StanjeZivotinje(),
+                            false
+                    );
+                }).collect(Collectors.toList()), this);
         recyclerView.setAdapter(animalsAdapter);
 
         apiService = ApiClient.getClient().create(ApiService.class);

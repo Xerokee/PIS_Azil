@@ -9,20 +9,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.activities.DetailedActivity;
-import com.activity.pis_azil.models.AnimalModel;
+import com.activity.pis_azil.models.IsBlockedAnimalModel;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
 
 public class AnimalsAdapter extends RecyclerView.Adapter<AnimalsAdapter.AnimalViewHolder> {
-    private List<AnimalModel> animalsAdapterList;
+    private List<IsBlockedAnimalModel> animalsAdapterList;
     private Context context;
 
-    public AnimalsAdapter(List<AnimalModel> animalsAdapterList, Context context) {
+    public AnimalsAdapter(List<IsBlockedAnimalModel> animalsAdapterList, Context context) {
         this.animalsAdapterList = animalsAdapterList;
         this.context = context;
     }
@@ -36,7 +37,7 @@ public class AnimalsAdapter extends RecyclerView.Adapter<AnimalsAdapter.AnimalVi
 
     @Override
     public void onBindViewHolder(@NonNull AnimalViewHolder holder, int position) {
-        AnimalModel animal = animalsAdapterList.get(position);
+        IsBlockedAnimalModel animal = animalsAdapterList.get(position);
         holder.animalName.setText(animal.getImeLjubimca());
         holder.animalDescription.setText(animal.getOpisLjubimca());
 
@@ -50,11 +51,19 @@ public class AnimalsAdapter extends RecyclerView.Adapter<AnimalsAdapter.AnimalVi
             holder.animalImage.setImageResource(R.drawable.paw);
         }
 
-        holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, DetailedActivity.class);
-            intent.putExtra("animal", animal);
-            context.startActivity(intent);
-        });
+        if (animal.isBlocked()) {
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, androidx.cardview.R.color.cardview_dark_background));
+        } else {
+            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.white));
+        }
+
+        if (!animal.isBlocked()) {
+            holder.itemView.setOnClickListener(v -> {
+                Intent intent = new Intent(context, DetailedActivity.class);
+                intent.putExtra("animal", animal);
+                context.startActivity(intent);
+            });
+        }
     }
 
     @Override
