@@ -77,9 +77,11 @@ public class MyAnimalsFragment extends Fragment implements DataRefreshListener {
                             continue;
                         }
 
+                        /*
                         if (!animal.isStanje_zivotinje()) {
                             Toast.makeText(getActivity(), "Životinja " + (animal.getIme_ljubimca() != null ? animal.getIme_ljubimca() : "N/A") + " nema postavljeno stanje", Toast.LENGTH_SHORT).show();
                         }
+                        */
 
                         Log.d(TAG, "Animal fetched: " + animal.toString());
                         MyAdoptionModel adoption = new MyAdoptionModel();
@@ -108,7 +110,7 @@ public class MyAnimalsFragment extends Fragment implements DataRefreshListener {
                     cartAdapter.notifyDataSetChanged();
                 } else {
                     Log.e(TAG, "Failed to fetch adopted animals: " + response.message());
-                    Toast.makeText(getActivity(), "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(getActivity(), "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
 

@@ -2,6 +2,7 @@ package com.activity.pis_azil.models;
 
 public class RejectAdoptionModelRead {
 
+    private Integer id;
     private Integer id_korisnika;
     private String ime_ljubimca;
 
@@ -24,5 +25,13 @@ public class RejectAdoptionModelRead {
 
     public void setIme_ljubimca(String ime_ljubimca) {
         this.ime_ljubimca = ime_ljubimca;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }

@@ -93,4 +93,7 @@ public interface ApiService {
 
     @POST("OdbijeneZivotinje")
     Call<Void> createOdbijenaZivotinja(@Body RejectAdoptionModel rejectAdoptionModel);
+
+    @DELETE("OdbijeneZivotinje/{id}")
+    Call<Void> deleteOdbijenaZivotinja(@Path("id") int id);
 }

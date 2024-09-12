@@ -125,7 +125,7 @@ public class DetailedActivity extends AppCompatActivity {
         adoptionModel.setIdKorisnika(currentUser.getIdKorisnika());
         adoptionModel.setUdomljen(false);
         adoptionModel.setStanjeZivotinje(false);
-        adoptionModel.setStatusUdomljavanja(false);
+        adoptionModel.setStatusUdomljavanja(true);
 
         Log.d(TAG, "Sending adoption model to API: " + adoptionModel);
 

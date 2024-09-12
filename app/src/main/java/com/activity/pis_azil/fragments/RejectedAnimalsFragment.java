@@ -1,5 +1,7 @@
 package com.activity.pis_azil.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +13,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.pis_azil.R;
-import com.activity.pis_azil.models.RejectAdoptionModel;
 import com.activity.pis_azil.models.RejectAdoptionModelRead;
+import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
+import com.google.gson.Gson;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,40 +55,56 @@ public class RejectedAnimalsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Inflata layout za ovaj fragment
         View view = inflater.inflate(R.layout.fragment_rejected_animals_list, container, false);
 
-        // Prepoznaj view kao RecyclerView
-        if (view instanceof RecyclerView) {
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), mColumnCount));
-            }
+        // Pronađi RecyclerView unutar layouta
+        RecyclerView recyclerView = view.findViewById(R.id.recyclerView); // Provjeri da u XML-u imaš točan ID
 
-            // Postavi prazan adapter dok čekamo podatke
-            adapter = new MyItemRecyclerViewAdapter(List.of());
-            recyclerView.setAdapter(adapter);
+        // Postavi LayoutManager ovisno o broju stupaca
+        if (mColumnCount <= 1) {
+            recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        } else {
+            recyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), mColumnCount));
+        }
 
-            // Dohvati podatke putem API-ja
-            Call<List<RejectAdoptionModelRead>> call = apiService.getOdbijeneZivotinje(); // Ovisno o API endpointu
-            call.enqueue(new Callback<List<RejectAdoptionModelRead>>() {
-                @Override
-                public void onResponse(Call<List<RejectAdoptionModelRead>> call, Response<List<RejectAdoptionModelRead>> response) {
-                    if (response.isSuccessful() && response.body() != null) {
-                        // Ažuriraj adapter s novim podacima
-                        adapter = new MyItemRecyclerViewAdapter(response.body());
-                        recyclerView.setAdapter(adapter);
+        // Postavi prazan adapter dok čekamo podatke
+        adapter = new MyItemRecyclerViewAdapter(List.of(), view.getContext());
+        recyclerView.setAdapter(adapter);
+
+        // Dohvati podatke putem API-ja
+        Call<List<RejectAdoptionModelRead>> call = apiService.getOdbijeneZivotinje();
+        call.enqueue(new Callback<List<RejectAdoptionModelRead>>() {
+            @Override
+            public void onResponse(Call<List<RejectAdoptionModelRead>> call, Response<List<RejectAdoptionModelRead>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    SharedPreferences prefs = view.getContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+                    String userJson = prefs.getString("current_user", null);
+                    if (userJson != null) {
+                        Gson gson = new Gson();
+                        UserModel currentUser = gson.fromJson(userJson, UserModel.class);
+                        if (currentUser != null ) {
+                            if (currentUser.isAdmin()) {
+                                adapter.updateData(response.body());
+                            } else {
+                                adapter.updateData(response.body().stream().filter(
+                                        item -> item.getId_korisnika() == currentUser.getIdKorisnika()
+                                ).collect(Collectors.toList()));
+                            }
+                        }
+
                     }
                 }
+            }
 
-                @Override
-                public void onFailure(Call<List<RejectAdoptionModelRead>> call, Throwable t) {
-                    // Obradi grešku
-                }
-            });
-        }
+            @Override
+            public void onFailure(Call<List<RejectAdoptionModelRead>> call, Throwable t) {
+                // Obradi grešku (npr. prikaži poruku)
+            }
+        });
 
         return view;
     }
+
+
 }

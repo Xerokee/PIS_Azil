@@ -1,6 +1,8 @@
 package com.activity.pis_azil.ui.home;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -23,9 +25,12 @@ import com.activity.pis_azil.R;
 import com.activity.pis_azil.adapters.AnimalsAdapter;
 import com.activity.pis_azil.models.AnimalModel;
 import com.activity.pis_azil.models.MyAdoptionModel;
+import com.activity.pis_azil.models.RejectAdoptionModelRead;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
+import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -169,9 +174,11 @@ public class HomeFragment extends Fragment {
                             .collect(Collectors.toList());
 
 
+                    fetchBlokiranjeZivotinje(filteredAnimals);
+                    /*
                     animalModelList.addAll(filteredAnimals);
                     animalsAdapter.notifyDataSetChanged();
-
+                     */
 
                 } else {
                     Log.e(TAG, "Failed to fetch adopted animals: " + response.message());
@@ -183,6 +190,48 @@ public class HomeFragment extends Fragment {
             public void onFailure(Call<List<UpdateDnevnikModel>> call, Throwable t) {
                 Log.e(TAG, "Error fetching adopted animals: ", t);
                 Toast.makeText(getActivity(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+
+    private void fetchBlokiranjeZivotinje(List<AnimalModel> animals) {
+        Log.d(TAG, "Fetching blocked animals");
+
+        Call<List<RejectAdoptionModelRead>> call = apiService.getOdbijeneZivotinje();
+        call.enqueue(new Callback<List<RejectAdoptionModelRead>>() {
+            @Override
+            public void onResponse(Call<List<RejectAdoptionModelRead>> call, Response<List<RejectAdoptionModelRead>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    SharedPreferences prefs = getContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+                    String userJson = prefs.getString("current_user", null);
+                    if (userJson != null) {
+                        Gson gson = new Gson();
+                        UserModel currentUser = gson.fromJson(userJson, UserModel.class);
+                        if (currentUser != null ) {
+                            if (currentUser.isAdmin()) {
+                                animalModelList.addAll(animals);
+                                animalsAdapter.notifyDataSetChanged();
+                            } else {
+                                animalModelList.addAll(
+                                        animals.stream()
+                                                .filter(animal -> {
+                                                    return response.body().stream()
+                                                            .noneMatch(blocked -> blocked.getIme_ljubimca().equals(animal.getImeLjubimca()) && blocked.getId_korisnika() == currentUser.getIdKorisnika());
+                                                })
+                                                .collect(Collectors.toList())
+                                );
+                                animalsAdapter.notifyDataSetChanged();
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<RejectAdoptionModelRead>> call, Throwable t) {
             }
         });
     }
