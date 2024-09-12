@@ -15,7 +15,6 @@ import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.adapters.MyAdoptionAdapter;
 import com.activity.pis_azil.models.MyAdoptionModel;
-import com.activity.pis_azil.models.AnimalModel;
 import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.network.DataRefreshListener;
 

@@ -21,15 +21,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.activity.pis_azil.EmailService;
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.SendMail;
-import com.activity.pis_azil.models.AnimalModel;
+import com.activity.pis_azil.models.RejectAdoptionModel;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserByEmailResponseModel;
 import com.activity.pis_azil.network.DataRefreshListener;
 import com.activity.pis_azil.models.UserModel;
-import com.activity.pis_azil.models.UserRoleModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.models.MyAdoptionModel;
@@ -43,13 +41,12 @@ import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
 
@@ -103,6 +100,15 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         }
 
         holder.name.setText(cartModel.getImeLjubimca());
+
+        // Dohvati email korisnika prema ID-u
+        getEmailById(cartModel.getIdKorisnika(), email -> {
+            if (email != null && !email.isEmpty()) {
+                holder.requester.setText(email); // Prikaz emaila u TextView
+            } else {
+                holder.requester.setText("Nema dostupnog emaila");
+            }
+        });
         holder.type.setText(cartModel.getTipLjubimca());
         holder.date.setText(cartModel.getDatum());
         holder.time.setText(cartModel.getVrijeme());
@@ -190,7 +196,13 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         if (userJson != null) {
             Gson gson = new Gson();
             currentUser = gson.fromJson(userJson, UserModel.class);
+
+            if (currentUser == null || currentUser.getEmail() == null) {
+                Log.e(TAG, "Korisnički objekt ili email je null!");
+                // Prikaz poruke ili poduzmi akciju
+            }
         } else {
+            Log.e(TAG, "Korisnički JSON podaci nisu pronađeni.");
             currentUser = null; // Dodavanje kako bi izbjegli NullPointerException
         }
 
@@ -201,7 +213,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
                     if (response.isSuccessful()) {
                         // Pretvorite Listu UpdateDnevnikModel u Listu MyAdoptionModel, ako je potrebno
-                        cartModelList = convertToMyAdoptionModel(response.body());
+                        cartModelList = convertToMyAdoptionModel(response.body().stream().filter(item -> !item.isUdomljen()).collect(Collectors.toList()));
                         notifyDataSetChanged();
                     }
                 }
@@ -221,7 +233,8 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                         List<MyAdoptionModel> userAdoptions = new ArrayList<>();
 
                         for (UpdateDnevnikModel adoption : allAdoptions) {
-                            if (adoption.getId_korisnika() == currentUser.getIdKorisnika()) {
+                            if (adoption.getId_korisnika() == currentUser.getIdKorisnika()
+                                    && !adoption.isUdomljen()) {
                                 userAdoptions.add(convertToMyAdoptionModel(adoption));
                             }
                         }
@@ -291,23 +304,27 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         model.setIme_ljubimca(cartModel.getImeLjubimca());
         model.setStatus_udomljavanja(cartModel.isStatusUdomljavanja());
 
-        // Ažuriraj zapis u bazi podataka
-        apiService.updateAdoption(1, cartModel.getIdLjubimca(), model).enqueue(new Callback<Void>() {
+
+        RejectAdoptionModel rejectAdoptionModel = new RejectAdoptionModel();
+        rejectAdoptionModel.setIdKorisnika(cartModel.getIdKorisnika());
+        rejectAdoptionModel.setImeLjubimca(cartModel.getImeLjubimca());
+
+        apiService.createOdbijenaZivotinja(
+                rejectAdoptionModel).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    notifyDataSetChanged();
-                    Toast.makeText(context, "Udomljavanje odbijeno", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(context, "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
+                    deleteItem(position);
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(context, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                System.out.println("dd");
             }
         });
+
+
     }
 
 
@@ -485,6 +502,11 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
     }
 
     private void adoptAnimal(MyAdoptionModel selectedAnimal, String adopterId, String adopterName) {
+        if (adopterId == null || adopterId.isEmpty()) {
+            Log.e(TAG, "Adopter ID nije postavljen. Ne mogu nastaviti s udomljavanjem.");
+            Toast.makeText(context, "Adopter nije pronađen", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         UpdateDnevnikModel model = new UpdateDnevnikModel();
 
@@ -533,6 +555,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                                     } catch (MessagingException e) {
                                         throw new RuntimeException(e);
                                     }
+                                    System.out.println("send mail...");
                                 }
                             }).start();
                         }
@@ -552,6 +575,12 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
     }
 
     private void getEmailById(int userId, OnEmailFetchedListener listener) {
+        if (userId == 0) {
+            Log.e(TAG, "Adopter ID je 0, nema korisnika za dohvatiti.");
+            listener.onEmailFetched(null);
+            return;
+        }
+
         apiService.getUserById(userId).enqueue(new Callback<UserByEmailResponseModel>() {
             @Override
             public void onResponse(Call<UserByEmailResponseModel> call, Response<UserByEmailResponseModel> response) {
@@ -559,7 +588,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                     String email = response.body().getResult().getEmail();
                     listener.onEmailFetched(email);
                 } else {
-                    Log.e(TAG, "Failed to fetch email: " + response.message());
+                    Log.e(TAG, "Neuspješno dohvaćanje emaila. Odgovor: " + response.message());
                     listener.onEmailFetched(null);
                 }
             }
@@ -587,7 +616,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView name, type, date, time, state;
+        TextView name, type, date, time, state, requester;
         ImageView imgUrl;
         ImageView deleteItem, updateItem;
         Button adoptButton;
@@ -601,6 +630,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             date = itemView.findViewById(R.id.current_date);
             time = itemView.findViewById(R.id.current_time);
             state = itemView.findViewById(R.id.product_state);
+            requester = itemView.findViewById(R.id.user_requesting);
             imgUrl = itemView.findViewById(R.id.img_url);
             deleteItem = itemView.findViewById(R.id.delete);
             updateItem = itemView.findViewById(R.id.update);

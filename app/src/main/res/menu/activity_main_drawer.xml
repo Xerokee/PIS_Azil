@@ -28,5 +28,10 @@
             android:id="@+id/nav_my_carts"
             android:icon="@drawable/baseline_view_list_24"
             android:title="Lista Životinja" />
+
+        <item
+            android:id="@+id/rejectedAnimalsFragment"
+            android:icon="@android:drawable/btn_dialog"
+            android:title="Blokirane životinje" />
     </group>
 </menu>

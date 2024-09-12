@@ -157,6 +157,7 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
                             } catch (MessagingException e) {
                                 throw new RuntimeException(e);
                             }
+                            System.out.println("Send email...");
                         }
                     }).start();
                 } else {

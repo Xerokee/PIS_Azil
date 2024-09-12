@@ -43,4 +43,9 @@
         android:name="com.activity.pis_azil.fragments.MyAnimalsFragment"
         android:label="Lista Životinja"
         tools:layout="@layout/fragment_my_adoptions" />
+    <fragment
+        android:id="@+id/rejectedAnimalsFragment"
+        android:name="com.activity.pis_azil.fragments.RejectedAnimalsFragment"
+        android:label="Blokirane životinje"
+        tools:layout="@layout/fragment_rejected_animals_list" />
 </navigation>

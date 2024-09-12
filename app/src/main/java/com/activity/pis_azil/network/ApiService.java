@@ -1,5 +1,7 @@
 package com.activity.pis_azil.network;
 
+import com.activity.pis_azil.models.RejectAdoptionModel;
+import com.activity.pis_azil.models.RejectAdoptionModelRead;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserByEmailResponseModel;
 import com.activity.pis_azil.models.MyAdoptionModel;
@@ -85,4 +87,10 @@ public interface ApiService {
 
     @GET("SearchAnimals")
     Call<List<AnimalModel>> searchAnimals(@Query("keyword") String keyword);
+
+    @GET("odbijene_zivotinje")
+    Call<List<RejectAdoptionModelRead>> getOdbijeneZivotinje();
+
+    @POST("OdbijeneZivotinje")
+    Call<Void> createOdbijenaZivotinja(@Body RejectAdoptionModel rejectAdoptionModel);
 }

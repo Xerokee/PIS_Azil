@@ -22,11 +22,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.adapters.AnimalsAdapter;
 import com.activity.pis_azil.models.AnimalModel;
+import com.activity.pis_azil.models.MyAdoptionModel;
+import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -77,37 +81,6 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
-    private void loadAllAnimals() {
-        progressBar.setVisibility(View.VISIBLE);
-        Log.d(TAG, "Fetching all animals...");
-        apiService.getAllAnimals().enqueue(new Callback<List<AnimalModel>>() {
-            @Override
-            public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
-                progressBar.setVisibility(View.GONE);
-                if (response.isSuccessful() && response.body() != null) {
-                    animalModelList.clear(); // Ovo će osigurati da se lista osvježi
-                    List<AnimalModel> animals = response.body();
-                    Log.d(TAG, "Received " + animals.size() + " animals from the server.");
-                    for (AnimalModel animal : animals) {
-                        Log.d(TAG, "Animal: " + animal.getImeLjubimca() + ", Type: " + animal.getTipLjubimca() + ", Image URL: " + animal.getImgUrl());
-                    }
-                    animalModelList.addAll(animals);
-                    animalsAdapter.notifyDataSetChanged();
-                } else {
-                    Log.e(TAG, "Error fetching animals. Response code: " + response.code() + ", Message: " + response.message());
-                    Toast.makeText(getContext(), "Nema pronađenih životinja", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
-                progressBar.setVisibility(View.GONE);
-                Log.e(TAG, "Failed to fetch animals", t);
-                Toast.makeText(getContext(), "Greška u učitavanju životinja", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
     private void searchAnimalsByType(String type) {
         progressBar.setVisibility(View.VISIBLE);
         Log.d(TAG, "Searching animals by type: " + type);
@@ -137,4 +110,81 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
+    List<MyAdoptionModel> cartModelList = new ArrayList<>();
+
+    private void loadAllAnimals() {
+        progressBar.setVisibility(View.VISIBLE);
+        Log.d(TAG, "Fetching all animals...");
+        apiService.getAllAnimals().enqueue(new Callback<List<AnimalModel>>() {
+            @Override
+            public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
+                progressBar.setVisibility(View.GONE);
+                if (response.isSuccessful() && response.body() != null) {
+                    animalModelList.clear(); // Ovo će osigurati da se lista osvježi
+                    List<AnimalModel> animals = response.body();
+                    Log.d(TAG, "Received " + animals.size() + " animals from the server.");
+
+                    // Dohvati posvojene životinje, a filtriranje izvrši unutar odgovora tog API poziva
+                    fetchAdoptedAnimals(animals);
+
+                } else {
+                    Log.e(TAG, "Error fetching animals. Response code: " + response.code() + ", Message: " + response.message());
+                    Toast.makeText(getContext(), "Nema pronađenih životinja", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                Log.e(TAG, "Failed to fetch animals", t);
+                Toast.makeText(getContext(), "Greška u učitavanju životinja", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void fetchAdoptedAnimals(List<AnimalModel> animals) {
+        Log.d(TAG, "Fetching adopted animals");
+
+        apiService.getDnevnikUdomljavanja().enqueue(new Callback<List<UpdateDnevnikModel>>() {
+            @Override
+            public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d(TAG, "Successfully fetched adopted animals, size: " + response.body().size());
+                    cartModelList.clear();
+                    for (UpdateDnevnikModel animal : response.body()) {
+                        if (animal.isUdomljen()) {
+                            MyAdoptionModel adoption = new MyAdoptionModel();
+                            adoption.setImeLjubimca(animal.getIme_ljubimca());
+                            cartModelList.add(adoption);
+                        }
+                    }
+
+                    // Filtriraj sve životinje tek nakon što je dohvaćen popis posvojenih
+                    List<AnimalModel> filteredAnimals = animals.stream()
+                            .filter(item -> !cartModelList.stream()
+                                    .map(MyAdoptionModel::getImeLjubimca)
+                                    .collect(Collectors.toList())
+                                    .contains(item.getImeLjubimca()))
+                            .collect(Collectors.toList());
+
+
+                    animalModelList.addAll(filteredAnimals);
+                    animalsAdapter.notifyDataSetChanged();
+
+
+                } else {
+                    Log.e(TAG, "Failed to fetch adopted animals: " + response.message());
+                    Toast.makeText(getActivity(), "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<UpdateDnevnikModel>> call, Throwable t) {
+                Log.e(TAG, "Error fetching adopted animals: ", t);
+                Toast.makeText(getActivity(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 }
