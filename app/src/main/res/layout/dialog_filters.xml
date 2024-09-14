@@ -1,0 +1,68 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Gumb za resetiranje filtera, gore desno -->
+    <ImageButton
+        android:id="@+id/reset_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:src="@drawable/ic_reset"
+        android:background="?attr/selectableItemBackground"
+        android:padding="8dp"
+        android:contentDescription="Resetiraj filtere"
+        app:tint="@android:color/white" />
+
+    <!-- Polje za ime životinje -->
+    <EditText
+        android:id="@+id/filter_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Unesi ime životinje" />
+
+    <!-- Polje za tip životinje -->
+    <EditText
+        android:id="@+id/filter_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Unesi tip životinje" />
+
+    <!-- Linearni layout za gumbove potvrde i odustajanja -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:layout_marginTop="16dp">
+
+        <!-- Gumb za odustajanje -->
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Odustani"
+            android:textColor="@android:color/black"
+            android:background="@android:color/white"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:layout_marginEnd="4dp"  />
+
+        <!-- Gumb za potvrdu -->
+        <Button
+            android:id="@+id/confirm_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Potvrdi"
+            android:textColor="@android:color/black"
+            android:background="@android:color/white"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"  />
+
+    </LinearLayout>
+</LinearLayout>

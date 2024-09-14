@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -13,28 +12,45 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
 
-    <EditText
-        android:id="@+id/search_box"
+    <!-- Omotaj search_box i filter_button unutar LinearLayout i dodijeli mu ID -->
+    <LinearLayout
+        android:id="@+id/search_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/search_gb"
-        android:drawableLeft="@drawable/ic_baseline_search_24"
-        android:drawablePadding="5dp"
-        android:elevation="3dp"
-        android:hint="Pretraži svoju životinju ovdje..."
-        android:padding="13dp"
-        android:textColor="@color/green_700"
-        android:textColorHint="@color/green_700" />
+        android:orientation="horizontal"
+        android:padding="8dp"
+        android:layout_alignParentTop="true">
+
+        <EditText
+            android:id="@+id/search_box"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/search_gb"
+            android:drawableLeft="@drawable/ic_baseline_search_24"
+            android:drawablePadding="5dp"
+            android:elevation="3dp"
+            android:hint="Pretraži životinju..."
+            android:padding="13dp"
+            android:textColor="@color/green_700"
+            android:textColorHint="@color/green_700" />
+
+        <ImageButton
+            android:id="@+id/filter_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_filter_list"
+            android:contentDescription="Filtriraj"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp" />
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/search_box"
+        android:layout_below="@id/search_container"
         android:layout_marginRight="10dp"
         android:layout_marginLeft="10dp" />
 </RelativeLayout>

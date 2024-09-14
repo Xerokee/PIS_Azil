@@ -1,5 +1,6 @@
 package com.activity.pis_azil.ui.home;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,7 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,6 +53,7 @@ public class HomeFragment extends Fragment {
     private ApiService apiService;
     private ProgressBar progressBar;
     private EditText searchBox;
+    private ImageButton filterButton;
 
     @Nullable
     @Override
@@ -59,6 +63,7 @@ public class HomeFragment extends Fragment {
         recyclerView = root.findViewById(R.id.recycler_view);
         progressBar = root.findViewById(R.id.progressbar);
         searchBox = root.findViewById(R.id.search_box);
+        filterButton = root.findViewById(R.id.filter_button);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         animalsAdapter = new AnimalsAdapter(animalModelList, getContext());
@@ -82,10 +87,76 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        // Listener za otvaranje filter dijaloga
+        filterButton.setOnClickListener(v -> openFilterDialog());
+
         return root;
     }
 
-    // TODO
+    // Unutar metode openFilterDialog
+    private void openFilterDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Filtriraj životinje");
+
+        View filterView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_filters, null);
+        builder.setView(filterView);
+
+        // Polja za unos filtera
+        EditText nameFilter = filterView.findViewById(R.id.filter_name);
+        EditText typeFilter = filterView.findViewById(R.id.filter_type);
+
+        // Kreiranje AlertDialoga
+        AlertDialog dialog = builder.create();
+
+        // Gumb za resetiranje filtera (gore desno)
+        ImageButton resetButton = filterView.findViewById(R.id.reset_button);
+        resetButton.setOnClickListener(v -> {
+            resetFilter();
+            dialog.dismiss(); // Zatvori dijalog nakon resetiranja filtera
+        });
+
+        // Pronađi prilagođene gumbe i postavi event listenere
+        Button confirmButton = filterView.findViewById(R.id.confirm_button);
+        Button cancelButton = filterView.findViewById(R.id.cancel_button);
+
+        // Postavi klik event za potvrdu
+        confirmButton.setOnClickListener(v -> {
+            String name = nameFilter.getText().toString().trim();
+            String type = typeFilter.getText().toString().trim();
+            applyFilters(name, type);
+            dialog.dismiss(); // Zatvori dijalog nakon primjene filtera
+        });
+
+        // Postavi klik event za odustajanje
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
+
+        // Prikaži dijalog
+        dialog.show();
+    }
+
+    // Metoda za resetiranje filtera
+    private void resetFilter() {
+        progressBar.setVisibility(View.VISIBLE);
+        loadAllAnimals(); // Ponovno učitaj sve životinje
+        progressBar.setVisibility(View.GONE);
+    }
+
+    // Metoda za primjenu filtera
+    private void applyFilters(String name, String type) {
+        progressBar.setVisibility(View.VISIBLE);
+
+        List<IsBlockedAnimalModel> filteredList = animalModelList.stream()
+                .filter(animal -> (name.isEmpty() || animal.getImeLjubimca().toLowerCase().contains(name.toLowerCase())) &&
+                        (type.isEmpty() || animal.getTipLjubimca().toLowerCase().contains(type.toLowerCase())))
+                .collect(Collectors.toList());
+
+        animalModelList.clear();
+        animalModelList.addAll(filteredList);
+        animalsAdapter.notifyDataSetChanged();
+
+        progressBar.setVisibility(View.GONE);
+    }
+
     private void searchAnimalsByType(String type) {
         progressBar.setVisibility(View.VISIBLE);
         Log.d(TAG, "Searching animals by type: " + type);
