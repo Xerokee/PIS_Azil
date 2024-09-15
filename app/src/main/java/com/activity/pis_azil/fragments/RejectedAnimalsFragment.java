@@ -17,8 +17,10 @@ import com.activity.pis_azil.models.RejectAdoptionModelRead;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
+import com.activity.pis_azil.network.DataRefreshListener;
 import com.google.gson.Gson;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +28,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RejectedAnimalsFragment extends Fragment {
+public class RejectedAnimalsFragment extends Fragment implements DataRefreshListener {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
@@ -69,7 +71,7 @@ public class RejectedAnimalsFragment extends Fragment {
         }
 
         // Postavi prazan adapter dok čekamo podatke
-        adapter = new MyItemRecyclerViewAdapter(List.of(), view.getContext());
+        adapter = new MyItemRecyclerViewAdapter(new ArrayList<>(), view.getContext(), this); // Koristite this ako je fragment implementirao DataRefreshListener
         recyclerView.setAdapter(adapter);
 
         // Dohvati podatke putem API-ja
@@ -83,7 +85,7 @@ public class RejectedAnimalsFragment extends Fragment {
                     if (userJson != null) {
                         Gson gson = new Gson();
                         UserModel currentUser = gson.fromJson(userJson, UserModel.class);
-                        if (currentUser != null ) {
+                        if (currentUser != null) {
                             if (currentUser.isAdmin()) {
                                 adapter.updateData(response.body());
                             } else {
@@ -92,19 +94,20 @@ public class RejectedAnimalsFragment extends Fragment {
                                 ).collect(Collectors.toList()));
                             }
                         }
-
                     }
                 }
             }
 
             @Override
             public void onFailure(Call<List<RejectAdoptionModelRead>> call, Throwable t) {
-                // Obradi grešku (npr. prikaži poruku)
             }
         });
 
         return view;
     }
 
-
+    @Override
+    public void refreshData() {
+        // Implementacija metode za osvježavanje podataka ako je potrebna
+    }
 }

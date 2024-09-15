@@ -4,7 +4,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import android.util.Log; // Dodano za logiranje
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,14 +25,14 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MyAnimalsFragment extends Fragment implements DataRefreshListener {
-    private static final String TAG = "MyAnimalsFragment"; // Dodano za logiranje
+    private static final String TAG = "MyAnimalsFragment";
 
     ApiService apiService;
     TextView overTotalAmount;
     RecyclerView recyclerView;
     MyAdoptionAdapter cartAdapter;
     List<MyAdoptionModel> cartModelList;
-    TextView emptyStateTextView; // Dodano za praznu listu
+    TextView emptyStateTextView;
 
     public MyAnimalsFragment() {
         // Required empty public constructor
@@ -73,15 +73,9 @@ public class MyAnimalsFragment extends Fragment implements DataRefreshListener {
                     Log.d(TAG, "Successfully fetched adopted animals, size: " + response.body().size());
                     cartModelList.clear();
                     for (UpdateDnevnikModel animal : response.body()) {
-                        if(animal.isUdomljen() == true) {
+                        if(animal.isUdomljen()) {
                             continue;
                         }
-
-                        /*
-                        if (!animal.isStanje_zivotinje()) {
-                            Toast.makeText(getActivity(), "Životinja " + (animal.getIme_ljubimca() != null ? animal.getIme_ljubimca() : "N/A") + " nema postavljeno stanje", Toast.LENGTH_SHORT).show();
-                        }
-                        */
 
                         Log.d(TAG, "Animal fetched: " + animal.toString());
                         MyAdoptionModel adoption = new MyAdoptionModel();
@@ -110,7 +104,6 @@ public class MyAnimalsFragment extends Fragment implements DataRefreshListener {
                     cartAdapter.notifyDataSetChanged();
                 } else {
                     Log.e(TAG, "Failed to fetch adopted animals: " + response.message());
-                    // Toast.makeText(getActivity(), "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
 

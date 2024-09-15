@@ -308,6 +308,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         RejectAdoptionModel rejectAdoptionModel = new RejectAdoptionModel();
         rejectAdoptionModel.setIdKorisnika(cartModel.getIdKorisnika());
         rejectAdoptionModel.setImeLjubimca(cartModel.getImeLjubimca());
+        rejectAdoptionModel.setIdLjubimca(cartModel.getIdLjubimca());
 
         apiService.createOdbijenaZivotinja(
                 rejectAdoptionModel).enqueue(new Callback<Void>() {
@@ -315,11 +316,15 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     deleteItem(position);
+                    Log.d(TAG, "Odbijanje uspješno: " + response.message());
+                } else {
+                    Log.e(TAG, "Greška u odgovoru: " + response.message() + ", Kod: " + response.code());
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                Log.e(TAG, "Greška prilikom slanja zahtjeva: ", t);
                 System.out.println("dd");
             }
         });
@@ -471,16 +476,34 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 if (response.isSuccessful() && response.body() != null) {
                     List<String> adopterNames = new ArrayList<>();
                     List<String> adopterIds = new ArrayList<>();
+
+                    // Provjerimo prvo je li korisnik koji je podnio zahtjev prisutan
+                    boolean isRequesterAvailable = false;
                     for (UserModel userModel : response.body()) {
-                        if (!userModel.isAdmin()) {
+                        if (userModel.getIdKorisnika() == selectedAnimal.getIdKorisnika()) {
+                            // Korisnik koji je podnio zahtjev je dostupan
+                            isRequesterAvailable = true;
                             adopterNames.add(userModel.getIme());
                             adopterIds.add(String.valueOf(userModel.getIdKorisnika()));
+                            break;
                         }
                     }
+
+                    if (!isRequesterAvailable) {
+                        // Ako korisnik koji je podnio zahtjev nije dostupan, prikaži sve ostale korisnike osim administratora
+                        for (UserModel userModel : response.body()) {
+                            if (!userModel.isAdmin()) {
+                                adopterNames.add(userModel.getIme());
+                                adopterIds.add(String.valueOf(userModel.getIdKorisnika()));
+                            }
+                        }
+                    }
+
                     if (adopterNames.isEmpty()) {
                         Toast.makeText(context, "Trenutno nema dostupnih udomitelja.", Toast.LENGTH_SHORT).show();
-                        return; // Exit if there are no adopters
+                        return; // Izađi ako nema udomitelja
                     }
+
                     CharSequence[] adoptersArray = adopterNames.toArray(new CharSequence[0]);
                     new AlertDialog.Builder(context)
                             .setTitle("Odaberite udomitelja")
@@ -539,7 +562,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                     notifyDataSetChanged();
                     getEmailById(Integer.parseInt(adopterId), email -> {
                         if (email != null) {
-
                             String subject = "Životinja je posvojena!";
                             String body = "Poštovani, " + adopterName + " je posvojio/posvojila životinju " + selectedAnimal.getImeLjubimca() + "!";
 
@@ -548,11 +570,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                                 public void run() {
                                     try {
                                         SendMail.sendEmail("margeta.matija@gmail.com", subject, body);
-                                    } catch (GeneralSecurityException e) {
-                                        throw new RuntimeException(e);
-                                    } catch (IOException e) {
-                                        throw new RuntimeException(e);
-                                    } catch (MessagingException e) {
+                                    } catch (GeneralSecurityException | IOException | MessagingException e) {
                                         throw new RuntimeException(e);
                                     }
                                     System.out.println("send mail...");

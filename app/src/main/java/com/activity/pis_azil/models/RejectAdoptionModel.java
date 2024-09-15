@@ -4,6 +4,7 @@ public class RejectAdoptionModel {
 
     private Integer IdKorisnika;
     private String ImeLjubimca;
+    private Integer IdLjubimca;
 
     public RejectAdoptionModel() {
 
@@ -23,5 +24,13 @@ public class RejectAdoptionModel {
 
     public void setIdKorisnika(Integer idKorisnika) {
         IdKorisnika = idKorisnika;
+    }
+
+    public Integer getIdLjubimca() {
+        return IdLjubimca;
+    }
+
+    public void setIdLjubimca(Integer idLjubimca) {
+        IdLjubimca = idLjubimca;
     }
 }

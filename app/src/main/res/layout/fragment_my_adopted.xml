@@ -1,20 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".fragments.MyAdoptedFragment"
-    android:background="@color/white">
+    android:orientation="vertical"
+    android:background="@color/white"
+    tools:context=".fragments.MyAdoptedFragment">
 
+    <!-- Naslov za udomljene životinje -->
+    <TextView
+        android:id="@+id/textView7"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/green_700"
+        android:fontFamily="@font/alice"
+        android:padding="10dp"
+        android:text="Udomljene životinje"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="28sp"
+        android:textStyle="bold" />
+
+    <!-- RecyclerView za udomljene životinje -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/adopted_animals_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginRight="10dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
+    <!-- Prikaz kada nema udomljenih životinja -->
     <ImageView
         android:id="@+id/new_animals_img"
         android:layout_width="400dp"
@@ -37,4 +55,4 @@
         android:visibility="gone"
         tools:visibility="visible"/>
 
-</FrameLayout>
+</LinearLayout>
