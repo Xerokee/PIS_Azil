@@ -155,7 +155,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 holder.adoptButton.setText("Udomljeno");
             } else {
                 holder.adoptButton.setEnabled(true);
-                holder.adoptButton.setText("Udomi sad");
+                holder.adoptButton.setText("Udomi");
                 holder.adoptButton.setOnClickListener(view -> {
                     int adapterPosition = holder.getAdapterPosition();
                     if (adapterPosition != RecyclerView.NO_POSITION) {

@@ -130,7 +130,6 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                     }
                 } else {
                     Log.e("API Error", "Greška pri vraćanju životinje: " + response.message() + ", kod: " + response.code());
-                    Toast.makeText(context, "Greška pri vraćanju životinje", Toast.LENGTH_SHORT).show();
                 }
             }
 
