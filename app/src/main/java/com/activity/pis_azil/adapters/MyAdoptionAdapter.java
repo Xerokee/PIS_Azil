@@ -295,7 +295,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         UpdateDnevnikModel model = new UpdateDnevnikModel();
         model.setId_korisnika(cartModel.getIdKorisnika());
         model.setUdomljen(cartModel.isUdomljen());
-        model.setId_ljubimca(cartModel.getIdLjubimca());
+        // model.setId_ljubimca(cartModel.getIdLjubimca());
         model.setDatum(cartModel.getDatum());
         model.setImgUrl(cartModel.getImgUrl());
         model.setVrijeme(cartModel.getVrijeme());
@@ -318,6 +318,12 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                     deleteItem(position);
                     Log.d(TAG, "Odbijanje uspješno: " + response.message());
                 } else {
+                    try {
+                        String errorBody = response.errorBody().string();
+                        Log.e(TAG, "Server-side error body: " + errorBody);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     Log.e(TAG, "Greška u odgovoru: " + response.message() + ", Kod: " + response.code());
                 }
             }
@@ -370,6 +376,12 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                     notifyDataSetChanged();
                     Toast.makeText(context, "Lista izbrisana", Toast.LENGTH_SHORT).show();
                 } else {
+                    try {
+                        String errorBody = response.errorBody().string();
+                        Log.e(TAG, "Server-side error body: " + errorBody);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     Log.e(TAG, "Error deleting animal: " + response.message());
                     Toast.makeText(context, "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
@@ -432,14 +444,13 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
         model.setId_korisnika(cartModel.getIdKorisnika());
         model.setUdomljen(cartModel.isUdomljen());
-        model.setId_ljubimca(cartModel.getIdLjubimca());
+        // model.setId_ljubimca(cartModel.getIdLjubimca());
         model.setDatum(updatedDate);
         model.setImgUrl(updatedImgUrl);
         model.setVrijeme(updatedTime);
         model.setStanje_zivotinje(stanjeZivotinje);
         model.setTip_ljubimca(updatedType);
         model.setIme_ljubimca(updatedName);
-
 
         apiService.updateAdoption(1, cartModel.getIdLjubimca(), model).enqueue(new Callback<Void>() {
             @Override
@@ -455,6 +466,12 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                     notifyDataSetChanged();
                     Toast.makeText(context, "Lista ažurirana", Toast.LENGTH_SHORT).show();
                 } else {
+                    try {
+                        String errorBody = response.errorBody().string();
+                        Log.e(TAG, "Server-side error body: " + errorBody);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     Log.e(TAG, "Error updating animal: " + response.message() + ", code: " + response.code());
                     Log.e(TAG, "Response body: " + response.errorBody().toString());
                     Toast.makeText(context, "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
@@ -535,7 +552,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
         model.setId_korisnika(Integer.parseInt(adopterId));
         model.setUdomljen(true);
-        model.setId_ljubimca(selectedAnimal.getIdLjubimca());
+        // model.setId_ljubimca(selectedAnimal.getIdLjubimca());
 
         Date now = new Date();
         // Format za datum
@@ -579,6 +596,12 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                         }
                     });
                 } else {
+                    try {
+                        String errorBody = response.errorBody().string();
+                        Log.e(TAG, "Server-side error body: " + errorBody);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     Log.e(TAG, "Error adopting animal: " + response.message());
                     Toast.makeText(context, "Udomljavanje nije uspjelo: " + response.message(), Toast.LENGTH_SHORT).show();
                 }

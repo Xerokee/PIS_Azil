@@ -102,7 +102,7 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
         // Ažuriraj status životinje
         UpdateDnevnikModel updateModel = new UpdateDnevnikModel();
-        updateModel.setId_ljubimca(rejectedAnimal.getId_ljubimca());
+        // updateModel.setId_ljubimca(rejectedAnimal.getId_ljubimca());
         updateModel.setId_korisnika(rejectedAnimal.getId_korisnika());
         updateModel.setIme_ljubimca(rejectedAnimal.getIme_ljubimca());
 

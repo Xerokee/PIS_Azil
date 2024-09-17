@@ -106,8 +106,4 @@ public class UpdateDnevnikModel {
     public int getId_ljubimca() {
         return id_ljubimca;
     }
-
-    public void setId_ljubimca(int id_ljubimca) {
-        this.id_ljubimca = id_ljubimca;
-    }
 }
