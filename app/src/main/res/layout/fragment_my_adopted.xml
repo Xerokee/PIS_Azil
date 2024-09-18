@@ -1,12 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="@color/white"
     tools:context=".fragments.MyAdoptedFragment">
+
+    <!-- Dodano polje za pretraživanje -->
+    <EditText
+        android:id="@+id/search_adopter_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Pretraži udomitelja..."
+        android:padding="12dp"
+        android:textColor="@color/green_700"
+        android:textColorHint="@color/green_700"
+        android:background="@drawable/search_gb"
+        android:drawableLeft="@drawable/ic_baseline_search_24"
+        android:drawablePadding="5dp"
+        android:elevation="3dp"
+        android:layout_margin="8dp" />
 
     <!-- Naslov za udomljene životinje -->
     <TextView
@@ -30,7 +45,7 @@
         android:layout_weight="1"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
     <!-- Prikaz kada nema udomljenih životinja -->
     <ImageView
@@ -40,7 +55,7 @@
         android:layout_gravity="center"
         android:src="@drawable/paw"
         android:visibility="gone"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/new_animals_textview"
@@ -53,6 +68,6 @@
         android:textColor="@color/green_700"
         android:layout_gravity="center"
         android:visibility="gone"
-        tools:visibility="visible"/>
+        tools:visibility="visible" />
 
 </LinearLayout>

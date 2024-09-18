@@ -36,12 +36,12 @@ import retrofit2.Response;
 
 public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnimalsAdapter.ViewHolder> {
     private Context context;
-    private List<UpdateDnevnikModel> adoptedAnimalsList;
+    private List<UpdateDnevnikModel> filteredAdoptedAnimalsList;
     ApiService apiService;
 
-    public MyAdoptedAnimalsAdapter(Context context, List<UpdateDnevnikModel> adoptedAnimalsList) {
+    public MyAdoptedAnimalsAdapter(Context context, List<UpdateDnevnikModel> filteredAdoptedAnimalsList) {
         this.context = context;
-        this.adoptedAnimalsList = adoptedAnimalsList;
+        this.filteredAdoptedAnimalsList  = filteredAdoptedAnimalsList ;
         this.apiService = ApiClient.getClient().create(ApiService.class);
     }
 
@@ -54,14 +54,19 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        UpdateDnevnikModel animal = adoptedAnimalsList.get(position);
+        UpdateDnevnikModel animal = filteredAdoptedAnimalsList.get(position);
         holder.animalName.setText(animal.getIme_ljubimca());
         holder.animalType.setText(animal.getTip_ljubimca());
         Glide.with(context).load(animal.getImgUrl()).into(holder.animalImage);
 
         if (animal.isUdomljen()) {
             holder.tvAdoptedStatus.setText("Udomljeno");
-            getAdopterNameById(animal.getId_korisnika(), holder.adopterName);
+            String adopterName = animal.getImeUdomitelja();
+            if (adopterName == null || adopterName.isEmpty()) {
+                getAdopterNameById(animal.getId_korisnika(), holder.adopterName, animal); // Ovaj metod će postaviti ime i u holder i u model
+            } else {
+                holder.adopterName.setText(adopterName);
+            }
         } else {
             holder.tvAdoptedStatus.setText("Dostupno za udomljavanje");
             holder.adopterName.setText("");
@@ -78,7 +83,7 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
 
     @Override
     public int getItemCount() {
-        return adoptedAnimalsList.size();
+        return filteredAdoptedAnimalsList != null ? filteredAdoptedAnimalsList.size() : 0;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -108,9 +113,11 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
         return false;
     }
 
-    private void getAdopterNameById(int adopterId, final TextView adopterNameTextView) {
+    private void getAdopterNameById(int adopterId, final TextView adopterNameTextView, UpdateDnevnikModel animal) {
         if (adopterId == 0) {
             adopterNameTextView.setText("Nepoznato");
+            animal.setImeUdomitelja("Nepoznato");
+            notifyDataSetChanged(); // Osvježi adapter nakon ažuriranja modela
             return;
         }
 
@@ -118,15 +125,22 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
             @Override
             public void onResponse(Call<UserByEmailResponseModel> call, Response<UserByEmailResponseModel> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    adopterNameTextView.setText(response.body().getResult().getIme());
+                    String imeUdomitelja = response.body().getResult().getIme();
+                    adopterNameTextView.setText(imeUdomitelja);
+                    animal.setImeUdomitelja(imeUdomitelja);
+                    notifyDataSetChanged(); // Osvježi adapter nakon ažuriranja modela
                 } else {
                     adopterNameTextView.setText("Udomitelj: Nepoznato");
+                    animal.setImeUdomitelja("Nepoznato");
+                    notifyDataSetChanged(); // Osvježi adapter nakon ažuriranja modela
                 }
             }
 
             @Override
             public void onFailure(Call<UserByEmailResponseModel> call, Throwable t) {
                 adopterNameTextView.setText("Udomitelj: Greška u dohvatu podataka");
+                animal.setImeUdomitelja("Greška u dohvatu podataka");
+                notifyDataSetChanged(); // Osvježi adapter nakon ažuriranja modela
             }
         });
     }
@@ -139,7 +153,7 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    adoptedAnimalsList.remove(position);
+                    filteredAdoptedAnimalsList.remove(position);
                     notifyItemRemoved(position);
                     Toast.makeText(context, "Životinja je vraćena u azil", Toast.LENGTH_SHORT).show();
                     String subject = "Životinja je vraćena!";

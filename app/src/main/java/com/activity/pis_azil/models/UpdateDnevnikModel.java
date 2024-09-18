@@ -12,7 +12,7 @@ public class UpdateDnevnikModel {
     private String imgUrl;
     private boolean stanje_zivotinje;
     private boolean status_udomljavanja;
-
+    private String imeUdomitelja;
 
     public UpdateDnevnikModel() {
     }
@@ -105,5 +105,12 @@ public class UpdateDnevnikModel {
 
     public int getId_ljubimca() {
         return id_ljubimca;
+    }
+    public String getImeUdomitelja() {
+        return imeUdomitelja;
+    }
+
+    public void setImeUdomitelja(String imeUdomitelja) {
+        this.imeUdomitelja = imeUdomitelja;
     }
 }

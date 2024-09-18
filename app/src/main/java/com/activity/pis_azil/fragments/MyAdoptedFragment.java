@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,11 +21,14 @@ import com.activity.pis_azil.R;
 import com.activity.pis_azil.adapters.MyAdoptedAnimalsAdapter;
 import com.activity.pis_azil.models.AnimalModel;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
+import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import retrofit2.Call;
@@ -34,10 +39,13 @@ public class MyAdoptedFragment extends Fragment {
 
     private ApiService apiService;
     private MyAdoptedAnimalsAdapter adapter;
+    private EditText searchAdopterBox;
     private RecyclerView recyclerView;
     private List<UpdateDnevnikModel> adoptedAnimalsList;
+    public List<UpdateDnevnikModel> filteredAdoptedAnimalsList;
     private TextView newAnimalsTextView;
     private ImageView newAnimalsImageView;
+    private Map<Integer, String> userMap = new HashMap<>();
 
     public MyAdoptedFragment() {
         // Required empty public constructor
@@ -50,18 +58,77 @@ public class MyAdoptedFragment extends Fragment {
 
         apiService = ApiClient.getClient().create(ApiService.class);
 
+        searchAdopterBox = root.findViewById(R.id.search_adopter_box);
         recyclerView = root.findViewById(R.id.adopted_animals_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
         adoptedAnimalsList = new ArrayList<>();
-        adapter = new MyAdoptedAnimalsAdapter(getActivity(), adoptedAnimalsList);
+        filteredAdoptedAnimalsList = new ArrayList<>();
+
+        adapter = new MyAdoptedAnimalsAdapter(getActivity(), filteredAdoptedAnimalsList);
         recyclerView.setAdapter(adapter);
 
         newAnimalsTextView = root.findViewById(R.id.new_animals_textview);
         newAnimalsImageView = root.findViewById(R.id.new_animals_img);
 
-        fetchAdoptedAnimals();
+        fetchUsers();
+
+        searchAdopterBox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String query = charSequence.toString().toLowerCase();
+                filterAdoptedAnimals(query);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {}
+        });
 
         return root;
+    }
+
+    private void fetchUsers() {
+        apiService.getAllUsers().enqueue(new Callback<List<UserModel>>() {
+            @Override
+            public void onResponse(Call<List<UserModel>> call, Response<List<UserModel>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    for (UserModel user : response.body()) {
+                        userMap.put(user.getIdKorisnika(), user.getIme()); // Spremi ID korisnika i ime u mapu
+                    }
+                    fetchAdoptedAnimals(); // Zatim dohvati udomljene životinje
+                } else {
+                    Toast.makeText(getActivity(), "Greška u dohvaćanju korisnika: " + response.message(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<UserModel>> call, Throwable t) {
+                Log.e("MyAdoptedFragment", "Error fetching users: ", t);
+                Toast.makeText(getActivity(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    // Metoda za filtriranje udomljenih životinja prema imenu udomitelja
+    private void filterAdoptedAnimals(String query) {
+        filteredAdoptedAnimalsList.clear();
+        if (query.isEmpty()) {
+            // Ako je upit prazan, prikaži sve udomljene životinje
+            filteredAdoptedAnimalsList.addAll(adoptedAnimalsList);
+        } else {
+            // Filtriraj listu prema imenu udomitelja iz modela
+            for (UpdateDnevnikModel animal : adoptedAnimalsList) {
+                if (animal.getImeUdomitelja() != null && animal.getImeUdomitelja().toLowerCase().contains(query.toLowerCase())) {
+                    filteredAdoptedAnimalsList.add(animal);
+                }
+            }
+        }
+        // Ažurirajte adapter sa novom listom
+        adapter.notifyDataSetChanged();
     }
 
     private void fetchAdoptedAnimals() {
@@ -70,8 +137,18 @@ public class MyAdoptedFragment extends Fragment {
             public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     adoptedAnimalsList.clear();
+                    filteredAdoptedAnimalsList.clear();
                     List<UpdateDnevnikModel> list = response.body().stream().filter(UpdateDnevnikModel::isUdomljen).collect(Collectors.toList());
-                    adoptedAnimalsList.addAll(list);
+
+                    // Postavite ime udomitelja pre filtriranja
+                    for (UpdateDnevnikModel animal : list) {
+                        String imeUdomitelja = userMap.getOrDefault(animal.getId_korisnika(), "Nepoznato");
+                        animal.setImeUdomitelja(imeUdomitelja);
+                        adoptedAnimalsList.add(animal);
+                    }
+
+                    // Kopirajte sve u filteredAdoptedAnimalsList
+                    filteredAdoptedAnimalsList.addAll(adoptedAnimalsList);
                     adapter.notifyDataSetChanged();
                     updateEmptyState();
                 } else {
@@ -88,7 +165,7 @@ public class MyAdoptedFragment extends Fragment {
     }
 
     private void updateEmptyState() {
-        if (adoptedAnimalsList.isEmpty()) {
+        if (filteredAdoptedAnimalsList.isEmpty()) {
             newAnimalsTextView.setVisibility(View.VISIBLE);
             newAnimalsImageView.setVisibility(View.VISIBLE);
         } else {
