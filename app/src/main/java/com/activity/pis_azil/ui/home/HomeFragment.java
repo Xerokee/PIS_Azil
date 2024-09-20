@@ -123,6 +123,7 @@ public class HomeFragment extends Fragment {
         confirmButton.setOnClickListener(v -> {
             String name = nameFilter.getText().toString().trim();
             String type = typeFilter.getText().toString().trim();
+            Log.d(TAG, "Filters applied: Name = " + name + ", Type = " + type);
             applyFilters(name, type);
             dialog.dismiss(); // Zatvori dijalog nakon primjene filtera
         });
@@ -137,6 +138,7 @@ public class HomeFragment extends Fragment {
     // Metoda za resetiranje filtera
     private void resetFilter() {
         progressBar.setVisibility(View.VISIBLE);
+        Log.d(TAG, "Resetting filters and reloading all animals");
         loadAllAnimals(); // Ponovno učitaj sve životinje
         progressBar.setVisibility(View.GONE);
     }
@@ -144,12 +146,14 @@ public class HomeFragment extends Fragment {
     // Metoda za primjenu filtera
     private void applyFilters(String name, String type) {
         progressBar.setVisibility(View.VISIBLE);
+        Log.d(TAG, "Applying filters: Name = " + name + ", Type = " + type);
 
         List<IsBlockedAnimalModel> filteredList = animalModelList.stream()
                 .filter(animal -> (name.isEmpty() || animal.getImeLjubimca().toLowerCase().contains(name.toLowerCase())) &&
                         (type.isEmpty() || animal.getTipLjubimca().toLowerCase().contains(type.toLowerCase())))
                 .collect(Collectors.toList());
 
+        Log.d(TAG, "Number of animals after filtering: " + filteredList.size());
         animalModelList.clear();
         animalModelList.addAll(filteredList);
         animalsAdapter.notifyDataSetChanged();
@@ -164,7 +168,10 @@ public class HomeFragment extends Fragment {
             @Override
             public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
                 progressBar.setVisibility(View.GONE);
+                Log.d(TAG, "Search animals by type - Response received");
+                Log.d(TAG, "Response code: " + response.code());
                 if (response.isSuccessful() && response.body() != null) {
+                    Log.d(TAG, "Response body size: " + response.body().size());
                     animalModelList.clear();
                     List<IsBlockedAnimalModel> animals = response.body().stream().map(animal -> {
                         return new IsBlockedAnimalModel(
@@ -210,14 +217,14 @@ public class HomeFragment extends Fragment {
             @Override
             public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
                 progressBar.setVisibility(View.GONE);
+                Log.d(TAG, "Fetch all animals - Response received");
+                Log.d(TAG, "Response code: " + response.code());
                 if (response.isSuccessful() && response.body() != null) {
-                    animalModelList.clear(); // Ovo će osigurati da se lista osvježi
+                    Log.d(TAG, "Number of animals fetched: " + response.body().size());
+                    animalModelList.clear();
                     List<AnimalModel> animals = response.body();
-                    Log.d(TAG, "Received " + animals.size() + " animals from the server.");
-
-                    // Dohvati posvojene životinje, a filtriranje izvrši unutar odgovora tog API poziva
+                    Log.d(TAG, "Animals received from server: " + animals.toString());
                     fetchAdoptedAnimals(animals);
-
                 } else {
                     Log.e(TAG, "Error fetching animals. Response code: " + response.code() + ", Message: " + response.message());
                     Toast.makeText(getContext(), "Nema pronađenih životinja", Toast.LENGTH_SHORT).show();
@@ -234,13 +241,14 @@ public class HomeFragment extends Fragment {
     }
 
     private void fetchAdoptedAnimals(List<AnimalModel> animals) {
-        Log.d(TAG, "Fetching adopted animals");
-
+        Log.d(TAG, "Fetching adopted animals...");
         apiService.getDnevnikUdomljavanja().enqueue(new Callback<List<UpdateDnevnikModel>>() {
             @Override
             public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
+                Log.d(TAG, "Fetch adopted animals - Response received");
+                Log.d(TAG, "Response code: " + response.code());
                 if (response.isSuccessful() && response.body() != null) {
-                    Log.d(TAG, "Successfully fetched adopted animals, size: " + response.body().size());
+                    Log.d(TAG, "Number of adopted animals fetched: " + response.body().size());
                     cartModelList.clear();
                     for (UpdateDnevnikModel animal : response.body()) {
                         if (animal.isUdomljen()) {
@@ -249,8 +257,6 @@ public class HomeFragment extends Fragment {
                             cartModelList.add(adoption);
                         }
                     }
-
-                    // Filtriraj sve životinje tek nakon što je dohvaćen popis posvojenih
                     List<AnimalModel> filteredAnimals = animals.stream()
                             .filter(item -> !cartModelList.stream()
                                     .map(MyAdoptionModel::getImeLjubimca)
@@ -258,11 +264,10 @@ public class HomeFragment extends Fragment {
                                     .contains(item.getImeLjubimca()))
                             .collect(Collectors.toList());
 
-
+                    Log.d(TAG, "Number of animals after filtering adopted ones: " + filteredAnimals.size());
                     fetchBlokiranjeZivotinje(filteredAnimals);
-
                 } else {
-                    Log.e(TAG, "Failed to fetch adopted animals: " + response.message());
+                    Log.e(TAG, "Failed to fetch adopted animals. Response code: " + response.code() + ", Message: " + response.message());
                     Toast.makeText(getActivity(), "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
@@ -275,52 +280,47 @@ public class HomeFragment extends Fragment {
         });
     }
 
-
     private void fetchBlokiranjeZivotinje(List<AnimalModel> animals) {
-        Log.d(TAG, "Fetching blocked animals");
-
+        Log.d(TAG, "Fetching blocked animals...");
         Call<List<RejectAdoptionModelRead>> call = apiService.getOdbijeneZivotinje();
         call.enqueue(new Callback<List<RejectAdoptionModelRead>>() {
             @Override
             public void onResponse(Call<List<RejectAdoptionModelRead>> call, Response<List<RejectAdoptionModelRead>> response) {
+                Log.d(TAG, "Fetch blocked animals - Response received");
+                Log.d(TAG, "Response code: " + response.code());
                 if (response.isSuccessful() && response.body() != null) {
+                    Log.d(TAG, "Number of blocked animals fetched: " + response.body().size());
                     SharedPreferences prefs = getContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
                     String userJson = prefs.getString("current_user", null);
+                    Log.d(TAG, "Current user JSON: " + userJson);
                     if (userJson != null) {
                         Gson gson = new Gson();
                         UserModel currentUser = gson.fromJson(userJson, UserModel.class);
                         if (currentUser != null) {
-
+                            Log.d(TAG, "Current user ID: " + currentUser.getIdKorisnika() + ", Is Admin: " + currentUser.isAdmin());
                             if (currentUser.isAdmin()) {
-
                                 animalModelList.clear();
                                 animalModelList.addAll(animals.stream()
-                                        .map(animal -> {
-                                            return new IsBlockedAnimalModel(
-                                                    animal.getIdLjubimca(),
-                                                    animal.getIdUdomitelja(),
-                                                    animal.getImeLjubimca(),
-                                                    animal.getTipLjubimca(),
-                                                    animal.getOpisLjubimca(),
-                                                    animal.isUdomljen(),
-                                                    animal.getDatum(),
-                                                    animal.getVrijeme(),
-                                                    animal.getImgUrl(),
-                                                    animal.StanjeZivotinje(),
-                                                    false
-                                            );
-                                        }).collect(Collectors.toList()));
+                                        .map(animal -> new IsBlockedAnimalModel(
+                                                animal.getIdLjubimca(),
+                                                animal.getIdUdomitelja(),
+                                                animal.getImeLjubimca(),
+                                                animal.getTipLjubimca(),
+                                                animal.getOpisLjubimca(),
+                                                animal.isUdomljen(),
+                                                animal.getDatum(),
+                                                animal.getVrijeme(),
+                                                animal.getImgUrl(),
+                                                animal.StanjeZivotinje(),
+                                                false))
+                                        .collect(Collectors.toList()));
                                 animalsAdapter.notifyDataSetChanged();
-
-
                             } else {
                                 List<IsBlockedAnimalModel> mappedAnimals = animals.stream()
                                         .map(animal -> {
                                             boolean isBlocked = response.body().stream()
                                                     .anyMatch(blocked -> blocked.getIme_ljubimca().equals(animal.getImeLjubimca())
                                                             && blocked.getId_korisnika() == currentUser.getIdKorisnika());
-
-                                            // Mapiraj AnimalModel u IsBlockedAnimalModel
                                             return new IsBlockedAnimalModel(
                                                     animal.getIdLjubimca(),
                                                     animal.getIdUdomitelja(),
@@ -337,13 +337,15 @@ public class HomeFragment extends Fragment {
                                         })
                                         .collect(Collectors.toList());
 
+                                Log.d(TAG, "Number of animals after filtering blocked ones: " + mappedAnimals.size());
                                 animalModelList.clear();
                                 animalModelList.addAll(mappedAnimals);
                                 animalsAdapter.notifyDataSetChanged();
                             }
-
                         }
                     }
+                } else {
+                    Log.e(TAG, "Failed to fetch blocked animals. Response code: " + response.code() + ", Message: " + response.message());
                 }
             }
 
@@ -353,6 +355,4 @@ public class HomeFragment extends Fragment {
             }
         });
     }
-
-
 }

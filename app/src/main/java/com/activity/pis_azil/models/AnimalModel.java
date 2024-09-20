@@ -1,6 +1,7 @@
 package com.activity.pis_azil.models;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class AnimalModel implements Serializable {
     private int id_ljubimca;
@@ -12,12 +13,13 @@ public class AnimalModel implements Serializable {
     private String datum;
     private String vrijeme;
     private String imgUrl;
+    private List<GalleryImageModel> galerijaZivotinja;
     private boolean stanje_zivotinje;
 
     // Constructors, getters, and setters
     public AnimalModel() {}
 
-    public AnimalModel(int id_ljubimca, int id_udomitelja, String ime_ljubimca, String tip_ljubimca, String opis_ljubimca, boolean udomljen, String datum, String vrijeme, String imgUrl, Boolean stanje_zivotinje) {
+    public AnimalModel(int id_ljubimca, int id_udomitelja, String ime_ljubimca, String tip_ljubimca, String opis_ljubimca, boolean udomljen, String datum, String vrijeme, String imgUrl, List<GalleryImageModel> galerijaZivotinja, boolean stanje_zivotinje) {
         this.id_ljubimca = id_ljubimca;
         this.id_udomitelja = id_udomitelja;
         this.ime_ljubimca = ime_ljubimca;
@@ -27,6 +29,7 @@ public class AnimalModel implements Serializable {
         this.datum = datum;
         this.vrijeme = vrijeme;
         this.imgUrl = imgUrl;
+        this.galerijaZivotinja = galerijaZivotinja;
         this.stanje_zivotinje = stanje_zivotinje;
     }
 
@@ -102,6 +105,14 @@ public class AnimalModel implements Serializable {
         this.imgUrl = imgUrl;
     }
 
+    public List<GalleryImageModel> getGalerijaZivotinja() {
+        return galerijaZivotinja;
+    }
+
+    public void setGalerijaZivotinja(List<GalleryImageModel> galerijaZivotinja) {
+        this.galerijaZivotinja = galerijaZivotinja;
+    }
+
     public boolean StanjeZivotinje() {
         return stanje_zivotinje;
     }
@@ -124,6 +135,7 @@ public class AnimalModel implements Serializable {
                 ", vrijeme='" + vrijeme + '\'' +
                 '}' +
                 ", imgUrl='" + imgUrl + '\'' +
+                ", galerijaZivotinja='" + galerijaZivotinja + '\'' +
                 ", stanje_zivotinje=" + stanje_zivotinje +
                 '}';
     }

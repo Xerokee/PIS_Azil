@@ -1,6 +1,7 @@
 package com.activity.pis_azil.models;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class IsBlockedAnimalModel implements Serializable {
     private int id_ljubimca;
@@ -12,6 +13,7 @@ public class IsBlockedAnimalModel implements Serializable {
     private String datum;
     private String vrijeme;
     private String imgUrl;
+    List<String> galerijaZivotinja;
     private boolean stanje_zivotinje;
     private boolean isBlocked;
 
@@ -103,6 +105,14 @@ public class IsBlockedAnimalModel implements Serializable {
 
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
+    }
+
+    public List<String> getGalleryImgUrls() {
+        return galerijaZivotinja;
+    }
+
+    public void setGalleryImgUrls(List<String> galerijaZivotinja) {
+        this.galerijaZivotinja = galerijaZivotinja;
     }
 
     public boolean isStanjeZivotinje() {
