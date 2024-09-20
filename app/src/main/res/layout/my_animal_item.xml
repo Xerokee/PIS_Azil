@@ -253,39 +253,55 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
 
             <Button
                 android:id="@+id/adoptButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:text="Udomi"
                 android:textColor="@color/black"
                 android:background="@color/green_500"
                 android:textStyle="bold"
                 android:textSize="20dp"
-                android:weightSum="2" />
-
+                android:layout_marginRight="8dp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+
+            <Button
+                android:id="@+id/approveButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Odobri"
+                android:textColor="@color/black"
+                android:background="@color/teal_200"
+                android:textStyle="bold"
+                android:textSize="20dp"
+                android:layout_marginRight="8dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
 
             <Button
                 android:id="@+id/rejectButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:text="Odbij"
                 android:textColor="@color/black"
                 android:background="@color/red"
                 android:textStyle="bold"
                 android:textSize="20dp"
-                android:weightSum="2" />
-
+                android:layout_marginRight="8dp" />
         </LinearLayout>
     </LinearLayout>
 

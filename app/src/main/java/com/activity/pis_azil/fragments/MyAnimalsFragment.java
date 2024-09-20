@@ -25,6 +25,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MyAnimalsFragment extends Fragment implements DataRefreshListener {
+    @Override
+    public void refreshData() {
+        fetchAdoptedAnimals();
+    }
     private static final String TAG = "MyAnimalsFragment";
 
     ApiService apiService;
@@ -50,17 +54,12 @@ public class MyAnimalsFragment extends Fragment implements DataRefreshListener {
         emptyStateTextView = root.findViewById(R.id.empty_state_text_view); // Inicijalizacija praznog prikaza
 
         cartModelList = new ArrayList<>();
-        cartAdapter = new MyAdoptionAdapter(getActivity(), cartModelList, this); // Proslijedi listener
+        cartAdapter = new MyAdoptionAdapter(requireContext(), cartModelList, this); // Proslijedi listener
         recyclerView.setAdapter(cartAdapter);
 
         fetchAdoptedAnimals();
 
         return root;
-    }
-
-    @Override
-    public void refreshData() {
-        fetchAdoptedAnimals();
     }
 
     private void fetchAdoptedAnimals() {

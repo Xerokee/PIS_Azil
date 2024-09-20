@@ -75,7 +75,7 @@ public class DetailedActivity extends AppCompatActivity {
         }
 
         addToCart = findViewById(R.id.add_to_cart);
-        addToCart.setOnClickListener(v -> addedToCart());
+        addToCart.setOnClickListener(v -> adoptAnimal());
     }
 
     private void fetchAnimalDetails(int animalId) {
@@ -136,11 +136,11 @@ public class DetailedActivity extends AppCompatActivity {
         }
     }
 
-    private void addedToCart() {
-        Log.d(TAG, "Dodavanje ljubimca u listu udomljavanja...");
+    private void adoptAnimal() {
+        Log.d(TAG, "Udomljavanje ljubimca...");
 
         if (animalModel == null) {
-            Log.e(TAG, "AnimalModel je null, prekidam dodavanje.");
+            Log.e(TAG, "AnimalModel je null, prekidam udomljavanje.");
             return;
         }
 
@@ -205,18 +205,18 @@ public class DetailedActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    Log.d(TAG, "Udomljavanje uspješno dodano.");
-                    Toast.makeText(DetailedActivity.this, "Dodano u listu udomljavanja!", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "Životinja uspješno rezervirana.");
+                    Toast.makeText(DetailedActivity.this, "Životinja je rezervirana!", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
-                    Log.e(TAG, "Neuspješno dodavanje udomljavanja: " + response.message());
+                    Log.e(TAG, "Neuspješno rezerviranje: " + response.message());
                     Toast.makeText(DetailedActivity.this, "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Log.e(TAG, "Greška prilikom dodavanja udomljavanja: ", t);
+                Log.e(TAG, "Greška prilikom rezerviranja životinje: ", t);
                 Toast.makeText(DetailedActivity.this, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

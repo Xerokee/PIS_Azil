@@ -10,6 +10,7 @@ public class AnimalModel implements Serializable {
     private String tip_ljubimca;
     private String opis_ljubimca;
     private boolean udomljen;
+    private boolean inAdoptionProcess;
     private String datum;
     private String vrijeme;
     private String imgUrl;
@@ -120,6 +121,14 @@ public class AnimalModel implements Serializable {
     public boolean setStanjeZivotinje(boolean stanje_zivotinje) {
         this.stanje_zivotinje = stanje_zivotinje;
         return stanje_zivotinje;
+    }
+
+    public boolean isInAdoptionProcess() {
+        return inAdoptionProcess;
+    }
+
+    public void setInAdoptionProcess(boolean inAdoptionProcess) {
+        this.inAdoptionProcess = inAdoptionProcess;
     }
 
     @Override
