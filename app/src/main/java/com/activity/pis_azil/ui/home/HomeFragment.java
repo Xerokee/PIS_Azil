@@ -93,7 +93,7 @@ public class HomeFragment extends Fragment {
         return root;
     }
 
-    // Unutar metode openFilterDialog
+    // Otvaranje filter dijaloga
     private void openFilterDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Filtriraj životinje");
@@ -222,6 +222,28 @@ public class HomeFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d(TAG, "Number of animals fetched: " + response.body().size());
                     animalModelList.clear();
+
+                    // Filtriraj životinje koje su već udomljene
+                    List<AnimalModel> availableAnimals = response.body().stream()
+                            .filter(animal -> !animal.isUdomljen()) // Filtriramo udomljene životinje
+                            .collect(Collectors.toList());
+
+                    for (AnimalModel animal : availableAnimals) {
+                        animalModelList.add(new IsBlockedAnimalModel(
+                                animal.getIdLjubimca(),
+                                animal.getIdUdomitelja(),
+                                animal.getImeLjubimca(),
+                                animal.getTipLjubimca(),
+                                animal.getOpisLjubimca(),
+                                animal.isUdomljen(),
+                                animal.getDatum(),
+                                animal.getVrijeme(),
+                                animal.getImgUrl(),
+                                animal.StanjeZivotinje(),
+                                false
+                        ));
+                    }
+                    animalsAdapter.notifyDataSetChanged();
                     List<AnimalModel> animals = response.body();
                     Log.d(TAG, "Animals received from server: " + animals.toString());
                     fetchAdoptedAnimals(animals);
@@ -355,4 +377,48 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
+    private void loadAdoptedAnimalsForAdmin() {
+        progressBar.setVisibility(View.VISIBLE);
+        apiService.getDnevnikUdomljavanja().enqueue(new Callback<List<UpdateDnevnikModel>>() {
+            @Override
+            public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
+                progressBar.setVisibility(View.GONE);
+                if (response.isSuccessful() && response.body() != null) {
+                    animalModelList.clear();
+
+                    // Filtriramo i prikazujemo samo udomljene životinje
+                    List<UpdateDnevnikModel> adoptedAnimals = response.body().stream()
+                            .filter(UpdateDnevnikModel::isUdomljen)
+                            .collect(Collectors.toList());
+
+                    for (UpdateDnevnikModel adoptedAnimal : adoptedAnimals) {
+                        animalModelList.add(new IsBlockedAnimalModel(
+                                adoptedAnimal.getId_ljubimca(),
+                                adoptedAnimal.getId_korisnika(),
+                                adoptedAnimal.getIme_ljubimca(),
+                                adoptedAnimal.getTip_ljubimca(),
+                                adoptedAnimal.getOpisLjubimca(),
+                                adoptedAnimal.isUdomljen(),
+                                adoptedAnimal.getDatum(),
+                                adoptedAnimal.getVrijeme(),
+                                adoptedAnimal.getImgUrl(),
+                                adoptedAnimal.isStanje_zivotinje(),
+                                false
+                        ));
+                    }
+                    animalsAdapter.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(getContext(), "Nema pronađenih udomljenih životinja", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<UpdateDnevnikModel>> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(getContext(), "Greška u dohvaćanju udomljenih životinja", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 }

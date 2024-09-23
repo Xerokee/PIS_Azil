@@ -298,7 +298,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             myAdoptionModel.setIdLjubimca(dnevnikModel.getId_ljubimca());
             myAdoptionModel.setImeLjubimca(dnevnikModel.getIme_ljubimca());
             myAdoptionModel.setTipLjubimca(dnevnikModel.getTip_ljubimca());
-            myAdoptionModel.setOpisLjubimca("");  // Možete prilagoditi prema potrebi
+            myAdoptionModel.setOpisLjubimca("");
             myAdoptionModel.setDatum(dnevnikModel.getDatum());
             myAdoptionModel.setVrijeme(dnevnikModel.getVrijeme());
             myAdoptionModel.setImgUrl(dnevnikModel.getImgUrl());
@@ -636,7 +636,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 context,
                 0,
                 intent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE // Omogućavamo ponovno korištenje ovog PendingIntent-a
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
         // Kreiramo obavijest

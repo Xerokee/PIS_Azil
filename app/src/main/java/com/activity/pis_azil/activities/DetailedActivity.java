@@ -2,10 +2,12 @@ package com.activity.pis_azil.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -75,7 +77,27 @@ public class DetailedActivity extends AppCompatActivity {
         }
 
         addToCart = findViewById(R.id.add_to_cart);
-        addToCart.setOnClickListener(v -> adoptAnimal());
+
+        // Dohvaćanje trenutnog korisnika iz SharedPreferences
+        SharedPreferences prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        String userJson = prefs.getString("current_user", null);
+        UserModel currentUser;
+
+        if (userJson != null) {
+            Gson gson = new Gson();
+            currentUser = gson.fromJson(userJson, UserModel.class);
+        } else {
+            currentUser = null;
+        }
+
+        // Prikaži gumb "Udomi" za sve korisnike, ali s različitim funkcionalnostima
+        if (currentUser != null && currentUser.isAdmin()) {
+            // Admin bira udomitelja
+            addToCart.setOnClickListener(v -> showAdoptionDialogWithAllUsers());
+        } else {
+            // Obični korisnici mogu samo poslati zahtjev za udomljavanje
+            addToCart.setOnClickListener(v -> requestAdoptionForUser(currentUser));
+        }
     }
 
     private void fetchAnimalDetails(int animalId) {
@@ -136,27 +158,67 @@ public class DetailedActivity extends AppCompatActivity {
         }
     }
 
-    private void adoptAnimal() {
-        Log.d(TAG, "Udomljavanje ljubimca...");
+    // Metoda za admina - prikaz dijaloga s popisom korisnika
+    private void showAdoptionDialogWithAllUsers() {
+        apiService.getAllUsers().enqueue(new Callback<List<UserModel>>() {
+            @Override
+            public void onResponse(Call<List<UserModel>> call, Response<List<UserModel>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<String> userNames = new ArrayList<>();
+                    List<Integer> userIds = new ArrayList<>();
 
+                    // Prikazujemo samo korisnike koji nisu admini
+                    for (UserModel user : response.body()) {
+                        if (!user.isAdmin()) {
+                            userNames.add(user.getIme());
+                            userIds.add(user.getIdKorisnika());
+                        }
+                    }
+
+                    if (!userNames.isEmpty()) {
+                        CharSequence[] usersArray = userNames.toArray(new CharSequence[0]);
+
+                        new AlertDialog.Builder(DetailedActivity.this)
+                                .setTitle("Odaberite udomitelja")
+                                .setItems(usersArray, (dialog, which) -> {
+                                    int selectedUserId = userIds.get(which);
+                                    String selectedUserName = userNames.get(which);
+                                    adoptAnimalForUser(selectedUserId, selectedUserName);
+                                })
+                                .show();
+                    } else {
+                        Toast.makeText(DetailedActivity.this, "Nema dostupnih korisnika za udomljavanje.", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(DetailedActivity.this, "Greška u dohvaćanju korisnika.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<UserModel>> call, Throwable t) {
+                Toast.makeText(DetailedActivity.this, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // Metoda za admina - udomljavanje životinje za odabranog korisnika
+    private void adoptAnimalForUser(int userId, String userName) {
+        Log.d(TAG, "Udomljavanje životinje za korisnika: " + userName);
+        adoptAnimal(userId, false); // Admin odmah odobrava udomljavanje
+    }
+
+    // Metoda za korisnike - zahtjev za udomljavanje životinje za sebe (dodaje se u listu za odobrenje)
+    private void requestAdoptionForUser(UserModel currentUser) {
+        if (currentUser != null) {
+            Log.d(TAG, "Korisnik šalje zahtjev za udomljavanje: " + currentUser.getIme());
+            adoptAnimal(currentUser.getIdKorisnika(), true); // Korisnik šalje zahtjev koji čeka odobrenje
+        }
+    }
+
+    // Zajednička metoda za udomljavanje ili zahtjev za udomljavanje
+    private void adoptAnimal(int userId, boolean requiresApproval) {
         if (animalModel == null) {
-            Log.e(TAG, "AnimalModel je null, prekidam udomljavanje.");
-            return;
-        }
-
-        SharedPreferences prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-        String userJson = prefs.getString("current_user", null);
-        Log.d(TAG, "Podaci o korisniku iz SharedPreferences: " + userJson);
-        UserModel currentUser = null;
-
-        if (userJson != null) {
-            Gson gson = new Gson();
-            currentUser = gson.fromJson(userJson, UserModel.class);
-        }
-
-        if (currentUser == null) {
-            Log.e(TAG, "Trenutni korisnik nije prepoznat.");
-            Toast.makeText(this, "Nije moguće prepoznati trenutnog korisnika", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "AnimalModel je null, prekidam proces.");
             return;
         }
 
@@ -181,6 +243,7 @@ public class DetailedActivity extends AppCompatActivity {
 
         adoptionModel.setOpisLjubimca(animalModel.getOpisLjubimca());
 
+        // Postavljanje trenutnog datuma i vremena
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
 
@@ -191,32 +254,44 @@ public class DetailedActivity extends AppCompatActivity {
         // Postavljanje datuma i vremena
         String currentDate = sdfDate.format(Calendar.getInstance().getTime());
         String currentTime = sdfTime.format(Calendar.getInstance().getTime());
+
         adoptionModel.setDatum(currentDate);
         adoptionModel.setVrijeme(currentTime);
         adoptionModel.setImgUrl(animalModel.getImgUrl());
-        adoptionModel.setIdKorisnika(currentUser.getIdKorisnika());
-        adoptionModel.setUdomljen(false);
-        adoptionModel.setStanjeZivotinje(false);
-        adoptionModel.setStatusUdomljavanja(true);
+        adoptionModel.setIdKorisnika(userId);  // Postavljanje korisnika
 
-        Log.d(TAG, "Slanje adoption modela na API: " + adoptionModel);
+        if (requiresApproval) {
+            // Ako zahtjeva odobrenje, označava se kao neudomljena životinja
+            adoptionModel.setUdomljen(false);
+            adoptionModel.setStatusUdomljavanja(false); // Čeka odobrenje
+        } else {
+            // Ako admin odobrava odmah, označava se kao udomljena
+            adoptionModel.setUdomljen(true);
+            adoptionModel.setStatusUdomljavanja(true);
+        }
+
+        Log.d(TAG, "Slanje modela udomljavanja na API: " + adoptionModel);
 
         apiService.addAdoption(adoptionModel).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    Log.d(TAG, "Životinja uspješno rezervirana.");
-                    Toast.makeText(DetailedActivity.this, "Životinja je rezervirana!", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "Proces udomljavanja uspješno završen.");
+                    if (requiresApproval) {
+                        Toast.makeText(DetailedActivity.this, "Zahtjev za udomljavanje poslan.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(DetailedActivity.this, "Životinja je uspješno udomljena!", Toast.LENGTH_SHORT).show();
+                    }
                     finish();
                 } else {
-                    Log.e(TAG, "Neuspješno rezerviranje: " + response.message());
+                    Log.e(TAG, "Greška u procesu udomljavanja: " + response.message());
                     Toast.makeText(DetailedActivity.this, "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Log.e(TAG, "Greška prilikom rezerviranja životinje: ", t);
+                Log.e(TAG, "Greška prilikom udomljavanja: ", t);
                 Toast.makeText(DetailedActivity.this, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

@@ -13,6 +13,7 @@ public class UpdateDnevnikModel {
     private boolean stanje_zivotinje;
     private boolean status_udomljavanja;
     private String imeUdomitelja;
+    private String opisLjubimca;
 
     public UpdateDnevnikModel() {
     }
@@ -116,5 +117,13 @@ public class UpdateDnevnikModel {
 
     public void setImeUdomitelja(String imeUdomitelja) {
         this.imeUdomitelja = imeUdomitelja;
+    }
+
+    public String getOpisLjubimca() {
+        return opisLjubimca;
+    }
+
+    public void setOpisLjubimca(String opisLjubimca) {
+        this.opisLjubimca = opisLjubimca;
     }
 }
