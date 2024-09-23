@@ -1,6 +1,7 @@
 package com.activity.pis_azil.models;
+import java.io.Serializable;
 
-public class MyAdoptionModel {
+public class MyAdoptionModel implements Serializable {
     private int idLjubimca;
     private String ime_ljubimca;
     private String tip_ljubimca;
@@ -12,6 +13,7 @@ public class MyAdoptionModel {
     private boolean stanje_zivotinje;
     private int id_korisnika;
     private boolean status_udomljavanja;
+
 
     // Getteri i setteri
 

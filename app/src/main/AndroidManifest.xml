@@ -28,6 +28,13 @@
         <receiver android:name=".AlarmReceiver" />
 
         <activity
+            android:name=".activities.AdoptionStatusActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        </activity>
+
+        <activity
             android:name=".activities.DetailedActivity"
             android:theme="@style/Theme.PIS_Azil.NoActionBar"
             android:exported="false" />

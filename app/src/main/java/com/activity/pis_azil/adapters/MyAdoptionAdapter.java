@@ -3,7 +3,9 @@ package com.activity.pis_azil.adapters;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -23,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.SendMail;
+import com.activity.pis_azil.activities.AdoptionStatusActivity;
 import com.activity.pis_azil.models.RejectAdoptionModel;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserByEmailResponseModel;
@@ -269,6 +272,9 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                             if (adoption.getId_korisnika() == currentUser.getIdKorisnika()
                                     && !adoption.isUdomljen()) {
                                 userAdoptions.add(convertToMyAdoptionModel(adoption));
+
+                                // Pošalji obavijest kada korisnik uđe u listu
+                                sendAdoptionStatusNotification(context, currentUser.getIdKorisnika(), adoption.getIme_ljubimca());
                             }
                         }
 
@@ -611,6 +617,41 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         });
     }
 
+    private void sendAdoptionStatusNotification(Context context, int idLjubimca, String animalName) {
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        String channelId = "adoption_status_channel";
+        String channelName = "Adoption Status Notifications";
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        // Kreiramo Intent za otvaranje AdoptionStatusActivity s dodatnim informacijama
+        Intent intent = new Intent(context, AdoptionStatusActivity.class);
+        intent.putExtra("idLjubimca", idLjubimca);  // Šaljemo ID životinje
+
+        // Postavljamo PendingIntent s Intentom
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                context,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE // Omogućavamo ponovno korištenje ovog PendingIntent-a
+        );
+
+        // Kreiramo obavijest
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
+                .setSmallIcon(R.drawable.paw)  // Ikonica za obavijest
+                .setContentTitle("Unesite status za udomljavanje")
+                .setContentText("Potvrdite status za udomljavanje životinje " + animalName)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContentIntent(pendingIntent)  // Klik na obavijest otvara aktivnost
+                .setAutoCancel(true);  // Obavijest će se automatski ukloniti kada se klikne
+
+        // Prikazujemo obavijest
+        notificationManager.notify(animalName.hashCode(), builder.build());
+    }
+
     private void adoptAnimal(MyAdoptionModel selectedAnimal, String adopterId, String adopterName) {
         if (adopterId == null || adopterId.isEmpty()) {
             Log.e(TAG, "Adopter ID nije postavljen. Ne mogu nastaviti s udomljavanjem.");
@@ -645,6 +686,11 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     Log.d(TAG, "Animal adopted successfully: " + selectedAnimal.getIdLjubimca() + ", adopterId: " + adopterId + ", adopterName: " + adopterName);
+                    // Slanje obavijesti korisniku
+                    sendAdoptionStatusNotification(context, selectedAnimal.getIdLjubimca(), selectedAnimal.getImeLjubimca());
+                    Toast.makeText(context, "Životinja je udomljena za korisnika " + adopterName, Toast.LENGTH_SHORT).show();
+                    notifyDataSetChanged();
+
                     Toast.makeText(context, "Životinja je udomljena za korisnika " + adopterName, Toast.LENGTH_SHORT).show();
                     notifyDataSetChanged();
                     getEmailById(Integer.parseInt(adopterId), email -> {

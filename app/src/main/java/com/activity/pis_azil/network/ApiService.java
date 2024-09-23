@@ -85,6 +85,9 @@ public interface ApiService {
     @DELETE("DnevnikUdomljavanja/delete/{id}")
     Call<Void> deleteAdoption(@Header("RequestAnimalId") int requestAnimalId, @Path("id") int id);
 
+    @PUT("DnevnikUdomljavanja/{idLjubimca}/update/status")
+    Call<Void> updateAdoptionStatus(@Path("idLjubimca") int idLjubimca, @Body Map<String, Boolean> statusUpdate);
+
     @GET("SearchAnimals")
     Call<List<AnimalModel>> searchAnimals(@Query("keyword") String keyword);
 
