@@ -41,12 +41,36 @@ public class AdoptionStatusActivity extends AppCompatActivity {
             finish();
         }
 
+        // Poziv metode za dohvaćanje statusa udomljavanja
+        fetchAdoptionStatus();
+
         Button confirmButton = findViewById(R.id.confirm_but);
         Button rejectButton = findViewById(R.id.reject_but);
 
         // Kada se pritisne na prihvati/odbij gumb
         confirmButton.setOnClickListener(v -> updateAdoptionStatus(true));
         rejectButton.setOnClickListener(v -> updateAdoptionStatus(false));
+    }
+
+    // Metoda za dohvaćanje statusa udomljavanja
+    private void fetchAdoptionStatus() {
+        apiService.getAdoptionStatus(idLjubimca).enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    boolean status = response.body();
+                    // Ažuriraj UI ili pohrani status
+                    Log.d("AdoptionStatus", "Trenutni status udomljavanja: " + status);
+                } else {
+                    Log.e("AdoptionStatus", "Greška pri dohvaćanju statusa: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                Log.e("AdoptionStatus", "API poziv nije uspio: ", t);
+            }
+        });
     }
 
     private void updateAdoptionStatus(boolean status) {

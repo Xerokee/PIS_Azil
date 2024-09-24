@@ -127,7 +127,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
         // Postavljanje boje pozadine ovisno o statusu udomljavanja
         if (!cartModel.isStatusUdomljavanja()) {
-            holder.itemView.setBackgroundColor(Color.GRAY); // Siva boja za odbijeno udomljavanje
+            holder.itemView.setBackgroundColor(Color.RED); // Siva boja za odbijeno udomljavanje
         } else {
             holder.itemView.setBackgroundColor(Color.WHITE); // Bijela boja za prihvaćeno udomljavanje
         }

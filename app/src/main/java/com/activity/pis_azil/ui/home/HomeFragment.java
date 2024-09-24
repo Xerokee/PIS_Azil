@@ -148,9 +148,11 @@ public class HomeFragment extends Fragment {
         progressBar.setVisibility(View.VISIBLE);
         Log.d(TAG, "Applying filters: Name = " + name + ", Type = " + type);
 
+        // Filtriraj po imenu, tipu i provjeri da životinja nije udomljena
         List<IsBlockedAnimalModel> filteredList = animalModelList.stream()
                 .filter(animal -> (name.isEmpty() || animal.getImeLjubimca().toLowerCase().contains(name.toLowerCase())) &&
-                        (type.isEmpty() || animal.getTipLjubimca().toLowerCase().contains(type.toLowerCase())))
+                        (type.isEmpty() || animal.getTipLjubimca().toLowerCase().contains(type.toLowerCase())) &&
+                        !animal.isUdomljen()) // Filtriraj udomljene životinje
                 .collect(Collectors.toList());
 
         Log.d(TAG, "Number of animals after filtering: " + filteredList.size());
@@ -172,28 +174,29 @@ public class HomeFragment extends Fragment {
                 Log.d(TAG, "Response code: " + response.code());
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d(TAG, "Response body size: " + response.body().size());
+
+                    // Filtriraj životinje koje su udomljene
+                    List<IsBlockedAnimalModel> availableAnimals = response.body().stream()
+                            .filter(animal -> !animal.isUdomljen()) // Samo neudomljene životinje
+                            .map(animal -> new IsBlockedAnimalModel(
+                                    animal.getIdLjubimca(),
+                                    animal.getIdUdomitelja(),
+                                    animal.getImeLjubimca(),
+                                    animal.getTipLjubimca(),
+                                    animal.getOpisLjubimca(),
+                                    animal.isUdomljen(),
+                                    animal.getDatum(),
+                                    animal.getVrijeme(),
+                                    animal.getImgUrl(),
+                                    animal.StanjeZivotinje(),
+                                    false
+                            ))
+                            .collect(Collectors.toList());
+
                     animalModelList.clear();
-                    List<IsBlockedAnimalModel> animals = response.body().stream().map(animal -> {
-                        return new IsBlockedAnimalModel(
-                                animal.getIdLjubimca(),
-                                animal.getIdUdomitelja(),
-                                animal.getImeLjubimca(),
-                                animal.getTipLjubimca(),
-                                animal.getOpisLjubimca(),
-                                animal.isUdomljen(),
-                                animal.getDatum(),
-                                animal.getVrijeme(),
-                                animal.getImgUrl(),
-                                animal.StanjeZivotinje(),
-                                false
-                        );
-                    }).collect(Collectors.toList());
-                    Log.d(TAG, "Found " + animals.size() + " animals of type: " + type);
-                    for (IsBlockedAnimalModel animal : animals) {
-                        Log.d(TAG, "Animal: " + animal.getImeLjubimca() + ", Type: " + animal.getTipLjubimca() + ", Image URL: " + animal.getImgUrl());
-                    }
-                    animalModelList.addAll(animals);
+                    animalModelList.addAll(availableAnimals);
                     animalsAdapter.notifyDataSetChanged();
+
                 } else {
                     Log.e(TAG, "Error searching animals by type. Response code: " + response.code() + ", Message: " + response.message());
                 }
@@ -377,48 +380,4 @@ public class HomeFragment extends Fragment {
             }
         });
     }
-
-    private void loadAdoptedAnimalsForAdmin() {
-        progressBar.setVisibility(View.VISIBLE);
-        apiService.getDnevnikUdomljavanja().enqueue(new Callback<List<UpdateDnevnikModel>>() {
-            @Override
-            public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
-                progressBar.setVisibility(View.GONE);
-                if (response.isSuccessful() && response.body() != null) {
-                    animalModelList.clear();
-
-                    // Filtriramo i prikazujemo samo udomljene životinje
-                    List<UpdateDnevnikModel> adoptedAnimals = response.body().stream()
-                            .filter(UpdateDnevnikModel::isUdomljen)
-                            .collect(Collectors.toList());
-
-                    for (UpdateDnevnikModel adoptedAnimal : adoptedAnimals) {
-                        animalModelList.add(new IsBlockedAnimalModel(
-                                adoptedAnimal.getId_ljubimca(),
-                                adoptedAnimal.getId_korisnika(),
-                                adoptedAnimal.getIme_ljubimca(),
-                                adoptedAnimal.getTip_ljubimca(),
-                                adoptedAnimal.getOpisLjubimca(),
-                                adoptedAnimal.isUdomljen(),
-                                adoptedAnimal.getDatum(),
-                                adoptedAnimal.getVrijeme(),
-                                adoptedAnimal.getImgUrl(),
-                                adoptedAnimal.isStanje_zivotinje(),
-                                false
-                        ));
-                    }
-                    animalsAdapter.notifyDataSetChanged();
-                } else {
-                    Toast.makeText(getContext(), "Nema pronađenih udomljenih životinja", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<UpdateDnevnikModel>> call, Throwable t) {
-                progressBar.setVisibility(View.GONE);
-                Toast.makeText(getContext(), "Greška u dohvaćanju udomljenih životinja", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
 }
