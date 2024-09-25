@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,25 +12,36 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import androidx.viewpager2.widget.ViewPager2;
+
+import com.activity.pis_azil.SendMail;
 import com.activity.pis_azil.adapters.ImagePagerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.activity.pis_azil.adapters.MyAdoptionAdapter;
 import com.activity.pis_azil.models.AnimalModel;
 import com.activity.pis_azil.models.GalleryImageModel;
 import com.activity.pis_azil.models.IsBlockedAnimalModel;
 import com.activity.pis_azil.models.MyAdoptionModel;
+import com.activity.pis_azil.models.UserByEmailResponseModel;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.R;
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
+
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import javax.mail.MessagingException;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -54,12 +66,13 @@ public class DetailedActivity extends AppCompatActivity {
         // Inicijalizacija ViewPager2
         viewPager = findViewById(R.id.viewPager);
 
+        // Inicijalizacija API servisa
         apiService = ApiClient.getClient().create(ApiService.class);
 
         // Retrieve the animal ID passed from HomeFragment
         animalModel = (IsBlockedAnimalModel) getIntent().getSerializableExtra("animal");
 
-        // Logiram vrijednost proslijeđenog modela životinje
+        // Logiranje proslijeđenog modela životinje
         Log.d(TAG, "Proslijeđeni model životinje: " + animalModel);
 
         detailedImg = findViewById(R.id.detailed_img);
@@ -201,11 +214,66 @@ public class DetailedActivity extends AppCompatActivity {
         });
     }
 
+    // Definicija interfejsa unutar DetailedActivity
+    public interface OnEmailFetchedListener {
+        void onEmailFetched(String email);
+    }
+
+
     // Metoda za admina - udomljavanje životinje za odabranog korisnika
     private void adoptAnimalForUser(int userId, String userName) {
         Log.d(TAG, "Udomljavanje životinje za korisnika: " + userName);
+
+        // Pozovemo adoptAnimal i nakon toga pošaljemo email
         adoptAnimal(userId, false); // Admin odmah odobrava udomljavanje
+
+        // Nakon odabira udomitelja, dohvatite email korisnika i pošaljite email
+        getEmailById(userId, email -> {
+            if (email != null && !email.isEmpty()) {
+                String subject = "Životinja je uspješno udomljena!";
+                String body = "Poštovani, " + userName + " je uspješno udomio/udomila životinju " + animalModel.getImeLjubimca() + ".";
+
+                // Pokretanje nove niti za slanje emaila kako ne bi blokiralo glavni thread
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            SendMail.sendEmail("margeta.matija@gmail.com", subject, body);
+                        } catch (GeneralSecurityException | IOException | MessagingException e) {
+                            throw new RuntimeException(e);
+                        }
+                        System.out.println("send mail...");
+                    }
+                }).start();
+            } else {
+                Log.e(TAG, "Korisnik nema email adresu ili email nije dostupan.");
+            }
+        });
     }
+
+    private void getEmailById(int userId, OnEmailFetchedListener listener) {
+        apiService.getUserById(userId).enqueue(new Callback<UserByEmailResponseModel>() {
+            @Override
+            public void onResponse(Call<UserByEmailResponseModel> call, Response<UserByEmailResponseModel> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    UserModel user = response.body().getResult();
+                    if (user != null && user.getEmail() != null) {
+                        listener.onEmailFetched(user.getEmail());
+                    } else {
+                        listener.onEmailFetched(null);
+                    }
+                } else {
+                    listener.onEmailFetched(null);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserByEmailResponseModel> call, Throwable t) {
+                listener.onEmailFetched(null);
+            }
+        });
+    }
+
 
     // Metoda za korisnike - zahtjev za udomljavanje životinje za sebe (dodaje se u listu za odobrenje)
     private void requestAdoptionForUser(UserModel currentUser) {
@@ -263,7 +331,7 @@ public class DetailedActivity extends AppCompatActivity {
         if (requiresApproval) {
             // Ako zahtjeva odobrenje, označava se kao neudomljena životinja
             adoptionModel.setUdomljen(false);
-            adoptionModel.setStatusUdomljavanja(false); // Čeka odobrenje
+            adoptionModel.setStatusUdomljavanja(true); // Čeka odobrenje
         } else {
             // Ako admin odobrava odmah, označava se kao udomljena
             adoptionModel.setUdomljen(true);
@@ -282,6 +350,11 @@ public class DetailedActivity extends AppCompatActivity {
                     } else {
                         Toast.makeText(DetailedActivity.this, "Životinja je uspješno udomljena!", Toast.LENGTH_SHORT).show();
                     }
+
+                    // Postavi rezultat kao uspješan i vrati ID udomljene životinje
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("udomljena_zivotinja_id", animalModel.getIdLjubimca());
+                    setResult(RESULT_OK, resultIntent);
                     finish();
                 } else {
                     Log.e(TAG, "Greška u procesu udomljavanja: " + response.message());
@@ -293,6 +366,80 @@ public class DetailedActivity extends AppCompatActivity {
             public void onFailure(Call<Void> call, Throwable t) {
                 Log.e(TAG, "Greška prilikom udomljavanja: ", t);
                 Toast.makeText(DetailedActivity.this, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void adoptAnimal(int animalId) {
+        apiService.adoptAnimal(animalId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Log.d(TAG, "Životinja uspješno udomljena.");
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("udomljena_zivotinja_id", animalId);
+                    Log.d(TAG, "Adopted animal ID sent back: " + animalModel.getIdLjubimca()); // Provjeri da li se ID ispravno šalje
+                    setResult(RESULT_OK, resultIntent);
+                    finish();
+                } else {
+                    Log.e(TAG, "Greška prilikom udomljavanja: " + response.message());
+                    Toast.makeText(DetailedActivity.this, "Greška prilikom udomljavanja.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e(TAG, "API poziv nije uspio: ", t);
+                Toast.makeText(DetailedActivity.this, "Greška u API pozivu.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void rejectAnimal(int animalId) {
+        // Slanje PUT zahtjeva za odbijanje životinje
+        apiService.rejectAnimal(animalId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Log.d(TAG, "Životinja je uspješno odbijena!");
+
+                    // Postavi rezultat kako bi HomeFragment znao da ukloni životinju
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("odbijena_zivotinja_id", animalId);
+                    setResult(RESULT_OK, resultIntent);
+
+                    finish(); // Zatvori aktivnost nakon što je životinja odbijena
+                } else {
+                    Log.e(TAG, "Greška prilikom odbijanja: " + response.message());
+                    Toast.makeText(DetailedActivity.this, "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e(TAG, "Greška prilikom odbijanja: ", t);
+                Toast.makeText(DetailedActivity.this, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void updateAnimal(AnimalModel updatedAnimal) {
+        apiService.updateAnimal(updatedAnimal.getIdLjubimca(), updatedAnimal).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Log.d(TAG, "Životinja uspješno ažurirana.");
+                    // Ažuriranje UI ili povratak na prethodnu aktivnost
+                } else {
+                    Log.e(TAG, "Greška prilikom ažuriranja: " + response.message());
+                    Toast.makeText(DetailedActivity.this, "Greška prilikom ažuriranja.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e(TAG, "API poziv nije uspio: ", t);
+                Toast.makeText(DetailedActivity.this, "Greška u API pozivu.", Toast.LENGTH_SHORT).show();
             }
         });
     }

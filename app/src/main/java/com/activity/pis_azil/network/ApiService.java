@@ -61,6 +61,15 @@ public interface ApiService {
     @GET("KucniLjubimci/{id}")
     Call<AnimalModel> getAnimalById(@Path("id") int id);
 
+    @PUT("KucniLjubimci/update/{id}")
+    Call<Void> updateAnimal(@Path("id") int id, @Body AnimalModel animalModel);
+
+    @PUT("KucniLjubimci/{id}/odbij")
+    Call<Void> rejectAnimal(@Path("id") int id);
+
+    @PUT("KucniLjubimci/{id}/udomi")
+    Call<Void> adoptAnimal(@Path("id") int id);
+
     @POST("KucniLjubimci/add")
     Call<Void> addAnimal(@Header("RequestAnimalId") int requestAnimalId, @Body ViewAllModel animal);
 
@@ -69,12 +78,6 @@ public interface ApiService {
 
     @GET("dnevnik_udomljavanja")
     Call<List<UpdateDnevnikModel>> getDnevnikUdomljavanja();
-
-    @GET("AdoptedAnimals/search")
-    Call<List<UserModel>> searchUsersByName(@Query("startText") String startText, @Query("endText") String endText);
-
-    @POST("AdoptedAnimals/adopters")
-    Call<List<AnimalModel>> getAnimalsForAdopters(@Body List<String> adopterIds);
 
     @POST("DnevnikUdomljavanja/add")
     Call<Void> addAdoption(@Body MyAdoptionModel adoptionModel);

@@ -2,6 +2,7 @@ package com.activity.pis_azil.ui.home;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -46,6 +48,7 @@ import retrofit2.Response;
 public class HomeFragment extends Fragment {
 
     private static final String TAG = "HomeFragment";
+    private static final int REQUEST_ADOPT_ANIMAL = 1;
 
     private RecyclerView recyclerView;
     private AnimalsAdapter animalsAdapter;
@@ -91,6 +94,35 @@ public class HomeFragment extends Fragment {
         filterButton.setOnClickListener(v -> openFilterDialog());
 
         return root;
+    }
+
+    // Osluškivanje rezultata u HomeFragmentu
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult called with requestCode: " + requestCode + " resultCode: " + resultCode);
+
+        if (requestCode == REQUEST_ADOPT_ANIMAL && resultCode == FragmentActivity.RESULT_OK && data != null) {
+            int adoptedAnimalId = data.getIntExtra("udomljena_zivotinja_id", -1);
+            int rejectedAnimalId = data.getIntExtra("odbijena_zivotinja_id", -1);
+
+            if (adoptedAnimalId != -1) {
+                // Ukloni udomljenu životinju iz liste i osveži adapter
+                animalModelList.removeIf(animal -> animal.getIdLjubimca() == adoptedAnimalId);
+                Log.d(TAG, "Broj preostalih životinja nakon uklanjanja: " + animalModelList.size());
+                animalsAdapter.notifyDataSetChanged();
+                Toast.makeText(getContext(), "Životinja je uspješno udomljena!", Toast.LENGTH_SHORT).show();
+            }
+
+            if (rejectedAnimalId != -1) {
+                // Odbijeni zahtjev - postavi status udomljavanja na false
+                animalModelList.stream()
+                        .filter(animal -> animal.getIdLjubimca() == rejectedAnimalId)
+                        .forEach(animal -> animal.setStatusUdomljavanja(false));
+                animalsAdapter.notifyDataSetChanged();
+                Toast.makeText(getContext(), "Zahtjev za udomljavanje je odbijen!", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     // Otvaranje filter dijaloga
@@ -228,7 +260,7 @@ public class HomeFragment extends Fragment {
 
                     // Filtriraj životinje koje su već udomljene
                     List<AnimalModel> availableAnimals = response.body().stream()
-                            .filter(animal -> !animal.isUdomljen()) // Filtriramo udomljene životinje
+                            .filter(animal -> !animal.isUdomljen() && !animal.isStatusUdomljavanja())
                             .collect(Collectors.toList());
 
                     for (AnimalModel animal : availableAnimals) {

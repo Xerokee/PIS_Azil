@@ -16,6 +16,7 @@ public class AnimalModel implements Serializable {
     private String imgUrl;
     private List<GalleryImageModel> galerijaZivotinja;
     private boolean stanje_zivotinje;
+    private boolean statusUdomljavanja;
 
     // Constructors, getters, and setters
     public AnimalModel() {}
@@ -129,6 +130,14 @@ public class AnimalModel implements Serializable {
 
     public void setInAdoptionProcess(boolean inAdoptionProcess) {
         this.inAdoptionProcess = inAdoptionProcess;
+    }
+
+    public boolean isStatusUdomljavanja() {
+        return statusUdomljavanja;
+    }
+
+    public void setStatusUdomljavanja(boolean statusUdomljavanja) {
+        this.statusUdomljavanja = statusUdomljavanja;
     }
 
     @Override

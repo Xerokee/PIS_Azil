@@ -1,5 +1,7 @@
 package com.activity.pis_azil.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,11 +14,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
+import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.adapters.MyAdoptionAdapter;
 import com.activity.pis_azil.models.MyAdoptionModel;
 import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.network.DataRefreshListener;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,28 +69,44 @@ public class MyAnimalsFragment extends Fragment implements DataRefreshListener {
     private void fetchAdoptedAnimals() {
         Log.d(TAG, "Fetching adopted animals");
 
+        SharedPreferences prefs = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        String userJson = prefs.getString("current_user", null);
+        final UserModel currentUser;
+
+        if (userJson != null) {
+            Gson gson = new Gson();
+            currentUser = gson.fromJson(userJson, UserModel.class);
+        } else {
+            Log.e(TAG, "Korisnički JSON podaci nisu pronađeni.");
+            return;
+        }
+
         apiService.getDnevnikUdomljavanja().enqueue(new Callback<List<UpdateDnevnikModel>>() {
             @Override
             public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d(TAG, "Successfully fetched adopted animals, size: " + response.body().size());
                     cartModelList.clear();
-                    for (UpdateDnevnikModel animal : response.body()) {
-                        if(animal.isUdomljen()) {
-                            continue;
-                        }
+                    List<UpdateDnevnikModel> allAdoptions = response.body();
+                    for (UpdateDnevnikModel animal : allAdoptions) {
+                        // Provjera je li korisnik admin ili prikazivanje samo svojih zahtjeva
+                        if (currentUser.isAdmin() || animal.getId_korisnika() == currentUser.getIdKorisnika()) {
+                            if (animal.isUdomljen()) {
+                                continue;
+                            }
 
-                        Log.d(TAG, "Animal fetched: " + animal.toString());
-                        MyAdoptionModel adoption = new MyAdoptionModel();
-                        adoption.setIdLjubimca(animal.getId_ljubimca());
-                        adoption.setImeLjubimca(animal.getIme_ljubimca() != null ? animal.getIme_ljubimca() : "N/A");
-                        adoption.setTipLjubimca(animal.getTip_ljubimca() != null ? animal.getTip_ljubimca() : "N/A");
-                        adoption.setDatum(animal.getDatum());
-                        adoption.setVrijeme(animal.getVrijeme());
-                        adoption.setImgUrl(animal.getImgUrl());
-                        adoption.setStanjeZivotinje(animal.isStanje_zivotinje());
-                        adoption.setIdKorisnika(animal.getId_korisnika()); // Dodavanje korisnika iz API odgovora
-                        cartModelList.add(adoption);
+                            Log.d(TAG, "Animal fetched: " + animal.toString());
+                            MyAdoptionModel adoption = new MyAdoptionModel();
+                            adoption.setIdLjubimca(animal.getId_ljubimca());
+                            adoption.setImeLjubimca(animal.getIme_ljubimca() != null ? animal.getIme_ljubimca() : "N/A");
+                            adoption.setTipLjubimca(animal.getTip_ljubimca() != null ? animal.getTip_ljubimca() : "N/A");
+                            adoption.setDatum(animal.getDatum());
+                            adoption.setVrijeme(animal.getVrijeme());
+                            adoption.setImgUrl(animal.getImgUrl());
+                            adoption.setStanjeZivotinje(animal.isStanje_zivotinje());
+                            adoption.setIdKorisnika(animal.getId_korisnika()); // Dodavanje korisnika iz API odgovora
+                            cartModelList.add(adoption);
+                        }
                     }
 
                     // Provjera i prikazivanje prazne liste ili podataka

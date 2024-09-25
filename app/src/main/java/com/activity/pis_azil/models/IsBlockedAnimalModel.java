@@ -16,6 +16,7 @@ public class IsBlockedAnimalModel implements Serializable {
     List<String> galerijaZivotinja;
     private boolean stanje_zivotinje;
     private boolean isBlocked;
+    private boolean statusUdomljavanja;
 
     // Constructors, getters, and setters
     public IsBlockedAnimalModel() {}
@@ -129,6 +130,14 @@ public class IsBlockedAnimalModel implements Serializable {
 
     public void setBlocked(boolean isBlocked) {
         this.isBlocked = isBlocked;
+    }
+
+    public boolean isStatusUdomljavanja() {
+        return statusUdomljavanja;
+    }
+
+    public void setStatusUdomljavanja(boolean statusUdomljavanja) {
+        this.statusUdomljavanja = statusUdomljavanja;
     }
 
     @Override

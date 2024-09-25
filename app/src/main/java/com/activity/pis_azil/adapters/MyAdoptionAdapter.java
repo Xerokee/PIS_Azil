@@ -107,7 +107,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
         // Ako postoji zahtjev za udomljavanje (IdKorisnika nije 0), sakrij gumb "Udomi"
         if (cartModel.getIdKorisnika() != 0) {
-            // Onemogućimo gumb "Udomi" kada postoji korisnik
             holder.adoptButton.setVisibility(View.GONE); // Sakrij gumb
         } else {
             holder.adoptButton.setVisibility(View.VISIBLE); // Prikaži gumb ako nema zahtjeva
@@ -230,7 +229,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
     }
 
     private boolean checkIfUserIsAdmin() {
-        // Ovdje pretpostavljamo da imate spremljenog korisnika u SharedPreferences
         SharedPreferences prefs = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         String userJson = prefs.getString("current_user", null);
         if (userJson != null) {
@@ -253,20 +251,20 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
             if (currentUser == null || currentUser.getEmail() == null) {
                 Log.e(TAG, "Korisnički objekt ili email je null!");
-                // Prikaz poruke ili poduzmi akciju
+                Toast.makeText(context, "Korisnički podaci nisu dostupni", Toast.LENGTH_SHORT).show();
+                return; // Exit the function to avoid further issues
             }
         } else {
             Log.e(TAG, "Korisnički JSON podaci nisu pronađeni.");
-            currentUser = null; // Dodavanje kako bi izbjegli NullPointerException
+            return;
         }
 
-        if (currentUser != null && currentUser.isAdmin()) {
-            // Ako je admin, prikazujemo sve stavke
+        if (currentUser.isAdmin()) {
+            // If admin, fetch all records
             apiService.getDnevnikUdomljavanja().enqueue(new Callback<List<UpdateDnevnikModel>>() {
                 @Override
                 public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
                     if (response.isSuccessful()) {
-                        // Pretvorite Listu UpdateDnevnikModel u Listu MyAdoptionModel, ako je potrebno
                         cartModelList = convertToMyAdoptionModel(response.body().stream().filter(item -> !item.isUdomljen()).collect(Collectors.toList()));
                         notifyDataSetChanged();
                     }
@@ -278,7 +276,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 }
             });
         } else {
-            // Ako nije admin, filtriramo zapise za trenutnog korisnika
             apiService.getDnevnikUdomljavanja().enqueue(new Callback<List<UpdateDnevnikModel>>() {
                 @Override
                 public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
@@ -287,15 +284,11 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                         List<MyAdoptionModel> userAdoptions = new ArrayList<>();
 
                         for (UpdateDnevnikModel adoption : allAdoptions) {
-                            if (adoption.getId_korisnika() == currentUser.getIdKorisnika()
-                                    && !adoption.isUdomljen()) {
+                            if (adoption.getId_korisnika() == currentUser.getIdKorisnika() && !adoption.isUdomljen()) {
                                 userAdoptions.add(convertToMyAdoptionModel(adoption));
-
-                                // Pošalji obavijest kada korisnik uđe u listu
                                 sendAdoptionStatusNotification(context, currentUser.getIdKorisnika(), adoption.getIme_ljubimca());
                             }
                         }
-
                         cartModelList = userAdoptions;
                         notifyDataSetChanged();
                     }
@@ -334,7 +327,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         myAdoptionModel.setIdLjubimca(dnevnikModel.getId_ljubimca());
         myAdoptionModel.setImeLjubimca(dnevnikModel.getIme_ljubimca());
         myAdoptionModel.setTipLjubimca(dnevnikModel.getTip_ljubimca());
-        myAdoptionModel.setOpisLjubimca("");  // Možete prilagoditi prema potrebi
+        myAdoptionModel.setOpisLjubimca("");
         myAdoptionModel.setDatum(dnevnikModel.getDatum());
         myAdoptionModel.setVrijeme(dnevnikModel.getVrijeme());
         myAdoptionModel.setImgUrl(dnevnikModel.getImgUrl());
@@ -737,8 +730,8 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                     notifyDataSetChanged();
                     getEmailById(Integer.parseInt(adopterId), email -> {
                         if (email != null) {
-                            String subject = "Životinja je posvojena!";
-                            String body = "Poštovani, " + adopterName + " je posvojio/posvojila životinju " + selectedAnimal.getImeLjubimca() + "!";
+                            String subject = "Životinja je udomljena!";
+                            String body = "Poštovani, " + adopterName + " je udomio/udomila životinju " + selectedAnimal.getImeLjubimca() + "!";
 
                             new Thread(new Runnable() {
                                 @Override
@@ -784,17 +777,22 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             @Override
             public void onResponse(Call<UserByEmailResponseModel> call, Response<UserByEmailResponseModel> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    String email = response.body().getResult().getEmail();
-                    listener.onEmailFetched(email);
+                    UserModel user = response.body().getResult();
+                    if (user != null && user.getEmail() != null) {
+                        listener.onEmailFetched(user.getEmail());
+                    } else {
+                        Log.e(TAG, "Korisnik ili email je null.");
+                        listener.onEmailFetched(null);
+                    }
                 } else {
-                    Log.e(TAG, "Neuspješno dohvaćanje emaila. Odgovor: " + response.message());
+                    Log.e(TAG, "Neuspješno dohvaćanje korisnika. Odgovor: " + response.message());
                     listener.onEmailFetched(null);
                 }
             }
 
             @Override
             public void onFailure(Call<UserByEmailResponseModel> call, Throwable t) {
-                Log.e(TAG, "Error fetching email: ", t);
+                Log.e(TAG, "Greška pri dohvaćanju korisnika: ", t);
                 listener.onEmailFetched(null);
             }
         });

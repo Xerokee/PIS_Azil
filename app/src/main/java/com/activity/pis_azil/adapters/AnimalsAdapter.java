@@ -53,6 +53,7 @@ public class AnimalsAdapter extends RecyclerView.Adapter<AnimalsAdapter.AnimalVi
 
         if (animal.isBlocked()) {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.gray));
+            holder.itemView.setOnClickListener(null);
         } else {
             holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.white));
         }
