@@ -86,14 +86,35 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         MyAdoptionModel cartModel = cartModelList.get(position);
 
-        holder.adoptButton.setOnClickListener(v -> {
-            if (!cartModel.isUdomljen()) {
-                // Provjeravamo ako je životinja već udomljena ili ne
-                showAdoptionDialogWithAllUsers(cartModel, position);  // Ovdje omogućujemo adminu da odabere korisnika za udomljavanje
-            } else {
-                Toast.makeText(context, "Životinja je već udomljena.", Toast.LENGTH_SHORT).show();
+        // Provjera je li trenutni korisnik admin
+        boolean isAdmin = checkIfUserIsAdmin();
+
+        holder.adoptButton.setOnClickListener(view -> {
+            int adapterPosition = holder.getAdapterPosition();
+            if (adapterPosition != RecyclerView.NO_POSITION) {
+                MyAdoptionModel selectedAnimal = cartModelList.get(adapterPosition);
+                if (!selectedAnimal.isUdomljen()) {
+                    if (isAdmin) {
+                        showAdoptionDialog(selectedAnimal, adapterPosition); // Ovdje koristimo novu funkciju
+                    } else {
+                        adoptAnimal(selectedAnimal, String.valueOf(cartModel.getIdKorisnika()), "Admin");
+                    }
+                } else {
+                    Toast.makeText(context, "Životinja je već udomljena.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
+
+        // Ako postoji zahtjev za udomljavanje (IdKorisnika nije 0), sakrij gumb "Udomi"
+        if (cartModel.getIdKorisnika() != 0) {
+            // Onemogućimo gumb "Udomi" kada postoji korisnik
+            holder.adoptButton.setVisibility(View.GONE); // Sakrij gumb
+        } else {
+            holder.adoptButton.setVisibility(View.VISIBLE); // Prikaži gumb ako nema zahtjeva
+            holder.adoptButton.setEnabled(true);
+            holder.adoptButton.setText("Udomi");
+            holder.adoptButton.setBackgroundColor(Color.GREEN); // Omogućen gumb postaje zeleni
+        }
 
         // Onemogući gumb "Odobri" ako nema korisnika koji je podnio zahtjev
         if (cartModel.getIdKorisnika() == 0) {
@@ -101,7 +122,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             holder.approveButton.setBackgroundColor(Color.GRAY); // Sivi gumb
 
             holder.rejectButton.setEnabled(false);
-            holder.rejectButton.setBackgroundColor(Color.GRAY);
+            holder.rejectButton.setBackgroundColor(Color.GRAY); // Sivi gumb
         } else {
             holder.approveButton.setEnabled(true);
             holder.approveButton.setBackgroundColor(Color.parseColor("#03DAC5"));
@@ -127,7 +148,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
         // Postavljanje boje pozadine ovisno o statusu udomljavanja
         if (!cartModel.isStatusUdomljavanja()) {
-            holder.itemView.setBackgroundColor(Color.RED); // Siva boja za odbijeno udomljavanje
+            holder.itemView.setBackgroundColor(Color.RED); // Crvena boja za odbijeno udomljavanje
         } else {
             holder.itemView.setBackgroundColor(Color.WHITE); // Bijela boja za prihvaćeno udomljavanje
         }
@@ -167,9 +188,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         }
 
         Log.d(TAG, "Binding view holder for position: " + position + ", model: " + cartModel.toString());
-
-        // Provjera je li trenutni korisnik admin
-        boolean isAdmin = checkIfUserIsAdmin();
 
         if (!isAdmin) {
             // Sakrijte gumbe za normalne korisnike
@@ -574,6 +592,30 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 Toast.makeText(context, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void showAdoptionDialog(MyAdoptionModel selectedAnimal, int position) {
+        // Provjeravamo postoji li korisnik koji je podnio zahtjev
+        if (selectedAnimal.getIdKorisnika() != 0) {
+            // Ako postoji korisnik koji je podnio zahtjev, prikaži dijalog samo za tog korisnika
+            getEmailById(selectedAnimal.getIdKorisnika(), email -> {
+                if (email != null && !email.isEmpty()) {
+                    new AlertDialog.Builder(context)
+                            .setTitle("Potvrdi udomljavanje")
+                            .setMessage("Želite li udomiti životinju za korisnika: " + email + "?")
+                            .setPositiveButton("Udomi", (dialog, which) -> {
+                                adoptAnimal(selectedAnimal, String.valueOf(selectedAnimal.getIdKorisnika()), email);
+                            })
+                            .setNegativeButton("Odustani", (dialog, which) -> dialog.dismiss())
+                            .show();
+                } else {
+                    Toast.makeText(context, "Korisnik koji je podnio zahtjev nije pronađen.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            // Ako nema korisnika koji je podnio zahtjev, prikaži dijalog sa svim korisnicima
+            showAdoptionDialogWithAllUsers(selectedAnimal, position);
+        }
     }
 
     private void showAdoptionDialogWithAllUsers(MyAdoptionModel selectedAnimal, int position) {
