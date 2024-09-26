@@ -103,7 +103,6 @@ public class ProfileFragment extends Fragment {
     }
 
     private void logoutUser() {
-        // Očistite SharedPreferences da biste uklonili podatke trenutnog korisnika
         SharedPreferences preferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.clear();

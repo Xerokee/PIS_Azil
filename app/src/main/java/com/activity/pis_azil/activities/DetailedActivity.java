@@ -335,7 +335,7 @@ public class DetailedActivity extends AppCompatActivity {
         } else {
             // Ako admin odobrava odmah, označava se kao udomljena
             adoptionModel.setUdomljen(true);
-            adoptionModel.setStatusUdomljavanja(true);
+            adoptionModel.setStatusUdomljavanja(false);
         }
 
         Log.d(TAG, "Slanje modela udomljavanja na API: " + adoptionModel);

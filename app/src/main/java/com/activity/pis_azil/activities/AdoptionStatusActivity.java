@@ -1,3 +1,4 @@
+/*
 package com.activity.pis_azil.activities;
 
 import android.os.Bundle;
@@ -8,11 +9,14 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.activity.pis_azil.R;
+import com.activity.pis_azil.models.RejectAdoptionModel;
+import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import retrofit2.Call;
@@ -49,7 +53,15 @@ public class AdoptionStatusActivity extends AppCompatActivity {
 
         // Kada se pritisne na prihvati/odbij gumb
         confirmButton.setOnClickListener(v -> updateAdoptionStatus(true));
-        rejectButton.setOnClickListener(v -> updateAdoptionStatus(false));
+        // Odbijanje udomljavanja
+        rejectButton.setOnClickListener(v -> {
+            // Ažuriraj status udomljavanja na false
+            updateAdoptionStatus(false);
+
+            // Slanje podataka o odbijenoj životinji
+            sendRejectedAnimal(idLjubimca);
+        });
+
     }
 
     // Metoda za dohvaćanje statusa udomljavanja
@@ -87,6 +99,8 @@ public class AdoptionStatusActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
+                    // Nakon uspješnog ažuriranja statusa, osvježi prikaz
+                    fetchAdoptedAnimals();
                     Toast.makeText(AdoptionStatusActivity.this, "Status uspješno ažuriran", Toast.LENGTH_SHORT).show();
                     finish();
                 } else {
@@ -112,4 +126,58 @@ public class AdoptionStatusActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void fetchAdoptedAnimals() {
+        apiService.getDnevnikUdomljavanja().enqueue(new Callback<List<UpdateDnevnikModel>>() {
+            @Override
+            public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Ovdje možeš obraditi podatke koje si dobio
+                    List<UpdateDnevnikModel> adoptedAnimals = response.body();
+                    // Npr. osvježi prikaz liste ili ažuriraj UI
+                    Log.d("AdoptionStatusActivity", "Popis životinja uspješno dohvaćen.");
+                } else {
+                    Log.e("AdoptionStatusActivity", "Greška prilikom dohvaćanja podataka: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<UpdateDnevnikModel>> call, Throwable t) {
+                Log.e("AdoptionStatusActivity", "Greška prilikom poziva API-ja", t);
+            }
+        });
+    }
+
+    // Slanje podataka o odbijenoj životinji
+    private void sendRejectedAnimal(int idLjubimca) {
+        // Kreiramo model za odbijenu životinju
+        RejectAdoptionModel rejectAdoptionModel = new RejectAdoptionModel();
+        rejectAdoptionModel.setIdLjubimca(idLjubimca);
+
+        // Pozivamo API za spremanje odbijenih životinja
+        apiService.createOdbijenaZivotinja(rejectAdoptionModel).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    // Prikazujemo poruku korisniku
+                    Toast.makeText(AdoptionStatusActivity.this, "Udomljavanje odbijeno", Toast.LENGTH_SHORT).show();
+                    // Vraćamo se na prethodni ekran ili osvježavamo listu
+                    finish();
+                } else {
+                    try {
+                        String errorBody = response.errorBody().string();
+                        Log.e("API_ERROR", "Greška pri slanju odbijene životinje: " + errorBody);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e("API_FAILURE", "Greška pri slanju podataka o odbijenoj životinji", t);
+            }
+        });
+    }
 }
+*/

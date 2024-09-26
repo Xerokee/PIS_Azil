@@ -119,6 +119,7 @@ public class HomeFragment extends Fragment {
                 animalModelList.stream()
                         .filter(animal -> animal.getIdLjubimca() == rejectedAnimalId)
                         .forEach(animal -> animal.setStatusUdomljavanja(false));
+                loadAllAnimals();
                 animalsAdapter.notifyDataSetChanged();
                 Toast.makeText(getContext(), "Zahtjev za udomljavanje je odbijen!", Toast.LENGTH_SHORT).show();
             }

@@ -25,7 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.SendMail;
-import com.activity.pis_azil.activities.AdoptionStatusActivity;
+// import com.activity.pis_azil.activities.AdoptionStatusActivity;
 import com.activity.pis_azil.models.RejectAdoptionModel;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserByEmailResponseModel;
@@ -286,7 +286,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                         for (UpdateDnevnikModel adoption : allAdoptions) {
                             if (adoption.getId_korisnika() == currentUser.getIdKorisnika() && !adoption.isUdomljen()) {
                                 userAdoptions.add(convertToMyAdoptionModel(adoption));
-                                sendAdoptionStatusNotification(context, currentUser.getIdKorisnika(), adoption.getIme_ljubimca());
+                                // sendAdoptionStatusNotification(context, currentUser.getIdKorisnika(), adoption.getIme_ljubimca());
                             }
                         }
                         cartModelList = userAdoptions;
@@ -394,7 +394,11 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
     private void rejectAdoption(int position) {
         MyAdoptionModel cartModel = cartModelList.get(position);
+
         cartModel.setStatusUdomljavanja(false); // Postavi status udomljavanja na false
+
+        // Ažuriraj UI odmah
+        notifyItemChanged(position);
 
         UpdateDnevnikModel model = new UpdateDnevnikModel();
         model.setId_korisnika(cartModel.getIdKorisnika());
@@ -652,6 +656,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         });
     }
 
+    /*
     private void sendAdoptionStatusNotification(Context context, int idLjubimca, String animalName) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         String channelId = "adoption_status_channel";
@@ -686,6 +691,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         // Prikazujemo obavijest
         notificationManager.notify(animalName.hashCode(), builder.build());
     }
+    */
 
     private void adoptAnimal(MyAdoptionModel selectedAnimal, String adopterId, String adopterName) {
         if (adopterId == null || adopterId.isEmpty()) {
@@ -722,7 +728,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 if (response.isSuccessful()) {
                     Log.d(TAG, "Animal adopted successfully: " + selectedAnimal.getIdLjubimca() + ", adopterId: " + adopterId + ", adopterName: " + adopterName);
                     // Slanje obavijesti korisniku
-                    sendAdoptionStatusNotification(context, selectedAnimal.getIdLjubimca(), selectedAnimal.getImeLjubimca());
+                    // sendAdoptionStatusNotification(context, selectedAnimal.getIdLjubimca(), selectedAnimal.getImeLjubimca());
                     Toast.makeText(context, "Životinja je udomljena za korisnika " + adopterName, Toast.LENGTH_SHORT).show();
                     notifyDataSetChanged();
 
