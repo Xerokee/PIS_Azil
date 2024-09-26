@@ -1,5 +1,7 @@
 package com.activity.pis_azil.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -24,6 +26,7 @@ import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -138,16 +141,39 @@ public class MyAdoptedFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     adoptedAnimalsList.clear();
                     filteredAdoptedAnimalsList.clear();
-                    List<UpdateDnevnikModel> list = response.body().stream().filter(UpdateDnevnikModel::isUdomljen).collect(Collectors.toList());
 
-                    // Postavite ime udomitelja pre filtriranja
+                    List<UpdateDnevnikModel> list = response.body();
+
+                    // Dohvati podatke o trenutnom korisniku iz SharedPreferences
+                    SharedPreferences prefs = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+                    String userJson = prefs.getString("current_user", null);
+                    UserModel currentUser;
+                    if (userJson != null) {
+                        Gson gson = new Gson();
+                        currentUser = gson.fromJson(userJson, UserModel.class);
+                    } else {
+                        currentUser = null;
+                    }
+
+                    if (currentUser != null) {
+                        if (!currentUser.isAdmin()) {
+                            // Filtriraj samo životinje koje je udomio trenutni korisnik
+                            list = list.stream()
+                                    .filter(animal -> animal.isUdomljen() && animal.getId_korisnika() == currentUser.getIdKorisnika())
+                                    .collect(Collectors.toList());
+                        } else {
+                            // Admin vidi sve udomljene životinje
+                            list = list.stream().filter(UpdateDnevnikModel::isUdomljen).collect(Collectors.toList());
+                        }
+                    }
+
+                    // Dodajte životinje u listu
                     for (UpdateDnevnikModel animal : list) {
                         String imeUdomitelja = userMap.getOrDefault(animal.getId_korisnika(), "Nepoznato");
                         animal.setImeUdomitelja(imeUdomitelja);
                         adoptedAnimalsList.add(animal);
                     }
 
-                    // Kopirajte sve u filteredAdoptedAnimalsList
                     filteredAdoptedAnimalsList.addAll(adoptedAnimalsList);
                     adapter.notifyDataSetChanged();
                     updateEmptyState();

@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.activity.pis_azil.R;
@@ -93,7 +94,8 @@ public class ProfileFragment extends Fragment {
         update.setBackgroundTintList(ContextCompat.getColorStateList(requireContext(), R.color.green_700));
 
         profileImage.setOnClickListener(v -> showImagePickDialog());
-        logout.setOnClickListener(v -> logoutUser());
+        logout.setOnClickListener(v -> { logoutUser(); refreshFragment();
+        });
         update.setOnClickListener(v -> updateUserProfile());
         loadUserProfile();
 
@@ -101,6 +103,8 @@ public class ProfileFragment extends Fragment {
     }
 
     private void logoutUser() {
+        // Očistite SharedPreferences da biste uklonili podatke trenutnog korisnika
+        SharedPreferences preferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
         editor.clear();
         editor.apply();
@@ -108,6 +112,12 @@ public class ProfileFragment extends Fragment {
         Intent intent = new Intent(requireContext(), HomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+        getActivity().finish();
+    }
+
+    private void refreshFragment() {
+        FragmentTransaction ft = getParentFragmentManager().beginTransaction();
+        ft.detach(this).attach(this).commit(); // Ponovno učitajte fragment
     }
 
     private void showImagePickDialog() {
@@ -188,11 +198,20 @@ public class ProfileFragment extends Fragment {
                     ime.setText(userModel.getResult().getIme());
                     email.setText(userModel.getResult().getEmail());
                     lozinka.setText(userModel.getResult().getLozinka());
+
+
+                    // Provjera je li slika profila null
                     if (userModel.getResult().getProfileImg() != null) {
+                        // Ako slika postoji, učitaj je pomoću Glide
                         Glide.with(getContext()).load(userModel.getResult().getProfileImg()).into(profileImage);
+                    } else {
+                        // Ako je slika null, postavi zadanu sliku
+                        profileImage.setImageResource(R.drawable.paw); // Zamijenite "default_profile_image" s vašom stvarnom slikom
                     }
+
                     // Fetch and display user role
                     fetchUserRole(userId);
+
                     // Save current admin status
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putBoolean("admin", userModel.getResult().isAdmin());
