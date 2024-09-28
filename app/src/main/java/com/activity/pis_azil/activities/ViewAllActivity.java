@@ -50,7 +50,9 @@ public class ViewAllActivity extends AppCompatActivity {
                             item.getVrijeme(),
                             item.getImgUrl(),
                             item.StanjeZivotinje(),
-                            false
+                            false,
+                            item.getDob(),
+                            item.getBoja()
                     );
                 }).collect(Collectors.toList()), this);
         recyclerView.setAdapter(animalsAdapter);

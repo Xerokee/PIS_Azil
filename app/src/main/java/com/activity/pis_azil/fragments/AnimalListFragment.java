@@ -64,7 +64,9 @@ public class AnimalListFragment extends Fragment {
                                         item.getVrijeme(),
                                         item.getImgUrl(),
                                         item.StanjeZivotinje(),
-                                        false
+                                        false,
+                                        item.getDob(),
+                                        item.getBoja()
                                 );
                             }).collect(Collectors.toList());
                     animalsAdapter = new AnimalsAdapter(animals, getContext());

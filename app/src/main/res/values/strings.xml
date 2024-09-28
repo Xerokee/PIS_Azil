@@ -29,4 +29,25 @@
     <string name="lista_ivotinja">Lista životinja</string>
     <string name="skloni_te">Sklonište</string>
     <string name="korisnici">Korisnici</string>
+
+        <string-array name="animal_types">
+            <item>Sve</item>
+            <item>Pas</item>
+            <item>Macka</item>
+        </string-array>
+
+        <string-array name="animal_ages">
+            <item>Sve</item>
+            <item>0-1 godina</item>
+            <item>1-5 godina</item>
+            <item>5+ godina</item>
+        </string-array>
+
+        <string-array name="animal_colors">
+            <item>Sve</item>
+            <item>Bijela</item>
+            <item>Crna</item>
+            <item>Smeđa</item>
+        </string-array>
+
 </resources>

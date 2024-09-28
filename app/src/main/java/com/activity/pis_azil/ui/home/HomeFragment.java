@@ -11,10 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -134,37 +136,56 @@ public class HomeFragment extends Fragment {
         View filterView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_filters, null);
         builder.setView(filterView);
 
-        // Polja za unos filtera
-        EditText nameFilter = filterView.findViewById(R.id.filter_name);
-        EditText typeFilter = filterView.findViewById(R.id.filter_type);
+        Spinner typeSpinner = filterView.findViewById(R.id.spinner_type);
+        Spinner ageSpinner = filterView.findViewById(R.id.spinner_age);
+        Spinner colorSpinner = filterView.findViewById(R.id.spinner_color);
 
-        // Kreiranje AlertDialoga
+        // Postavljanje opcija u Spinner (ovo možete dohvatiti iz API-a ili hardcodirati)
+        ArrayAdapter<CharSequence> typeAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.animal_types, android.R.layout.simple_spinner_item);
+        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        typeSpinner.setAdapter(typeAdapter);
+
+        ArrayAdapter<CharSequence> ageAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.animal_ages, android.R.layout.simple_spinner_item);
+        ageAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ageSpinner.setAdapter(ageAdapter);
+
+        ArrayAdapter<CharSequence> colorAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.animal_colors, android.R.layout.simple_spinner_item);
+        colorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        colorSpinner.setAdapter(colorAdapter);
+
         AlertDialog dialog = builder.create();
 
-        // Gumb za resetiranje filtera (gore desno)
-        ImageButton resetButton = filterView.findViewById(R.id.reset_button);
-        resetButton.setOnClickListener(v -> {
-            resetFilter();
-            dialog.dismiss(); // Zatvori dijalog nakon resetiranja filtera
-        });
-
-        // Pronađi prilagođene gumbe i postavi event listenere
+        // Potvrda filtera
         Button confirmButton = filterView.findViewById(R.id.confirm_button);
-        Button cancelButton = filterView.findViewById(R.id.cancel_button);
-
-        // Postavi klik event za potvrdu
         confirmButton.setOnClickListener(v -> {
-            String name = nameFilter.getText().toString().trim();
-            String type = typeFilter.getText().toString().trim();
-            Log.d(TAG, "Filters applied: Name = " + name + ", Type = " + type);
-            applyFilters(name, type);
-            dialog.dismiss(); // Zatvori dijalog nakon primjene filtera
+            String selectedType = typeSpinner.getSelectedItem().toString();
+            String selectedAge = ageSpinner.getSelectedItem().toString();
+            String selectedColor = colorSpinner.getSelectedItem().toString();
+
+            applyFilters(selectedType, selectedAge, selectedColor);
+            dialog.dismiss();
         });
 
-        // Postavi klik event za odustajanje
+        // Odustajanje
+        Button cancelButton = filterView.findViewById(R.id.cancel_button);
         cancelButton.setOnClickListener(v -> dialog.dismiss());
 
-        // Prikaži dijalog
+        // Resetiranje filtera
+        Button resetButton = filterView.findViewById(R.id.reset_button);
+        resetButton.setOnClickListener(v -> {
+            // Resetiraj spinner-e na prvu opciju (koja predstavlja "Sve" ili default)
+            typeSpinner.setSelection(0);
+            ageSpinner.setSelection(0);
+            colorSpinner.setSelection(0);
+
+            // Resetiraj filtrirane podatke i ponovno učitaj sve životinje
+            resetFilter();
+            dialog.dismiss();
+        });
+
         dialog.show();
     }
 
@@ -177,22 +198,19 @@ public class HomeFragment extends Fragment {
     }
 
     // Metoda za primjenu filtera
-    private void applyFilters(String name, String type) {
+    private void applyFilters(String type, String age, String color) {
         progressBar.setVisibility(View.VISIBLE);
-        Log.d(TAG, "Applying filters: Name = " + name + ", Type = " + type);
 
-        // Filtriraj po imenu, tipu i provjeri da životinja nije udomljena
         List<IsBlockedAnimalModel> filteredList = animalModelList.stream()
-                .filter(animal -> (name.isEmpty() || animal.getImeLjubimca().toLowerCase().contains(name.toLowerCase())) &&
-                        (type.isEmpty() || animal.getTipLjubimca().toLowerCase().contains(type.toLowerCase())) &&
-                        !animal.isUdomljen()) // Filtriraj udomljene životinje
+                .filter(animal -> (type.equals("Sve") || animal.getTipLjubimca().equalsIgnoreCase(type)) &&
+                        (age.equals("Sve") || String.valueOf(animal.getDob()).equals(age)) &&
+                        (color.equals("Sve") || animal.getBoja().equalsIgnoreCase(color)) &&
+                        !animal.isUdomljen())
                 .collect(Collectors.toList());
 
-        Log.d(TAG, "Number of animals after filtering: " + filteredList.size());
         animalModelList.clear();
         animalModelList.addAll(filteredList);
         animalsAdapter.notifyDataSetChanged();
-
         progressBar.setVisibility(View.GONE);
     }
 
@@ -222,7 +240,9 @@ public class HomeFragment extends Fragment {
                                     animal.getVrijeme(),
                                     animal.getImgUrl(),
                                     animal.StanjeZivotinje(),
-                                    false
+                                    false,
+                                    animal.getDob(),
+                                    animal.getBoja()
                             ))
                             .collect(Collectors.toList());
 
@@ -276,7 +296,9 @@ public class HomeFragment extends Fragment {
                                 animal.getVrijeme(),
                                 animal.getImgUrl(),
                                 animal.StanjeZivotinje(),
-                                false
+                                false,
+                                animal.getDob(),
+                                animal.getBoja()
                         ));
                     }
                     animalsAdapter.notifyDataSetChanged();
@@ -370,7 +392,9 @@ public class HomeFragment extends Fragment {
                                                 animal.getVrijeme(),
                                                 animal.getImgUrl(),
                                                 animal.StanjeZivotinje(),
-                                                false))
+                                                false,
+                                                animal.getDob(),
+                                                animal.getBoja()))
                                         .collect(Collectors.toList()));
                                 animalsAdapter.notifyDataSetChanged();
                             } else {
@@ -390,7 +414,9 @@ public class HomeFragment extends Fragment {
                                                     animal.getVrijeme(),
                                                     animal.getImgUrl(),
                                                     animal.StanjeZivotinje(),
-                                                    isBlocked
+                                                    isBlocked,
+                                                    animal.getDob(),
+                                                    animal.getBoja()
                                             );
                                         })
                                         .collect(Collectors.toList());

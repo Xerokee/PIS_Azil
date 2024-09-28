@@ -1,68 +1,79 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Gumb za resetiranje filtera, gore desno -->
-    <ImageButton
-        android:id="@+id/reset_button"
+    <!-- Spinner za odabir tipa životinje -->
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:src="@drawable/ic_reset"
-        android:background="?attr/selectableItemBackground"
-        android:padding="8dp"
-        android:contentDescription="Resetiraj filtere"
-        app:tint="@android:color/white" />
+        android:text="Tip životinje"
+        android:paddingBottom="8dp" />
 
-    <!-- Polje za ime životinje -->
-    <EditText
-        android:id="@+id/filter_name"
+    <Spinner
+        android:id="@+id/spinner_type"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Unesi ime životinje" />
+        android:spinnerMode="dropdown" />
 
-    <!-- Polje za tip životinje -->
-    <EditText
-        android:id="@+id/filter_type"
+    <!-- Spinner za dob životinje -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dob životinje"
+        android:paddingBottom="8dp"
+        android:layout_marginTop="16dp"/>
+
+    <Spinner
+        android:id="@+id/spinner_age"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Unesi tip životinje" />
+        android:spinnerMode="dropdown" />
 
-    <!-- Linearni layout za gumbove potvrde i odustajanja -->
+    <!-- Spinner za boju životinje -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Boja životinje"
+        android:paddingBottom="8dp"
+        android:layout_marginTop="16dp"/>
+
+    <Spinner
+        android:id="@+id/spinner_color"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:spinnerMode="dropdown" />
+
+    <!-- LinearLayout for Confirm and Cancel buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="end"
+        android:gravity="center_horizontal"
         android:layout_marginTop="16dp">
 
-        <!-- Gumb za odustajanje -->
-        <Button
-            android:id="@+id/cancel_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Odustani"
-            android:textColor="@android:color/black"
-            android:background="@android:color/white"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"
-            android:layout_marginEnd="4dp"  />
+    <!-- Gumb za odustajanje -->
+    <Button
+        android:id="@+id/cancel_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Odustani"
+        android:layout_marginEnd="8dp" />
 
-        <!-- Gumb za potvrdu -->
-        <Button
-            android:id="@+id/confirm_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Potvrdi"
-            android:textColor="@android:color/black"
-            android:background="@android:color/white"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="8dp"  />
-
-    </LinearLayout>
+    <!-- Gumb za potvrdu -->
+    <Button
+        android:id="@+id/confirm_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Filtriraj" />
 </LinearLayout>
+
+    <Button
+        android:id="@+id/reset_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Resetiraj"
+        android:layout_marginTop="24dp"
+        android:gravity="center" />
+    </LinearLayout>

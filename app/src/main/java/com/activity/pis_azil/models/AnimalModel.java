@@ -17,6 +17,8 @@ public class AnimalModel implements Serializable {
     private List<GalleryImageModel> galerijaZivotinja;
     private boolean stanje_zivotinje;
     private boolean statusUdomljavanja;
+    private int dob;
+    private String boja;
 
     // Constructors, getters, and setters
     public AnimalModel() {}
@@ -138,6 +140,22 @@ public class AnimalModel implements Serializable {
 
     public void setStatusUdomljavanja(boolean statusUdomljavanja) {
         this.statusUdomljavanja = statusUdomljavanja;
+    }
+
+    public int getDob() {
+        return dob;
+    }
+
+    public void setDob(int dob) {
+        this.dob = dob;
+    }
+
+    public String getBoja() {
+        return boja;
+    }
+
+    public void setBoja(String boja) {
+        this.boja = boja;
     }
 
     @Override

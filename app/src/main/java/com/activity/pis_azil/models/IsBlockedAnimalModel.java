@@ -17,11 +17,13 @@ public class IsBlockedAnimalModel implements Serializable {
     private boolean stanje_zivotinje;
     private boolean isBlocked;
     private boolean statusUdomljavanja;
+    private int dob;
+    private String boja;
 
     // Constructors, getters, and setters
     public IsBlockedAnimalModel() {}
 
-    public IsBlockedAnimalModel(int id_ljubimca, int id_udomitelja, String ime_ljubimca, String tip_ljubimca, String opis_ljubimca, boolean udomljen, String datum, String vrijeme, String imgUrl, boolean stanje_zivotinje, boolean isBlocked) {
+    public IsBlockedAnimalModel(int id_ljubimca, int id_udomitelja, String ime_ljubimca, String tip_ljubimca, String opis_ljubimca, boolean udomljen, String datum, String vrijeme, String imgUrl, boolean stanje_zivotinje, boolean isBlocked, int dob, String boja) {
         this.id_ljubimca = id_ljubimca;
         this.id_udomitelja = id_udomitelja;
         this.ime_ljubimca = ime_ljubimca;
@@ -33,6 +35,8 @@ public class IsBlockedAnimalModel implements Serializable {
         this.imgUrl = imgUrl;
         this.stanje_zivotinje = stanje_zivotinje;
         this.isBlocked = isBlocked;
+        this.dob = dob;
+        this.boja = boja;
     }
 
     // Getters and Setters for all fields
@@ -140,6 +144,22 @@ public class IsBlockedAnimalModel implements Serializable {
         this.statusUdomljavanja = statusUdomljavanja;
     }
 
+    public int getDob() {
+        return dob;
+    }
+
+    public void setDob(int dob) {
+        this.dob = dob;
+    }
+
+    public String getBoja() {
+        return boja;
+    }
+
+    public void setBoja(String boja) {
+        this.boja = boja;
+    }
+
     @Override
     public String toString() {
         return "IsBlockedAnimalModel{" +
@@ -154,6 +174,8 @@ public class IsBlockedAnimalModel implements Serializable {
                 ", imgUrl='" + imgUrl + '\'' +
                 ", stanje_zivotinje=" + stanje_zivotinje +
                 ", isBlocked=" + isBlocked +  // Dodano novo polje u toString metodu
+                ", dob=" + dob +
+                ", boja='" + boja + '\'' +
                 '}';
     }
 }
