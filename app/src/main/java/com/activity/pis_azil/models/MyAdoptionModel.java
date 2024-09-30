@@ -10,6 +10,7 @@ public class MyAdoptionModel implements Serializable {
     private String vrijeme;
     private String imgUrl;
     private boolean udomljen;
+    private boolean zahtjev_udomljen;
     private boolean stanje_zivotinje;
     private int id_korisnika;
     private boolean status_udomljavanja;
@@ -103,6 +104,14 @@ public class MyAdoptionModel implements Serializable {
 
     public void setStatusUdomljavanja(boolean status_udomljavanja) {
         this.status_udomljavanja = status_udomljavanja;
+    }
+
+    public boolean isZahtjevUdomljavanja() {
+        return zahtjev_udomljen;
+    }
+
+    public void setZahtjevUdomljavanja(boolean zahtjev_udomljavanja) {
+        this.zahtjev_udomljen = zahtjev_udomljavanja;
     }
 
     @Override

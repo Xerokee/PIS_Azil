@@ -60,9 +60,21 @@ public class HomeFragment extends Fragment {
     private EditText searchBox;
     private ImageButton filterButton;
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (animalModelList != null && animalsAdapter != null) {
+            Log.d(TAG, "Test");
+            loadAllAnimals();
+            animalsAdapter.notifyDataSetChanged();
+        }
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "Kreiran view");
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
         recyclerView = root.findViewById(R.id.recycler_view);
@@ -75,7 +87,9 @@ public class HomeFragment extends Fragment {
         recyclerView.setAdapter(animalsAdapter);
 
         apiService = ApiClient.getClient().create(ApiService.class);
+        Log.d(TAG,"fsdfsdd");
         loadAllAnimals();
+        // loadAllAdoptedAnimals();
 
         // Add listener for search box
         searchBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -199,19 +213,63 @@ public class HomeFragment extends Fragment {
 
     // Metoda za primjenu filtera
     private void applyFilters(String type, String age, String color) {
-        progressBar.setVisibility(View.VISIBLE);
+        Integer dobMin = null;
+        Integer dobMax = null;
 
-        List<IsBlockedAnimalModel> filteredList = animalModelList.stream()
-                .filter(animal -> (type.equals("Sve") || animal.getTipLjubimca().equalsIgnoreCase(type)) &&
-                        (age.equals("Sve") || String.valueOf(animal.getDob()).equals(age)) &&
-                        (color.equals("Sve") || animal.getBoja().equalsIgnoreCase(color)) &&
-                        !animal.isUdomljen())
-                .collect(Collectors.toList());
+        // Postavljanje minimalne i maksimalne dobi na osnovu izabrane opcije
+        if (!age.equals("Sve")) {
+            switch (age) {
+                case "0-1 godina":
+                    dobMin = 0;
+                    dobMax = 1;
+                    break;
+                case "2-5 godina":
+                    dobMin = 2;
+                    dobMax = 5;
+                    break;
+                case "5+ godina":
+                    dobMin = 6;
+                    dobMax = 20;
+                    break;
+            }
+        }
 
-        animalModelList.clear();
-        animalModelList.addAll(filteredList);
-        animalsAdapter.notifyDataSetChanged();
-        progressBar.setVisibility(View.GONE);
+        // Prilagodba poziva API-ju sa minimalnom i maksimalnom dobi
+        apiService.getFilteredAnimalsByAgeRange(type, dobMin, dobMax, color).enqueue(new Callback<List<AnimalModel>>() {
+            @Override
+            public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    animalModelList.clear();
+                    // Mapiranje AnimalModel u IsBlockedAnimalModel pre nego što dodate u listu
+                    List<IsBlockedAnimalModel> mappedAnimals = response.body().stream()
+                            .map(animal -> new IsBlockedAnimalModel(
+                                    animal.getIdLjubimca(),
+                                    animal.getIdUdomitelja(),
+                                    animal.getImeLjubimca(),
+                                    animal.getTipLjubimca(),
+                                    animal.getOpisLjubimca(),
+                                    animal.isUdomljen(),
+                                    animal.isZahtjevUdomljavanja(),
+                                    animal.getDatum(),
+                                    animal.getVrijeme(),
+                                    animal.getImgUrl(),
+                                    animal.StanjeZivotinje(),
+                                    false,  // Primjer vrijednost za isBlocked
+                                    animal.getDob(),
+                                    animal.getBoja()
+                            ))
+                            .collect(Collectors.toList());
+
+                    animalModelList.addAll(mappedAnimals);
+                    animalsAdapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
+                Toast.makeText(getContext(), "Greška u filtriranju životinja", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void searchAnimalsByType(String type) {
@@ -236,6 +294,7 @@ public class HomeFragment extends Fragment {
                                     animal.getTipLjubimca(),
                                     animal.getOpisLjubimca(),
                                     animal.isUdomljen(),
+                                    animal.isZahtjevUdomljavanja(),
                                     animal.getDatum(),
                                     animal.getVrijeme(),
                                     animal.getImgUrl(),
@@ -273,6 +332,71 @@ public class HomeFragment extends Fragment {
             @Override
             public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
                 progressBar.setVisibility(View.GONE);
+                Log.d(TAG, "Fetch all animals - Response received NOVO");
+                Log.d(TAG, "Response code: " + response.code());
+                Log.d(TAG, "Response is successful: " + response.isSuccessful());
+                Log.d(TAG, "Response body: " + response.body());
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d(TAG, "Number of animals fetched: " + response.body().size());
+                    animalModelList.clear();
+
+                    // Filtriraj životinje koje su već udomljene
+                    List<AnimalModel> availableAnimals = response.body().stream()
+                            .filter(animal -> !animal.isUdomljen() && !animal.isStatusUdomljavanja())
+                            .collect(Collectors.toList());
+
+                    for (AnimalModel animal : availableAnimals) {
+                        if (animal.isZahtjevUdomljavanja() == false){
+
+
+                        animalModelList.add(new IsBlockedAnimalModel(
+                                animal.getIdLjubimca(),
+                                animal.getIdUdomitelja(),
+                                animal.getImeLjubimca(),
+                                animal.getTipLjubimca(),
+                                animal.getOpisLjubimca(),
+                                animal.isUdomljen(),
+                                animal.isZahtjevUdomljavanja(),
+                                animal.getDatum(),
+                                animal.getVrijeme(),
+                                animal.getImgUrl(),
+                                animal.StanjeZivotinje(),
+                                false,
+                                animal.getDob(),
+                                animal.getBoja()));
+                        animal.isZahtjevUdomljavanja();
+                        Log.d(TAG, "Test" + animal.isZahtjevUdomljavanja());
+                        }
+                    }
+                    animalsAdapter.notifyDataSetChanged();
+                    List<AnimalModel> animals = response.body();
+                    Log.d(TAG, "Animals received from server: " + animals.toString());
+                    // fetchAdoptedAnimals(animals);
+                    Log.d(TAG, "Test123" + animalModelList.size());
+                    // animalModelList.removeIf(animal -> animal.getDob() != 18);
+                    Log.d(TAG, "Test1243" + animalModelList.size());
+                    animalsAdapter.notifyDataSetChanged();
+                } else {
+                    Log.e(TAG, "Error fetching animals. Response code: " + response.code() + ", Message: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
+                Log.e(TAG, "Failed to fetch animals", t);
+                Toast.makeText(getContext(), "Greška u učitavanju životinja", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void loadAllAdoptedAnimals() {
+        progressBar.setVisibility(View.VISIBLE);
+        Log.d(TAG, "Fetching all animals...");
+        apiService.getAllAnimals().enqueue(new Callback<List<AnimalModel>>() {
+            @Override
+            public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
+                progressBar.setVisibility(View.GONE);
                 Log.d(TAG, "Fetch all animals - Response received");
                 Log.d(TAG, "Response code: " + response.code());
                 if (response.isSuccessful() && response.body() != null) {
@@ -292,6 +416,7 @@ public class HomeFragment extends Fragment {
                                 animal.getTipLjubimca(),
                                 animal.getOpisLjubimca(),
                                 animal.isUdomljen(),
+                                animal.isZahtjevUdomljavanja(),
                                 animal.getDatum(),
                                 animal.getVrijeme(),
                                 animal.getImgUrl(),
@@ -300,6 +425,7 @@ public class HomeFragment extends Fragment {
                                 animal.getDob(),
                                 animal.getBoja()
                         ));
+                        Log.d(TAG,"Ispis2" + animal.isZahtjevUdomljavanja());
                     }
                     animalsAdapter.notifyDataSetChanged();
                     List<AnimalModel> animals = response.body();
@@ -307,7 +433,6 @@ public class HomeFragment extends Fragment {
                     fetchAdoptedAnimals(animals);
                 } else {
                     Log.e(TAG, "Error fetching animals. Response code: " + response.code() + ", Message: " + response.message());
-                    Toast.makeText(getContext(), "Nema pronađenih životinja", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -388,6 +513,7 @@ public class HomeFragment extends Fragment {
                                                 animal.getTipLjubimca(),
                                                 animal.getOpisLjubimca(),
                                                 animal.isUdomljen(),
+                                                animal.isZahtjevUdomljavanja(),
                                                 animal.getDatum(),
                                                 animal.getVrijeme(),
                                                 animal.getImgUrl(),
@@ -403,21 +529,8 @@ public class HomeFragment extends Fragment {
                                             boolean isBlocked = response.body().stream()
                                                     .anyMatch(blocked -> blocked.getIme_ljubimca().equals(animal.getImeLjubimca())
                                                             && blocked.getId_korisnika() == currentUser.getIdKorisnika());
-                                            return new IsBlockedAnimalModel(
-                                                    animal.getIdLjubimca(),
-                                                    animal.getIdUdomitelja(),
-                                                    animal.getImeLjubimca(),
-                                                    animal.getTipLjubimca(),
-                                                    animal.getOpisLjubimca(),
-                                                    animal.isUdomljen(),
-                                                    animal.getDatum(),
-                                                    animal.getVrijeme(),
-                                                    animal.getImgUrl(),
-                                                    animal.StanjeZivotinje(),
-                                                    isBlocked,
-                                                    animal.getDob(),
-                                                    animal.getBoja()
-                                            );
+                                            return new IsBlockedAnimalModel(animal.getIdLjubimca(), animal.getIdUdomitelja(), animal.getImeLjubimca(), animal.getTipLjubimca(), animal.getOpisLjubimca(), animal.isUdomljen(), animal.isZahtjevUdomljavanja(), animal.getDatum(), animal.getVrijeme(), animal.getImgUrl(), animal.StanjeZivotinje(), false, animal.getDob(), animal.getBoja());
+
                                         })
                                         .collect(Collectors.toList());
 

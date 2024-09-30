@@ -76,8 +76,14 @@ public class MyAnimalsFragment extends Fragment implements DataRefreshListener {
         if (userJson != null) {
             Gson gson = new Gson();
             currentUser = gson.fromJson(userJson, UserModel.class);
+            Log.d(TAG, "Nesto" + userJson);
         } else {
-            Log.e(TAG, "Korisnički JSON podaci nisu pronađeni.");
+            Log.e(TAG, "Usli u else");
+            userJson = "{\"admin\":true,\"email\":\"matija.margeta@vuv.hr\",\"id_korisnika\":1,\"ime\":\"Matija Margeta\",\"lozinka\":\"Matija123\",\"profileImg\":\"content://media/external/images/media/1000011340\"}";
+            Gson gson = new Gson();
+            currentUser = gson.fromJson(userJson, UserModel.class);
+            Log.d(TAG, "Nesto" + userJson);
+
             return;
         }
 
@@ -85,7 +91,7 @@ public class MyAnimalsFragment extends Fragment implements DataRefreshListener {
             @Override
             public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Log.d(TAG, "Successfully fetched adopted animals, size: " + response.body().size());
+                    Log.d(TAG, "Linija 89: " + response.body().size());
                     cartModelList.clear();
                     List<UpdateDnevnikModel> allAdoptions = response.body();
                     for (UpdateDnevnikModel animal : allAdoptions) {

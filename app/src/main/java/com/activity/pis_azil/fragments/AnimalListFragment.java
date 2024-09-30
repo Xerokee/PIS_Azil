@@ -60,6 +60,7 @@ public class AnimalListFragment extends Fragment {
                                         item.getTipLjubimca(),
                                         item.getOpisLjubimca(),
                                         item.isUdomljen(),
+                                        item.isZahtjevUdomljavanja(),
                                         item.getDatum(),
                                         item.getVrijeme(),
                                         item.getImgUrl(),

@@ -36,8 +36,10 @@ import java.security.GeneralSecurityException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 import javax.mail.MessagingException;
@@ -332,6 +334,29 @@ public class DetailedActivity extends AppCompatActivity {
             // Ako zahtjeva odobrenje, označava se kao neudomljena životinja
             adoptionModel.setUdomljen(false);
             adoptionModel.setStatusUdomljavanja(true); // Čeka odobrenje
+            adoptionModel.setZahtjevUdomljavanja(true);
+            adoptionModel.setZahtjevUdomljavanja(true);
+            Log.d(TAG, "Print");
+            Map<String, Object> updateData = new HashMap<>();
+            updateData.put("zahtjev_udomljen", adoptionModel.isStatusUdomljavanja());
+
+            apiService.adoptAnimal((adoptionModel.getIdLjubimca())).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Log.d(TAG, "Životinja uspješno ažurirana.");
+                    } else {
+                        Log.e(TAG, "Greška prilikom ažuriranja: " + response.message());
+                        Toast.makeText(DetailedActivity.this, "Greška prilikom ažuriranja.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Log.e(TAG, "API poziv nije uspio: ", t);
+                    Toast.makeText(DetailedActivity.this, "Greška u API pozivu.", Toast.LENGTH_SHORT).show();
+                }
+            });
         } else {
             // Ako admin odobrava odmah, označava se kao udomljena
             adoptionModel.setUdomljen(true);
@@ -395,6 +420,7 @@ public class DetailedActivity extends AppCompatActivity {
         });
     }
 
+    /*
     private void rejectAnimal(int animalId) {
         // Slanje PUT zahtjeva za odbijanje životinje
         apiService.rejectAnimal(animalId).enqueue(new Callback<Void>() {
@@ -422,6 +448,7 @@ public class DetailedActivity extends AppCompatActivity {
             }
         });
     }
+    */
 
     private void updateAnimal(AnimalModel updatedAnimal) {
         apiService.updateAnimal(updatedAnimal.getIdLjubimca(), updatedAnimal).enqueue(new Callback<Void>() {
@@ -429,9 +456,9 @@ public class DetailedActivity extends AppCompatActivity {
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     Log.d(TAG, "Životinja uspješno ažurirana.");
+                    updatedAnimal.setZahtjevUdomljavanja(true);
                     // Ažuriranje UI ili povratak na prethodnu aktivnost
                 } else {
-                    Log.e(TAG, "Greška prilikom ažuriranja: " + response.message());
                     Toast.makeText(DetailedActivity.this, "Greška prilikom ažuriranja.", Toast.LENGTH_SHORT).show();
                 }
             }

@@ -17,19 +17,21 @@ public class AnimalModel implements Serializable {
     private List<GalleryImageModel> galerijaZivotinja;
     private boolean stanje_zivotinje;
     private boolean statusUdomljavanja;
+    private boolean zahtjev_udomljen;
     private int dob;
     private String boja;
 
     // Constructors, getters, and setters
     public AnimalModel() {}
 
-    public AnimalModel(int id_ljubimca, int id_udomitelja, String ime_ljubimca, String tip_ljubimca, String opis_ljubimca, boolean udomljen, String datum, String vrijeme, String imgUrl, List<GalleryImageModel> galerijaZivotinja, boolean stanje_zivotinje) {
+    public AnimalModel(int id_ljubimca, int id_udomitelja, String ime_ljubimca, String tip_ljubimca, String opis_ljubimca, boolean udomljen, boolean zahtjev_udomljen, String datum, String vrijeme, String imgUrl, List<GalleryImageModel> galerijaZivotinja, boolean stanje_zivotinje) {
         this.id_ljubimca = id_ljubimca;
         this.id_udomitelja = id_udomitelja;
         this.ime_ljubimca = ime_ljubimca;
         this.tip_ljubimca = tip_ljubimca;
         this.opis_ljubimca = opis_ljubimca;
         this.udomljen = udomljen;
+        this.zahtjev_udomljen = zahtjev_udomljen;
         this.datum = datum;
         this.vrijeme = vrijeme;
         this.imgUrl = imgUrl;
@@ -140,6 +142,14 @@ public class AnimalModel implements Serializable {
 
     public void setStatusUdomljavanja(boolean statusUdomljavanja) {
         this.statusUdomljavanja = statusUdomljavanja;
+    }
+
+    public boolean isZahtjevUdomljavanja() {
+        return zahtjev_udomljen;
+    }
+
+    public void setZahtjevUdomljavanja(boolean zahtjev_udomljavanja) {
+        this.zahtjev_udomljen = zahtjev_udomljavanja;
     }
 
     public int getDob() {

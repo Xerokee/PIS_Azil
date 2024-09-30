@@ -26,6 +26,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.SendMail;
 // import com.activity.pis_azil.activities.AdoptionStatusActivity;
+import com.activity.pis_azil.activities.DetailedActivity;
+import com.activity.pis_azil.models.AnimalModel;
+import com.activity.pis_azil.models.IsBlockedAnimalModel;
 import com.activity.pis_azil.models.RejectAdoptionModel;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserByEmailResponseModel;
@@ -64,6 +67,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
     private DataRefreshListener dataRefreshListener;
     Context context;
     List<MyAdoptionModel> cartModelList;
+    List<AnimalModel> animalModelList;
     ApiService apiService;
 
     public MyAdoptionAdapter(Context context, List<MyAdoptionModel> cartModelList, DataRefreshListener listener) {
@@ -394,14 +398,20 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
     private void rejectAdoption(int position) {
         MyAdoptionModel cartModel = cartModelList.get(position);
+        // AnimalModel animalModel = animalModelList.get(position);
 
         cartModel.setStatusUdomljavanja(false); // Postavi status udomljavanja na false
+        cartModel.setZahtjevUdomljavanja(false); // Postavi zahtjev udomljavanja na false
+
+        Log.d(TAG, "TEST567");
+        Log.d(TAG, "cartmodel" + cartModel.getIdLjubimca());
 
         // Ažuriraj UI odmah
         notifyItemChanged(position);
 
         UpdateDnevnikModel model = new UpdateDnevnikModel();
-        model.setId_korisnika(cartModel.getIdKorisnika());
+        model.setId_korisnika(
+                cartModel.getIdKorisnika());
         model.setUdomljen(cartModel.isUdomljen());
         // model.setId_ljubimca(cartModel.getIdLjubimca());
         model.setDatum(cartModel.getDatum());
@@ -411,38 +421,116 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         model.setTip_ljubimca(cartModel.getTipLjubimca());
         model.setIme_ljubimca(cartModel.getImeLjubimca());
         model.setStatus_udomljavanja(cartModel.isStatusUdomljavanja());
+        model.setZahtjev_udomljen(cartModel.isZahtjevUdomljavanja());
+
 
         RejectAdoptionModel rejectAdoptionModel = new RejectAdoptionModel();
-        rejectAdoptionModel.setIdKorisnika(cartModel.getIdKorisnika());
+        rejectAdoptionModel.
+                setIdKorisnika(cartModel.getIdKorisnika());
         rejectAdoptionModel.setImeLjubimca(cartModel.getImeLjubimca());
         rejectAdoptionModel.setIdLjubimca(cartModel.getIdLjubimca());
+        // rejectAdoptionModel.setZahtjev_udomljen(false);
 
-        apiService.createOdbijenaZivotinja(
-                rejectAdoptionModel).enqueue(new Callback<Void>() {
+
+
+
+
+
+
+        Log.d(TAG, "Fetching all animals...");
+        apiService.getAllAnimals().enqueue(new Callback<List<AnimalModel>>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    deleteItem(position);
-                    Log.d(TAG, "Odbijanje uspješno: " + response.message());
-                } else {
-                    try {
-                        String errorBody = response.errorBody().string();
-                        Log.e(TAG, "Server-side error body: " + errorBody);
-                    } catch (IOException e) {
-                        e.printStackTrace();
+            public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
+                Log.d(TAG, "DOHVATILI SVE ZIVOTINJE");
+                if (response.isSuccessful() && response.body() != null) {
+                    Log.d(TAG, "USLI ZADNJE" + response.body().size());
+
+
+                    // Filtriraj životinje koje su već udomljene
+                    List<AnimalModel> availableAnimals = response.body().stream()
+                            .collect(Collectors.toList());
+
+                    for (AnimalModel animal : availableAnimals) {
+                        if (animal.getImeLjubimca().equals(cartModel.getImeLjubimca())) {
+                            Log.d(TAG, "NAJBITNIJI DIO" + animal.getIdLjubimca() + animal.isZahtjevUdomljavanja());
+
+                            AnimalModel am = new AnimalModel(
+                                    animal.getIdLjubimca(),
+                                    15,
+                                    rejectAdoptionModel.getImeLjubimca(),
+                                    cartModel.getTipLjubimca(),
+                                    model.getOpisLjubimca(),
+                                    model.isUdomljen(),
+                                    false,
+                                    model.getDatum(),
+                                    model.getVrijeme(),
+                                    model.getImgUrl(),
+                                    null,
+                                    false
+                            );
+
+                            updateAnimal(am);
+                            RejectAdoptionModel rm = new RejectAdoptionModel();
+                            Log.d(TAG, "zadnji log " + cartModel.getIdLjubimca() + " " + cartModel.getIdKorisnika() + cartModel.getImeLjubimca());
+                            rm.setIdKorisnika(cartModel.getIdKorisnika());
+                            rm.setImeLjubimca(cartModel.getImeLjubimca());
+                            // rm.setIdLjubimca(animal.getIdLjubimca());
+                            rm.setIdLjubimca(cartModel.getIdLjubimca());
+                            Gson gson = new Gson();
+
+                            String requestJson = gson.toJson(rm);
+
+                            Log.d(TAG, "Prije poziva oncreate odbijena zivotinja Primjer: " + requestJson);
+                            apiService.createOdbijenaZivotinja(
+                                    rm).enqueue(new Callback<Void>() {
+                                @Override
+                                public void onResponse(Call<Void> call, Response<Void> response) {
+                                    if (response.isSuccessful()) {
+                                        deleteItem(position);
+                                        Log.d(TAG, "Odbijanje uspješno: " + position);
+                                    } else {
+                                        try {
+                                            String errorBody = response.errorBody().string();
+                                            deleteItem(position);
+                                            Log.e(TAG, "Server-side error body: " + errorBody);
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                        Log.e(TAG, "Greška u odgovoru: " + response.message() + ", Kod: " + response.code());
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<Void> call, Throwable t) {
+                                    Log.e(TAG, "Greška prilikom slanja zahtjeva: ", t);
+                                    System.out.println("dd");
+                                }
+                            });
+                            break;
+                        }
+
                     }
-                    Log.e(TAG, "Greška u odgovoru: " + response.message() + ", Kod: " + response.code());
+                    List<AnimalModel> animals = response.body();
+                    Log.d(TAG, "Animals received from server: " + animals.toString());
+                } else {
+                    Log.e(TAG, "NISMO USPJELI POVEZAT 1");
                 }
             }
 
+
+
+
+
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Log.e(TAG, "Greška prilikom slanja zahtjeva: ", t);
-                System.out.println("dd");
+            public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
+                Log.e(TAG, "NISMO USPJELI POVEZAT 2", t);
+
             }
         });
-    }
 
+
+
+    }
 
     private void sendNotification(Context context, String animalName) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -800,6 +888,27 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             public void onFailure(Call<UserByEmailResponseModel> call, Throwable t) {
                 Log.e(TAG, "Greška pri dohvaćanju korisnika: ", t);
                 listener.onEmailFetched(null);
+            }
+        });
+    }
+
+    private void updateAnimal(AnimalModel updatedAnimal) {
+        Log.d(TAG, "Usli u funkciju update animal" + updatedAnimal.getIdLjubimca());
+        apiService.rejectAnimal(updatedAnimal.getIdLjubimca(), updatedAnimal).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Log.d(TAG, "Životinja uspješno ažurirana.");
+                    updatedAnimal.setZahtjevUdomljavanja(false);
+                    // Ažuriranje UI ili povratak na prethodnu aktivnost
+                } else {
+                    Log.d(TAG, "PRIMJER");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e(TAG, "API poziv nije uspio: ", t);
             }
         });
     }

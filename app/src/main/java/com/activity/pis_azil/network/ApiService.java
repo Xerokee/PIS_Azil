@@ -65,10 +65,18 @@ public interface ApiService {
     Call<Void> updateAnimal(@Path("id") int id, @Body AnimalModel animalModel);
 
     @PUT("KucniLjubimci/{id}/odbij")
-    Call<Void> rejectAnimal(@Path("id") int id);
+    Call<Void> rejectAnimal(@Path("id") int id, @Body AnimalModel animalModel);
 
     @PUT("KucniLjubimci/{id}/udomi")
     Call<Void> adoptAnimal(@Path("id") int id);
+
+    @GET("GetFilteredAnimalsByAgeRange")
+    Call<List<AnimalModel>> getFilteredAnimalsByAgeRange(
+            @Query("tipLjubimca") String tipLjubimca,
+            @Query("dobMin") Integer dobMin,
+            @Query("dobMax") Integer dobMax,
+            @Query("boja") String boja
+    );
 
     @POST("KucniLjubimci/add")
     Call<Void> addAnimal(@Header("RequestAnimalId") int requestAnimalId, @Body ViewAllModel animal);

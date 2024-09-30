@@ -46,6 +46,7 @@ public class ViewAllActivity extends AppCompatActivity {
                             item.getTipLjubimca(),
                             item.getOpisLjubimca(),
                             item.isUdomljen(),
+                            item.isZahtjevUdomljavanja(),
                             item.getDatum(),
                             item.getVrijeme(),
                             item.getImgUrl(),
