@@ -23,7 +23,7 @@ public class SendMail {
 
     private static final String APPLICATION_NAME = "Your Application Name";
     private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private static final String ACCESS_TOKEN = "ya29.a0AcM612yvgkNrR8Q_sP4ETO24KpAt-1zhb9R0U-K0ms0HcN8z5bSqM529R8eaIUaGuRpqDS3-zCWXRxG7xeFm9aB9pWbldpLvdbCdoMBItjR6Q_z4mmBK986c_chGk3BjZJMBROtiMIdqOxVeLwzhKfObYaI8A5PL_oFjwPV6aCgYKAc4SARISFQHGX2Mi2aJmM8mPUk2YFBp5z7AKZw0175";
+    private static final String ACCESS_TOKEN = "ya29.a0AcM612zy19cPuL0nbXudBh9SDw2YKktAbcW6QwAEk28BMoJ5CKWXj-WiRuLNqJ5NK4CYfIG2-3iFTHEZmSh0AvZwJmcA_Elf2umQX3WkvBKW71ZA_RwuaRdcKQQN7qScGiuATFa7EbFZpgRDgkb-4V9Pu7jVJ8s0-nFzPzI_aCgYKAXcSARISFQHGX2MiIiaj1Em517dT2CmEhle52Q0175";
 
     public static void sendEmail(String to, String subject, String body) throws GeneralSecurityException, IOException, MessagingException {
         Gmail service = getGmailService(ACCESS_TOKEN);

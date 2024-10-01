@@ -21,13 +21,33 @@
             android:icon="@drawable/autorenew"
             android:title="@string/nove_ivotinje" />
         <item
-            android:id="@+id/nav_my_orders"
-            android:icon="@drawable/baseline_warehouse_24"
-            android:title="@string/skloni_te" />
+            android:id="@+id/nav_admin_menu"
+            android:icon="@drawable/ic_admin_menu"
+            android:title="Izbornik administrator" />
         <item
-            android:id="@+id/nav_my_carts"
-            android:icon="@drawable/baseline_view_list_24"
-            android:title="Lista Životinja" />
+            android:id="@+id/nav_my_orders"
+            android:icon="@drawable/ic_adopted_animals"
+            android:title="Udomljene životinje" />
+
+        <item
+            android:id="@+id/nav_my_animals"
+            android:icon="@drawable/ic_my_animals"
+            android:title="Moje životinje" />
+
+        <item
+            android:id="@+id/nav_available_animals"
+            android:icon="@drawable/ic_available_animals"
+            android:title="Raspoložive životinje" />
+
+        <item
+            android:id="@+id/nav_user_available_animals"
+            android:icon="@drawable/ic_available_animals_user"
+            android:title="Izbornik korisnika" />
+
+        <item
+            android:id="@+id/nav_request_list"
+            android:icon="@drawable/ic_requests"
+            android:title="Lista zahtjeva" />
 
         <item
             android:id="@+id/rejectedAnimalsFragment"

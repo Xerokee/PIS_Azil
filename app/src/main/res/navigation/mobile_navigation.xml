@@ -28,21 +28,55 @@
         android:name="com.activity.pis_azil.ui.profile.ProfileFragment"
         android:label="@string/profil"
         tools:layout="@layout/fragment_profile" />
+
     <fragment
         android:id="@+id/nav_new_products"
         android:name="com.activity.pis_azil.fragments.NewAnimalsFragment"
         android:label="Nove Životinje"
         tools:layout="@layout/fragment_new_animals" />
+
+    <!-- Izbornik administratora koji prikazuje sve životinje -->
+    <fragment
+        android:id="@+id/nav_admin_menu"
+        android:name="com.activity.pis_azil.fragments.AnimalsFragment"
+        android:label="Izbornik administrator"
+        tools:layout="@layout/fragment_my_adopted" />
+
+    <!-- Udomljene životinje - administrator vidi sve udomljene životinje -->
     <fragment
         android:id="@+id/nav_my_orders"
         android:name="com.activity.pis_azil.fragments.MyAdoptedFragment"
-        android:label="Sklonište"
+        android:label="Udomljene životinje"
         tools:layout="@layout/fragment_my_adopted" />
+
+    <!-- Moje životinje - korisnik vidi životinje koje je udomio -->
     <fragment
-        android:id="@+id/nav_my_carts"
+        android:id="@+id/nav_my_animals"
         android:name="com.activity.pis_azil.fragments.MyAnimalsFragment"
-        android:label="Lista Životinja"
-        tools:layout="@layout/fragment_my_adoptions" />
+        android:label="Moje životinje"
+        tools:layout="@layout/fragment_animals" />
+
+    <!-- Raspoložive životinje - prikazuje sve životinje koje čekaju udomljavanje -->
+    <fragment
+        android:id="@+id/nav_available_animals"
+        android:name="com.activity.pis_azil.fragments.AvailableAnimalsFragment"
+        android:label="Raspoložive životinje"
+        tools:layout="@layout/fragment_available_animals" />
+
+    <!-- Izbornik korisnika - prikazuje životinje koje taj korisnik može udomiti -->
+    <fragment
+        android:id="@+id/nav_user_available_animals"
+        android:name="com.activity.pis_azil.fragments.UserAvailableAnimalsFragment"
+        android:label="Izbornik korisnika"
+        tools:layout="@layout/fragment_user_available_animals" />
+
+    <!-- Lista zahtjeva - administrator vidi sve zahtjeve za udomljavanje -->
+    <fragment
+        android:id="@+id/nav_request_list"
+        android:name="com.activity.pis_azil.fragments.RequestListFragment"
+        android:label="Lista zahtjeva"
+        tools:layout="@layout/fragment_request_list" />
+
     <fragment
         android:id="@+id/rejectedAnimalsFragment"
         android:name="com.activity.pis_azil.fragments.RejectedAnimalsFragment"
