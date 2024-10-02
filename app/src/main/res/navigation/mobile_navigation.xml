@@ -65,10 +65,10 @@
 
     <!-- Izbornik korisnika - prikazuje životinje koje taj korisnik može udomiti -->
     <fragment
-        android:id="@+id/nav_user_available_animals"
-        android:name="com.activity.pis_azil.fragments.UserAvailableAnimalsFragment"
+        android:id="@+id/nav_user_animals"
+        android:name="com.activity.pis_azil.fragments.UserAnimalsFragment"
         android:label="Izbornik korisnika"
-        tools:layout="@layout/fragment_user_available_animals" />
+        tools:layout="@layout/fragment_user_animals" />
 
     <!-- Lista zahtjeva - administrator vidi sve zahtjeve za udomljavanje -->
     <fragment

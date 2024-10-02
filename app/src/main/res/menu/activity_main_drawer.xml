@@ -40,7 +40,7 @@
             android:title="Raspoložive životinje" />
 
         <item
-            android:id="@+id/nav_user_available_animals"
+            android:id="@+id/nav_user_animals"
             android:icon="@drawable/ic_available_animals_user"
             android:title="Izbornik korisnika" />
 
