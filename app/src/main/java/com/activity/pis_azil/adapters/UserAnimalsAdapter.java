@@ -54,7 +54,6 @@ public class UserAnimalsAdapter extends RecyclerView.Adapter<UserAnimalsAdapter.
         // Postavljanje akcije za gumb "Udomi"
         holder.adoptButton.setOnClickListener(v -> {
             Toast.makeText(context, "Odabrali ste: " + animal.getImeLjubimca(), Toast.LENGTH_SHORT).show();
-            // Ovdje možete dodati logiku za udomljavanje
         });
     }
 

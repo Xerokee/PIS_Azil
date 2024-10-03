@@ -65,7 +65,6 @@ public class MyAnimalsFragment extends Fragment {
         UserModel currentUser = new Gson().fromJson(userJson, UserModel.class);
 
         if (currentUser == null) {
-            Toast.makeText(getContext(), "Korisnički podaci nisu dostupni", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -81,7 +80,13 @@ public class MyAnimalsFragment extends Fragment {
                     // Filter animals for the current user
                     for (UpdateDnevnikModel animal : allAnimals) {
                         if (animal.getId_korisnika() == currentUser.getIdKorisnika()) {
-                            animalsList.add(animal);
+                            if (animal.isUdomljen() == false && animal.isStatus_udomljavanja() == false) {
+                                // Notify user that the request was rejected
+                                Toast.makeText(getContext(), "Zahtjev za udomljavanje " + animal.getIme_ljubimca() + " je odbijen.", Toast.LENGTH_LONG).show();
+                            } else {
+                                // Only show animals with requests still pending or approved
+                                animalsList.add(animal);
+                            }
                         }
                     }
 

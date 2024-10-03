@@ -63,7 +63,6 @@ public class UserAnimalsFragment extends Fragment {
         UserModel currentUser = new Gson().fromJson(userJson, UserModel.class);
 
         if (currentUser == null) {
-            Toast.makeText(getContext(), "Korisnički podaci nisu dostupni", Toast.LENGTH_SHORT).show();
             return;
         }
 

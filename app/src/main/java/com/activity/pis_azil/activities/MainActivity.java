@@ -72,6 +72,26 @@ public class MainActivity extends AppCompatActivity {
         TextView headerEmail = headerView.findViewById(R.id.profileEml);
         CircleImageView headerImg = headerView.findViewById(R.id.profileImg);
 
+        // Dohvati SharedPreferences i provjeri je li korisnik admin
+        SharedPreferences prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        boolean isAdmin = prefs.getBoolean("admin", false);
+        String userJson = prefs.getString("current_user", null);
+        UserModel currentUser = new Gson().fromJson(userJson, UserModel.class);
+
+        Menu menu = navigationView.getMenu();
+        if (!isAdmin) {
+            menu.findItem(R.id.nav_new_products).setVisible(false);
+            menu.findItem(R.id.nav_admin_menu).setVisible(false);
+            menu.findItem(R.id.nav_my_orders).setVisible(false);
+            menu.findItem(R.id.nav_request_list).setVisible(false);
+        } else {
+            // Prikazi sve za admina
+            menu.findItem(R.id.nav_new_products).setVisible(true);
+            menu.findItem(R.id.nav_admin_menu).setVisible(true);
+            menu.findItem(R.id.nav_my_orders).setVisible(true);
+            menu.findItem(R.id.nav_request_list).setVisible(true);
+        }
+
         // Get user data from intent
         UserModel user = (UserModel) getIntent().getSerializableExtra("user_data");
         if (user != null) {
