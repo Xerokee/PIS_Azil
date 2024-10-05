@@ -48,14 +48,12 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
         if (animal.isUdomljen()) {
             holder.animalStatus.setText("Status: Udomljeno");
             holder.itemView.setBackgroundColor(Color.GREEN); // Set green background for adopted animals
-        } else if (animal.isUdomljen() == false && animal.isStatus_udomljavanja() == true) {
+        } else if (animal.isStatus_udomljavanja()) {
             holder.animalStatus.setText("Status: Zahtjev u tijeku");
             holder.itemView.setBackgroundColor(Color.parseColor("#FFA500")); // Orange background for requests in process
-        } else if (animal.isStatus_udomljavanja() == false) {
+        } else {
             holder.animalStatus.setText("Status: Odbijen zahtjev");
             holder.itemView.setBackgroundColor(Color.RED); // Red background for rejected requests
-            // Notify the user that their request was rejected
-            Toast.makeText(context, "Administrator je odbio zahtjev za udomljavanje: " + animal.getIme_ljubimca(), Toast.LENGTH_LONG).show();
         }
     }
 

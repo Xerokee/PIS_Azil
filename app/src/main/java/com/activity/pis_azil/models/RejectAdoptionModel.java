@@ -5,7 +5,7 @@ public class RejectAdoptionModel {
     private Integer IdKorisnika;
     private String ImeLjubimca;
     private Integer IdLjubimca;
-    // private boolean zahtjev_udomljen;
+    private boolean zahtjev_udomljen;
 
     public RejectAdoptionModel() {
 
@@ -35,13 +35,11 @@ public class RejectAdoptionModel {
         IdLjubimca = idLjubimca;
     }
 
-    /*
-    public boolean isZahtjev_udomljen() {
+    public boolean isZahtjevUdomljen() {
         return zahtjev_udomljen;
     }
 
-    public void setZahtjev_udomljen(boolean zahtjev_udomljen) {
+    public void setZahtjevUdomljen(boolean zahtjev_udomljen) {
         this.zahtjev_udomljen = zahtjev_udomljen;
     }
-    */
 }

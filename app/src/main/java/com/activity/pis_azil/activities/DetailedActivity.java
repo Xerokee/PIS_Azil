@@ -346,8 +346,6 @@ public class DetailedActivity extends AppCompatActivity {
                     if (response.isSuccessful()) {
                         Log.d(TAG, "Životinja uspješno ažurirana.");
                     } else {
-                        Log.e(TAG, "Greška prilikom ažuriranja: " + response.message());
-                        Toast.makeText(DetailedActivity.this, "Greška prilikom ažuriranja.", Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -459,7 +457,6 @@ public class DetailedActivity extends AppCompatActivity {
                     updatedAnimal.setZahtjevUdomljavanja(true);
                     // Ažuriranje UI ili povratak na prethodnu aktivnost
                 } else {
-                    Toast.makeText(DetailedActivity.this, "Greška prilikom ažuriranja.", Toast.LENGTH_SHORT).show();
                 }
             }
 

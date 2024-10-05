@@ -429,7 +429,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 setIdKorisnika(cartModel.getIdKorisnika());
         rejectAdoptionModel.setImeLjubimca(cartModel.getImeLjubimca());
         rejectAdoptionModel.setIdLjubimca(cartModel.getIdLjubimca());
-        // rejectAdoptionModel.setZahtjev_udomljen(false);
+        rejectAdoptionModel.setZahtjevUdomljen(false);
 
 
 

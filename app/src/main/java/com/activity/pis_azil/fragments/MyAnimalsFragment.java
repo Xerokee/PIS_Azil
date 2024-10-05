@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.adapters.MyAnimalsAdapter;
+import com.activity.pis_azil.models.RejectAdoptionModel;
+import com.activity.pis_azil.models.RejectAdoptionModelRead;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
@@ -80,7 +82,7 @@ public class MyAnimalsFragment extends Fragment {
                     // Filter animals for the current user
                     for (UpdateDnevnikModel animal : allAnimals) {
                         if (animal.getId_korisnika() == currentUser.getIdKorisnika()) {
-                            if (animal.isUdomljen() == false && animal.isStatus_udomljavanja() == false) {
+                            if (!animal.isUdomljen() && !animal.isStatus_udomljavanja()) {
                                 // Notify user that the request was rejected
                                 Toast.makeText(getContext(), "Zahtjev za udomljavanje " + animal.getIme_ljubimca() + " je odbijen.", Toast.LENGTH_LONG).show();
                             } else {
@@ -89,6 +91,29 @@ public class MyAnimalsFragment extends Fragment {
                             }
                         }
                     }
+
+                    // API call to fetch rejected animals for current user
+                    apiService.getOdbijeneZivotinje().enqueue(new Callback<List<RejectAdoptionModelRead>>() {
+                        @Override
+                        public void onResponse(Call<List<RejectAdoptionModelRead>> call, Response<List<RejectAdoptionModelRead>> response) {
+                            if (response.isSuccessful() && response.body() != null) {
+                                List<RejectAdoptionModelRead> rejectedAnimals = response.body();
+                                for (RejectAdoptionModelRead rejectedAnimal : rejectedAnimals) {
+                                    if (rejectedAnimal.getId_korisnika().equals(currentUser.getIdKorisnika())) {
+                                        // Notify user that the request was rejected
+                                        Toast.makeText(getContext(), "Admin je odbio zahtjev za " + rejectedAnimal.getIme_ljubimca(), Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            } else {
+                                Toast.makeText(getContext(), "Greška pri dohvaćanju odbijenih zahtjeva", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<List<RejectAdoptionModelRead>> call, Throwable t) {
+                            Toast.makeText(getContext(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
 
                     // Display empty state if no animals
                     if (animalsList.isEmpty()) {
