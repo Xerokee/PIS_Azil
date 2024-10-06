@@ -136,4 +136,12 @@ public class MyAnimalsFragment extends Fragment {
             }
         });
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Ponovo učitaj podatke o životinjama kad se fragment vrati u fokus
+        fetchMyAnimals();
+    }
+
 }

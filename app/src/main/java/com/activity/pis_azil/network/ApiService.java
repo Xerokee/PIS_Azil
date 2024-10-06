@@ -62,7 +62,7 @@ public interface ApiService {
     Call<AnimalModel> getAnimalById(@Path("id") int id);
 
     @PUT("KucniLjubimci/update/{id}")
-    Call<Void> updateAnimal(@Path("id") int id, @Body AnimalModel animalModel);
+    Call<Void> updateAnimal(@Path("id") int id, @Body UpdateDnevnikModel animalModel);
 
     @PUT("KucniLjubimci/{id}/odbij")
     Call<Void> rejectAnimal(@Path("id") int id, @Body AnimalModel animalModel);

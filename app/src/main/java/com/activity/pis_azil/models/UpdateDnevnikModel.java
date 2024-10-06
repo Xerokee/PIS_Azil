@@ -1,6 +1,10 @@
 package com.activity.pis_azil.models;
 
-public class UpdateDnevnikModel {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+public class UpdateDnevnikModel implements Serializable {
 
     private int id_ljubimca;
     private int id_korisnika;
@@ -15,8 +19,13 @@ public class UpdateDnevnikModel {
     private boolean zahtjev_udomljen;
     private String imeUdomitelja;
     private String opisLjubimca;
+    private List<String> galleryImgUrls;
+    private List<String> activities;
 
+    // Defaultni konstruktor sa inicijalizacijom
     public UpdateDnevnikModel() {
+        galleryImgUrls = new ArrayList<>();
+        activities = new ArrayList<>();
     }
 
     public UpdateDnevnikModel(int id_ljubimca, int id_korisnika, String ime_ljubimca, String tip_ljubimca, boolean udomljen, String datum, String vrijeme, String imgUrl, boolean stanje_zivotinje, boolean status_udomljavanja, boolean zahtjev_udomljen) {
@@ -31,6 +40,8 @@ public class UpdateDnevnikModel {
         this.stanje_zivotinje = stanje_zivotinje;
         this.status_udomljavanja = status_udomljavanja;
         this.zahtjev_udomljen = zahtjev_udomljen;
+        galleryImgUrls = new ArrayList<>();
+        activities = new ArrayList<>();
     }
 
 
@@ -135,5 +146,25 @@ public class UpdateDnevnikModel {
 
     public void setOpisLjubimca(String opisLjubimca) {
         this.opisLjubimca = opisLjubimca;
+    }
+
+    public List<String> getGalleryImgUrls() {
+        return galleryImgUrls;
+    }
+
+    public void setGalleryImgUrls(List<String> galleryImgUrls) {
+        this.galleryImgUrls = galleryImgUrls;
+    }
+
+    public void addGalleryImage(String imageUrl) {
+        galleryImgUrls.add(imageUrl);
+    }
+
+    public List<String> getActivities() {
+        return activities;
+    }
+
+    public void addActivity(String activity) {
+        activities.add(activity);
     }
 }

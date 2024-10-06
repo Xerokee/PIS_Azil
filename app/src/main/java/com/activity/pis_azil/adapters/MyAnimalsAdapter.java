@@ -11,9 +11,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.pis_azil.R;
+import com.activity.pis_azil.fragments.EditAnimalDialogFragment;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.bumptech.glide.Glide;
 
@@ -55,6 +57,19 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
             holder.animalStatus.setText("Status: Odbijen zahtjev");
             holder.itemView.setBackgroundColor(Color.RED); // Red background for rejected requests
         }
+
+        // listener dugme za akciju
+        holder.actionButton.setOnClickListener(v -> {
+            // Otvori detalje za ažuriranje podataka o životinji, dodavanje slika i aktivnosti
+            openEditAnimalDialog(animal);
+        });
+    }
+
+    private void openEditAnimalDialog(UpdateDnevnikModel animal) {
+        // Implementacija dijaloga za uređivanje podataka o životinji
+        // Korisnik može menjati ime, dodavati slike u galeriju i dodavati aktivnosti
+        EditAnimalDialogFragment editDialog = EditAnimalDialogFragment.newInstance(animal);
+        editDialog.show(((FragmentActivity) context).getSupportFragmentManager(), "EditAnimalDialog");
     }
 
     @Override

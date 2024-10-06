@@ -448,6 +448,7 @@ public class DetailedActivity extends AppCompatActivity {
     }
     */
 
+    /*
     private void updateAnimal(AnimalModel updatedAnimal) {
         apiService.updateAnimal(updatedAnimal.getIdLjubimca(), updatedAnimal).enqueue(new Callback<Void>() {
             @Override
@@ -467,4 +468,5 @@ public class DetailedActivity extends AppCompatActivity {
             }
         });
     }
+    */
 }
