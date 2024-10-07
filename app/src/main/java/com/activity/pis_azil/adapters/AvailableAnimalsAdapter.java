@@ -53,11 +53,6 @@ public class AvailableAnimalsAdapter extends RecyclerView.Adapter<AvailableAnima
             holder.animalStatus.setText("Status: Dostupno");
             holder.itemView.setBackgroundColor(Color.WHITE); // White for available animals
         }
-
-        // Action button logic
-        holder.actionButton.setOnClickListener(v -> {
-            // Handle the adoption action or details
-        });
     }
 
     @Override

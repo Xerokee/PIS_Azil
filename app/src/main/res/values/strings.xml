@@ -38,8 +38,8 @@
 
         <string-array name="animal_ages">
             <item>Sve</item>
-            <item>0 - 1 godina</item>
-            <item>2 - 5 godina</item>
+            <item>0 do 1 godina</item>
+            <item>2 do 5 godina</item>
             <item>5+ godina</item>
         </string-array>
 

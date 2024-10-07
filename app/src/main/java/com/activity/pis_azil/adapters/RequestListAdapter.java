@@ -45,12 +45,6 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
         } else {
             holder.animalImage.setImageResource(R.drawable.profile); // Default image if none available
         }
-
-        // You can add an onClickListener for the button if needed
-        holder.actionButton.setText("Opozovi zahtjev");
-        holder.actionButton.setOnClickListener(v -> {
-            // Handle the revoke request action here
-        });
     }
 
     @Override

@@ -41,6 +41,7 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import retrofit2.Call;
@@ -213,34 +214,45 @@ public class HomeFragment extends Fragment {
 
     // Metoda za primjenu filtera
     private void applyFilters(String type, String age, String color) {
-        Integer dobMin = null;
-        Integer dobMax = null;
+        Integer minDob = null;
+        Integer maxDob = null;
 
-        // Postavljanje minimalne i maksimalne dobi na osnovu izabrane opcije
+        // Postavljanje dobi na osnovu izabrane opcije
         if (!age.equals("Sve")) {
             switch (age) {
-                case "0-1 godina":
-                    dobMin = 0;
-                    dobMax = 1;
+                case "0 do 1 godina":
+                    minDob = 0;
+                    maxDob = 1;
                     break;
-                case "2-5 godina":
-                    dobMin = 2;
-                    dobMax = 5;
+                case "2 do 5 godina":
+                    minDob = 2;
+                    maxDob = 5;
                     break;
                 case "5+ godina":
-                    dobMin = 6;
-                    dobMax = 20;
+                    minDob = 6;
+                    maxDob = 20; // Ili neki maksimalni broj godina
                     break;
             }
         }
 
-        // Prilagodba poziva API-ju sa minimalnom i maksimalnom dobi
-        apiService.getFilteredAnimalsByAgeRange(type, dobMin, dobMax, color).enqueue(new Callback<List<AnimalModel>>() {
+        // Provjerite vrijednosti prije poziva API-a
+        Log.d(TAG, "Filtriraj: tip=" + type + ", dobMin=" + minDob + ", dobMax=" + maxDob + ", boja=" + color);
+
+        progressBar.setVisibility(View.VISIBLE);
+
+        // Jedan API poziv za dohvaćanje životinja s filtrima
+        apiService.getFilteredAnimalsByAgeRange(
+                type.equals("Sve") ? null : type,
+                minDob == null ? 0 : minDob,  // Postavljanje minimalne vrijednosti na 0 ako je null
+                maxDob == null ? 100 : maxDob, // Postavljanje maksimalne vrijednosti na 100 ako je null
+                null,  // Nema specifične jedne godine
+                color.equals("Sve") ? null : color
+        ).enqueue(new Callback<List<AnimalModel>>() {
             @Override
             public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
+                progressBar.setVisibility(View.GONE);
                 if (response.isSuccessful() && response.body() != null) {
                     animalModelList.clear();
-                    // Mapiranje AnimalModel u IsBlockedAnimalModel pre nego što dodate u listu
                     List<IsBlockedAnimalModel> mappedAnimals = response.body().stream()
                             .map(animal -> new IsBlockedAnimalModel(
                                     animal.getIdLjubimca(),
@@ -254,7 +266,7 @@ public class HomeFragment extends Fragment {
                                     animal.getVrijeme(),
                                     animal.getImgUrl(),
                                     animal.StanjeZivotinje(),
-                                    false,  // Primjer vrijednost za isBlocked
+                                    false, // Primjer vrijednost za isBlocked
                                     animal.getDob(),
                                     animal.getBoja()
                             ))
@@ -262,11 +274,14 @@ public class HomeFragment extends Fragment {
 
                     animalModelList.addAll(mappedAnimals);
                     animalsAdapter.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(getContext(), "Greška u filtriranju životinja", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
+                progressBar.setVisibility(View.GONE);
                 Toast.makeText(getContext(), "Greška u filtriranju životinja", Toast.LENGTH_SHORT).show();
             }
         });

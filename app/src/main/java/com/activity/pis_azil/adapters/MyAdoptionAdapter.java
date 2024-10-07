@@ -423,19 +423,11 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         model.setStatus_udomljavanja(cartModel.isStatusUdomljavanja());
         model.setZahtjev_udomljen(cartModel.isZahtjevUdomljavanja());
 
-
         RejectAdoptionModel rejectAdoptionModel = new RejectAdoptionModel();
-        rejectAdoptionModel.
-                setIdKorisnika(cartModel.getIdKorisnika());
+        rejectAdoptionModel.setIdKorisnika(cartModel.getIdKorisnika());
         rejectAdoptionModel.setImeLjubimca(cartModel.getImeLjubimca());
         rejectAdoptionModel.setIdLjubimca(cartModel.getIdLjubimca());
         rejectAdoptionModel.setZahtjevUdomljen(false);
-
-
-
-
-
-
 
         Log.d(TAG, "Fetching all animals...");
         apiService.getAllAnimals().enqueue(new Callback<List<AnimalModel>>() {
@@ -508,7 +500,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                             });
                             break;
                         }
-
                     }
                     List<AnimalModel> animals = response.body();
                     Log.d(TAG, "Animals received from server: " + animals.toString());
@@ -517,19 +508,12 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 }
             }
 
-
-
-
-
             @Override
             public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
                 Log.e(TAG, "NISMO USPJELI POVEZAT 2", t);
 
             }
         });
-
-
-
     }
 
     private void sendNotification(Context context, String animalName) {

@@ -73,8 +73,9 @@ public interface ApiService {
     @GET("GetFilteredAnimalsByAgeRange")
     Call<List<AnimalModel>> getFilteredAnimalsByAgeRange(
             @Query("tipLjubimca") String tipLjubimca,
-            @Query("dobMin") Integer dobMin,
-            @Query("dobMax") Integer dobMax,
+            @Query("minDob") Integer minDob,
+            @Query("maxDob") Integer maxDob,
+            @Query("dob") Integer dob,
             @Query("boja") String boja
     );
 
