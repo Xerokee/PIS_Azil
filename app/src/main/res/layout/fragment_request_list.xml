@@ -5,15 +5,67 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
+    <!-- Horizontal Layout for Filters -->
+    <LinearLayout
+        android:id="@+id/filter_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/filter_background"
+        android:layout_marginBottom="16dp"
+        android:elevation="6dp">
+
+        <!-- Spinner for animal type filter -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tip životinje:"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical"
+                android:textColor="@android:color/black"
+                android:layout_marginEnd="8dp" />
+
+            <Spinner
+                android:id="@+id/filter_request_spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/spinner_background"
+                android:padding="12dp"
+                android:textColor="@android:color/black"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- RecyclerView for displaying the list of animal requests -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_request_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/filter_container"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:visibility="visible"
-        android:scrollbars="vertical" />
+        android:layout_marginTop="16dp" />
 
+    <!-- Empty state text when no requests are available -->
+    <TextView
+        android:id="@+id/empty_state_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nema raspoloživih zahtjeva"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

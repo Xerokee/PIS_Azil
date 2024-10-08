@@ -4,6 +4,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,8 +33,10 @@ public class RequestListFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private RequestListAdapter adapter;
-    private List<AnimalModel> requestList;
+    private List<AnimalModel> requestList, filteredRequestList;
     private ApiService apiService;
+    private Spinner filterRequestSpinner;
+    private TextView emptyStateTextView;
 
     public RequestListFragment() {
         // Required empty public constructor
@@ -43,35 +49,61 @@ public class RequestListFragment extends Fragment {
 
         recyclerView = root.findViewById(R.id.recycler_view_request_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        filterRequestSpinner = root.findViewById(R.id.filter_request_spinner);
+        emptyStateTextView = root.findViewById(R.id.empty_state_text_view);
 
         requestList = new ArrayList<>();
-        adapter = new RequestListAdapter(getContext(), requestList);
+        filteredRequestList = new ArrayList<>();
+        adapter = new RequestListAdapter(getContext(), filteredRequestList);
         recyclerView.setAdapter(adapter);
 
+        setupFilterSpinner();
         fetchRequestList();
 
         return root;
     }
 
+    private void setupFilterSpinner() {
+        // Postavi adapter za Spinner za filtriranje prema tipu životinje
+        ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.animal_types2, android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        filterRequestSpinner.setAdapter(spinnerAdapter);
+
+        // Postavi listener za promjenu odabira filtera
+        filterRequestSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                applyFilter();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Ne radi ništa kada ništa nije odabrano
+            }
+        });
+    }
+
     private void fetchRequestList() {
         apiService = ApiClient.getClient().create(ApiService.class);
 
-        // API call to get the list of requested animals
+        // API poziv za dohvaćanje liste zahtjeva za životinje
         apiService.getAllAnimals().enqueue(new Callback<List<AnimalModel>>() {
             @Override
             public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<AnimalModel> allAnimals = response.body();
                     requestList.clear();
 
-                    // Filter only animals with a pending request (in adoption process)
-                    for (AnimalModel animal : allAnimals) {
+                    // Filtriraj samo životinje s otvorenim zahtjevom (u tijeku)
+                    for (AnimalModel animal : response.body()) {
                         if (animal.isZahtjevUdomljavanja()) {
                             requestList.add(animal);
                         }
                     }
 
-                    adapter.notifyDataSetChanged();
+                    // Primijeni filter na trenutno dohvaćene zahtjeve
+                    applyFilter();
+
                 } else {
                     Toast.makeText(getContext(), "Greška pri dohvaćanju podataka", Toast.LENGTH_SHORT).show();
                 }
@@ -82,5 +114,35 @@ public class RequestListFragment extends Fragment {
                 Toast.makeText(getContext(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void applyFilter() {
+        String selectedType = filterRequestSpinner.getSelectedItem().toString();
+
+        filteredRequestList.clear();
+
+        // Ako je odabrano "Svi", prikazujemo sve zahtjeve
+        if (selectedType.equals("Svi")) {
+            filteredRequestList.addAll(requestList);
+        } else {
+            // Inače filtriramo po tipu životinje
+            for (AnimalModel animal : requestList) {
+                if (animal.getTipLjubimca().equalsIgnoreCase(selectedType)) {
+                    filteredRequestList.add(animal);
+                }
+            }
+        }
+
+        // Prikaz praznog stanja ako nema zahtjeva za prikaz
+        if (filteredRequestList.isEmpty()) {
+            recyclerView.setVisibility(View.GONE);
+            emptyStateTextView.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyStateTextView.setVisibility(View.GONE);
+        }
+
+        // Ažuriraj prikaz pomoću adaptera
+        adapter.notifyDataSetChanged();
     }
 }

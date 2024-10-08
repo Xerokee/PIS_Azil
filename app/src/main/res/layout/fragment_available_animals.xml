@@ -1,30 +1,96 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="16dp">
 
-    <!-- RecyclerView for displaying the list of animals -->
+    <!-- Horizontal Layout for Filters -->
+    <LinearLayout
+        android:id="@+id/filter_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/filter_background"
+        android:layout_marginBottom="16dp"
+        android:elevation="6dp">
+
+        <!-- Spinner for animal type filter -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tip životinje:"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical"
+                android:textColor="@android:color/black"
+                android:layout_marginEnd="8dp" />
+
+            <Spinner
+                android:id="@+id/filter_type_spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/spinner_background"
+                android:padding="12dp"
+                android:textColor="@android:color/black"/>
+        </LinearLayout>
+
+        <!-- Spinner for animal status filter -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Status životinje:"
+                android:textSize="16sp"
+                android:layout_gravity="center_vertical"
+                android:textColor="@android:color/black"
+                android:layout_marginEnd="8dp" />
+
+            <Spinner
+                android:id="@+id/filter_status_spinner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/spinner_background"
+                android:padding="12dp"
+                android:textColor="@android:color/black"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- RecyclerView for displaying available animals -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_available_animals"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/filter_container"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
 
     <!-- Empty state text when no animals are available -->
     <TextView
         android:id="@+id/empty_state_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Nema dostupnih životinja za udomljavanje"
-        android:textSize="18sp"
+        android:text="Nema raspoloživih životinja"
         android:visibility="gone"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

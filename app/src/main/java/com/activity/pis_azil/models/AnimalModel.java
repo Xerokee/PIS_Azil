@@ -168,6 +168,18 @@ public class AnimalModel implements Serializable {
         this.boja = boja;
     }
 
+    public String getDobCategory() {
+        if (dob >= 0 && dob <= 1) {
+            return "0 do 1 godina";
+        } else if (dob >= 2 && dob <= 5) {
+            return "2 do 5 godina";
+        } else if (dob >= 6) {
+            return "5+ godina";
+        } else {
+            return "Nepoznato";
+        }
+    }
+
     @Override
     public String toString() {
         return "AnimalModel{" +

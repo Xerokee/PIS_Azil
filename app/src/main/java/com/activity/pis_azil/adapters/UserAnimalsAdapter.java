@@ -50,11 +50,6 @@ public class UserAnimalsAdapter extends RecyclerView.Adapter<UserAnimalsAdapter.
         } else {
             holder.animalImageView.setImageResource(R.drawable.profile); // Zadana slika
         }
-
-        // Postavljanje akcije za gumb "Udomi"
-        holder.adoptButton.setOnClickListener(v -> {
-            Toast.makeText(context, "Odabrali ste: " + animal.getImeLjubimca(), Toast.LENGTH_SHORT).show();
-        });
     }
 
     @Override
@@ -65,7 +60,6 @@ public class UserAnimalsAdapter extends RecyclerView.Adapter<UserAnimalsAdapter.
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView nameTextView, typeTextView, ageTextView, colorTextView;
         ImageView animalImageView;
-        Button adoptButton;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -75,7 +69,6 @@ public class UserAnimalsAdapter extends RecyclerView.Adapter<UserAnimalsAdapter.
             ageTextView = itemView.findViewById(R.id.animal_age);
             colorTextView = itemView.findViewById(R.id.animal_color);
             animalImageView = itemView.findViewById(R.id.animal_image);
-            adoptButton = itemView.findViewById(R.id.adopt_button);
         }
     }
 }

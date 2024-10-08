@@ -9,6 +9,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,9 +34,10 @@ public class UserAnimalsFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private UserAnimalsAdapter adapter;
-    private List<AnimalModel> availableAnimals;
+    private List<AnimalModel> availableAnimals, filteredAnimals;
     private ApiService apiService;
     private TextView emptyStateTextView;
+    private Spinner filterTypeSpinner, filterAgeSpinner, filterColorSpinner;
 
     public UserAnimalsFragment() {
         // Required empty public constructor
@@ -46,18 +50,74 @@ public class UserAnimalsFragment extends Fragment {
         recyclerView = root.findViewById(R.id.recyclerview_user_available_animals);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         emptyStateTextView = root.findViewById(R.id.empty_state_text_view);
+        filterTypeSpinner = root.findViewById(R.id.filter_type_spinner);
+        filterAgeSpinner = root.findViewById(R.id.filter_age_spinner);
+        filterColorSpinner = root.findViewById(R.id.filter_color_spinner); // Dodan filter za boju
 
         availableAnimals = new ArrayList<>();
-        adapter = new UserAnimalsAdapter(getContext(), availableAnimals);
+        filteredAnimals = new ArrayList<>();
+        adapter = new UserAnimalsAdapter(getContext(), filteredAnimals);
         recyclerView.setAdapter(adapter);
 
+        setupFilterSpinners();
         fetchAvailableAnimalsForUser();
 
         return root;
     }
 
+    private void setupFilterSpinners() {
+        // Set up the type filter spinner
+        ArrayAdapter<CharSequence> typeSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.animal_types, android.R.layout.simple_spinner_item);
+        typeSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        filterTypeSpinner.setAdapter(typeSpinnerAdapter);
+
+        // Set up the age filter spinner
+        ArrayAdapter<CharSequence> ageSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.animal_ages, android.R.layout.simple_spinner_item);
+        ageSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        filterAgeSpinner.setAdapter(ageSpinnerAdapter);
+
+        // Set up the color filter spinner
+        ArrayAdapter<CharSequence> colorSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.animal_colors, android.R.layout.simple_spinner_item);
+        colorSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        filterColorSpinner.setAdapter(colorSpinnerAdapter);
+
+        // Set listeners for spinners
+        filterTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                applyFilter();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        filterAgeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                applyFilter();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        filterColorSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                applyFilter();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+
     private void fetchAvailableAnimalsForUser() {
-        // Dohvati trenutnog korisnika
+        // Get the current user
         SharedPreferences prefs = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         String userJson = prefs.getString("current_user", null);
         UserModel currentUser = new Gson().fromJson(userJson, UserModel.class);
@@ -66,32 +126,15 @@ public class UserAnimalsFragment extends Fragment {
             return;
         }
 
-        // API poziv za dohvaćanje dostupnih životinja
+        // API call to get all available animals
         apiService = ApiClient.getClient().create(ApiService.class);
         apiService.getAllAnimals().enqueue(new Callback<List<AnimalModel>>() {
             @Override
             public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<AnimalModel> allAnimals = response.body();
                     availableAnimals.clear();
-
-                    // Filtriraj životinje koje su dostupne za udomljavanje
-                    for (AnimalModel animal : allAnimals) {
-                        if (!animal.isUdomljen() && animal.getIdUdomitelja() == 0) { // Prikaži samo životinje koje čekaju udomljavanje
-                            availableAnimals.add(animal);
-                        }
-                    }
-
-                    // Prikaz praznog stanja ako nema dostupnih životinja
-                    if (availableAnimals.isEmpty()) {
-                        recyclerView.setVisibility(View.GONE);
-                        emptyStateTextView.setVisibility(View.VISIBLE);
-                    } else {
-                        recyclerView.setVisibility(View.VISIBLE);
-                        emptyStateTextView.setVisibility(View.GONE);
-                    }
-
-                    adapter.notifyDataSetChanged();
+                    availableAnimals.addAll(response.body());
+                    applyFilter();
                 } else {
                     Toast.makeText(getContext(), "Greška pri dohvaćanju podataka", Toast.LENGTH_SHORT).show();
                 }
@@ -102,5 +145,34 @@ public class UserAnimalsFragment extends Fragment {
                 Toast.makeText(getContext(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void applyFilter() {
+        String selectedType = filterTypeSpinner.getSelectedItem().toString();
+        String selectedAge = filterAgeSpinner.getSelectedItem().toString();
+        String selectedColor = filterColorSpinner.getSelectedItem().toString();
+
+        filteredAnimals.clear();
+
+        for (AnimalModel animal : availableAnimals) {
+            boolean matchesType = selectedType.equals("Sve") || animal.getTipLjubimca().equalsIgnoreCase(selectedType);
+            boolean matchesAge = selectedAge.equals("Sve") || animal.getDobCategory().equalsIgnoreCase(selectedAge);
+            boolean matchesColor = selectedColor.equals("Sve") || animal.getBoja().equalsIgnoreCase(selectedColor);
+
+            if (matchesType && matchesAge && matchesColor) {
+                filteredAnimals.add(animal);
+            }
+        }
+
+        // Update UI for empty state
+        if (filteredAnimals.isEmpty()) {
+            recyclerView.setVisibility(View.GONE);
+            emptyStateTextView.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyStateTextView.setVisibility(View.GONE);
+        }
+
+        adapter.notifyDataSetChanged();
     }
 }

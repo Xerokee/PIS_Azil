@@ -11,12 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.adapters.MyAnimalsAdapter;
-import com.activity.pis_azil.models.RejectAdoptionModel;
 import com.activity.pis_azil.models.RejectAdoptionModelRead;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserModel;
@@ -35,9 +37,10 @@ public class MyAnimalsFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private MyAnimalsAdapter adapter;
-    private List<UpdateDnevnikModel> animalsList;
+    private List<UpdateDnevnikModel> animalsList, filteredAnimalsList;
     private ApiService apiService;
     private TextView emptyStateTextView;
+    private Spinner filterTypeSpinner, filterStatusSpinner;
 
     public MyAnimalsFragment() {
         // Required empty public constructor
@@ -50,14 +53,53 @@ public class MyAnimalsFragment extends Fragment {
         recyclerView = root.findViewById(R.id.recyclerview_my_animals);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         emptyStateTextView = root.findViewById(R.id.empty_state_text_view);
+        filterTypeSpinner = root.findViewById(R.id.filter_type_spinner);
+        filterStatusSpinner = root.findViewById(R.id.filter_status_spinner);
 
         animalsList = new ArrayList<>();
-        adapter = new MyAnimalsAdapter(getContext(), animalsList);
+        filteredAnimalsList = new ArrayList<>();
+        adapter = new MyAnimalsAdapter(getContext(), filteredAnimalsList);
         recyclerView.setAdapter(adapter);
 
+        setupFilterSpinners();
         fetchMyAnimals();
 
         return root;
+    }
+
+    private void setupFilterSpinners() {
+        // Setup the adapter for the animal type filter spinner
+        ArrayAdapter<CharSequence> typeSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.animal_types2, android.R.layout.simple_spinner_item);
+        typeSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        filterTypeSpinner.setAdapter(typeSpinnerAdapter);
+
+        // Setup the adapter for the status filter spinner
+        ArrayAdapter<CharSequence> statusSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.animal_statuses, android.R.layout.simple_spinner_item);
+        statusSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        filterStatusSpinner.setAdapter(statusSpinnerAdapter);
+
+        // Add listeners for the spinners
+        filterTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                applyFilter();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        filterStatusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                applyFilter();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
     }
 
     private void fetchMyAnimals() {
@@ -82,15 +124,11 @@ public class MyAnimalsFragment extends Fragment {
                     // Filter animals for the current user
                     for (UpdateDnevnikModel animal : allAnimals) {
                         if (animal.getId_korisnika() == currentUser.getIdKorisnika()) {
-                            if (!animal.isUdomljen() && !animal.isStatus_udomljavanja()) {
-                                // Notify user that the request was rejected
-                                Toast.makeText(getContext(), "Zahtjev za udomljavanje " + animal.getIme_ljubimca() + " je odbijen.", Toast.LENGTH_LONG).show();
-                            } else {
-                                // Only show animals with requests still pending or approved
-                                animalsList.add(animal);
-                            }
+                            animalsList.add(animal);
                         }
                     }
+
+                    applyFilter();
 
                     // API call to fetch rejected animals for current user
                     apiService.getOdbijeneZivotinje().enqueue(new Callback<List<RejectAdoptionModelRead>>() {
@@ -115,16 +153,6 @@ public class MyAnimalsFragment extends Fragment {
                         }
                     });
 
-                    // Display empty state if no animals
-                    if (animalsList.isEmpty()) {
-                        recyclerView.setVisibility(View.GONE);
-                        emptyStateTextView.setVisibility(View.VISIBLE);
-                    } else {
-                        recyclerView.setVisibility(View.VISIBLE);
-                        emptyStateTextView.setVisibility(View.GONE);
-                    }
-
-                    adapter.notifyDataSetChanged();
                 } else {
                     Toast.makeText(getContext(), "Greška pri dohvaćanju podataka", Toast.LENGTH_SHORT).show();
                 }
@@ -137,11 +165,32 @@ public class MyAnimalsFragment extends Fragment {
         });
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        // Ponovo učitaj podatke o životinjama kad se fragment vrati u fokus
-        fetchMyAnimals();
-    }
+    private void applyFilter() {
+        String selectedType = filterTypeSpinner.getSelectedItem().toString();
+        String selectedStatus = filterStatusSpinner.getSelectedItem().toString();
 
+        filteredAnimalsList.clear();
+
+        for (UpdateDnevnikModel animal : animalsList) {
+            boolean matchesType = selectedType.equals("Svi") || animal.getTip_ljubimca().equalsIgnoreCase(selectedType);
+            boolean matchesStatus = selectedStatus.equals("Svi") ||
+                    (selectedStatus.equals("Udomljeno") && animal.isUdomljen()) ||
+                    (selectedStatus.equals("Zahtjev u tijeku") && animal.isStatus_udomljavanja());
+
+            if (matchesType && matchesStatus) {
+                filteredAnimalsList.add(animal);
+            }
+        }
+
+        // Update UI for empty state
+        if (filteredAnimalsList.isEmpty()) {
+            recyclerView.setVisibility(View.GONE);
+            emptyStateTextView.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyStateTextView.setVisibility(View.GONE);
+        }
+
+        adapter.notifyDataSetChanged();
+    }
 }

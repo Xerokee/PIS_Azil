@@ -5,93 +5,90 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="4dp"
+    android:layout_margin="12dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="6dp"
     android:background="@android:color/white">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:padding="12dp">
 
-        <!-- Animal Image aligned to the start (left) of the layout -->
-
-        <!-- Container for the text and button centered in the available space -->
+        <!-- Animal Image aligned to the start (left) of the layout, reduced size -->
         <ImageView
             android:id="@+id/animal_image"
-            android:layout_width="109dp"
-            android:layout_height="109dp"
-            android:layout_marginStart="4dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginEnd="12dp"
             android:scaleType="centerCrop"
             android:src="@drawable/profile"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.098" />
+            app:layout_constraintVertical_bias="0.5" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <!-- Animal Name TextView with adjusted size and positioning -->
+        <TextView
+            android:id="@+id/animal_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:text="Ime životinje"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toEndOf="@id/animal_image"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            android:paddingEnd="40dp">
+            android:gravity="start" />
 
-            <TextView
-                android:id="@+id/animal_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Ime životinje"
-                android:textStyle="bold"
-                android:textSize="20sp"
-                android:textColor="@android:color/black"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:gravity="center_horizontal" />
+        <!-- Animal Type TextView with improved layout -->
+        <TextView
+            android:id="@+id/animal_type"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Tip: Pas"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/animal_name"
+            app:layout_constraintStart_toEndOf="@id/animal_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="start"
+            android:layout_marginTop="4dp" />
 
-            <TextView
-                android:id="@+id/animal_type"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tip životinje"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:textColor="@android:color/black"
-                app:layout_constraintTop_toBottomOf="@id/animal_name"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:gravity="center_horizontal" />
+        <!-- Animal Status TextView with improved layout -->
+        <TextView
+            android:id="@+id/animal_status"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Status: Udomljeno"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/animal_type"
+            app:layout_constraintStart_toEndOf="@id/animal_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="start"
+            android:layout_marginTop="4dp" />
 
-            <TextView
-                android:id="@+id/animal_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Status"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"
-                app:layout_constraintTop_toBottomOf="@id/animal_type"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:gravity="center_horizontal" />
-
-            <Button
-                android:id="@+id/action_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Akcija"
-                android:textStyle="bold"
-                app:layout_constraintTop_toBottomOf="@id/animal_status"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:gravity="center_horizontal" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Action Button aligned under the other information, modern style -->
+        <Button
+            android:id="@+id/action_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Akcija"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:textColor="@android:color/white"
+            app:layout_constraintTop_toBottomOf="@id/animal_status"
+            app:layout_constraintStart_toEndOf="@id/animal_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="center_horizontal" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

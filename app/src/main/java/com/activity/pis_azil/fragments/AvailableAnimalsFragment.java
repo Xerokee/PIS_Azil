@@ -1,11 +1,13 @@
 package com.activity.pis_azil.fragments;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,7 +20,6 @@ import com.activity.pis_azil.adapters.AvailableAnimalsAdapter;
 import com.activity.pis_azil.models.AnimalModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +32,10 @@ public class AvailableAnimalsFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private AvailableAnimalsAdapter adapter;
-    private List<AnimalModel> animalsList;
+    private List<AnimalModel> animalsList, filteredAnimalsList;
     private ApiService apiService;
     private TextView emptyStateTextView;
+    private Spinner filterTypeSpinner, filterStatusSpinner;
 
     public AvailableAnimalsFragment() {
         // Required empty public constructor
@@ -46,14 +48,57 @@ public class AvailableAnimalsFragment extends Fragment {
         recyclerView = root.findViewById(R.id.recyclerview_available_animals);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         emptyStateTextView = root.findViewById(R.id.empty_state_text_view);
+        filterTypeSpinner = root.findViewById(R.id.filter_type_spinner);
+        filterStatusSpinner = root.findViewById(R.id.filter_status_spinner);
 
         animalsList = new ArrayList<>();
-        adapter = new AvailableAnimalsAdapter(getContext(), animalsList);
+        filteredAnimalsList = new ArrayList<>();
+        adapter = new AvailableAnimalsAdapter(getContext(), filteredAnimalsList);
         recyclerView.setAdapter(adapter);
 
+        setupFilterSpinners();
         fetchAvailableAnimals();
 
         return root;
+    }
+
+    private void setupFilterSpinners() {
+        // Set up the type filter spinner
+        ArrayAdapter<CharSequence> typeSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.animal_types2, android.R.layout.simple_spinner_item);
+        typeSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        filterTypeSpinner.setAdapter(typeSpinnerAdapter);
+
+        // Set up the status filter spinner
+        ArrayAdapter<CharSequence> statusSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.animal_statuses2, android.R.layout.simple_spinner_item); // Ažurirano da koristi novi niz sa dvije opcije
+        statusSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        filterStatusSpinner.setAdapter(statusSpinnerAdapter);
+
+        // Set listeners for spinners
+        filterTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                applyFilter();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
+
+        filterStatusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                applyFilter();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
     }
 
     private void fetchAvailableAnimals() {
@@ -63,24 +108,9 @@ public class AvailableAnimalsFragment extends Fragment {
             @Override
             public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<AnimalModel> allAnimals = response.body();
                     animalsList.clear();
-
-                    // Filter to include both adopted and available animals
-                    for (AnimalModel animal : allAnimals) {
-                        animalsList.add(animal);
-                    }
-
-                    // Show or hide the empty state
-                    if (animalsList.isEmpty()) {
-                        recyclerView.setVisibility(View.GONE);
-                        emptyStateTextView.setVisibility(View.VISIBLE);
-                    } else {
-                        recyclerView.setVisibility(View.VISIBLE);
-                        emptyStateTextView.setVisibility(View.GONE);
-                    }
-
-                    adapter.notifyDataSetChanged();
+                    animalsList.addAll(response.body());
+                    applyFilter();
                 } else {
                     Toast.makeText(getContext(), "Greška pri dohvaćanju podataka", Toast.LENGTH_SHORT).show();
                 }
@@ -91,5 +121,34 @@ public class AvailableAnimalsFragment extends Fragment {
                 Toast.makeText(getContext(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void applyFilter() {
+        String selectedType = filterTypeSpinner.getSelectedItem().toString();
+        String selectedStatus = filterStatusSpinner.getSelectedItem().toString();
+
+        filteredAnimalsList.clear();
+
+        for (AnimalModel animal : animalsList) {
+            boolean matchesType = selectedType.equals("Svi") || animal.getTipLjubimca().equalsIgnoreCase(selectedType);
+            boolean matchesStatus = selectedStatus.equals("Svi") ||
+                    (selectedStatus.equals("Dostupno") && !animal.isZahtjevUdomljavanja()) ||
+                    (selectedStatus.equals("Udomljeno") && animal.isZahtjevUdomljavanja());
+
+            if (matchesType && matchesStatus) {
+                filteredAnimalsList.add(animal);
+            }
+        }
+
+        // Update UI for empty state
+        if (filteredAnimalsList.isEmpty()) {
+            recyclerView.setVisibility(View.GONE);
+            emptyStateTextView.setVisibility(View.VISIBLE);
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+            emptyStateTextView.setVisibility(View.GONE);
+        }
+
+        adapter.notifyDataSetChanged();
     }
 }

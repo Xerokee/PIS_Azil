@@ -50,4 +50,22 @@
             <item>Smeđa</item>
         </string-array>
 
+        <string-array name="animal_types2">
+            <item>Svi</item>
+            <item>Pas</item>
+            <item>Macka</item>
+        </string-array>
+
+        <string-array name="animal_statuses">
+            <item>Svi</item>
+            <item>Udomljeno</item>
+            <item>Zahtjev u tijeku</item>
+        </string-array>
+
+        <string-array name="animal_statuses2">
+            <item>Svi</item>
+            <item>Dostupno</item>
+            <item>Udomljeno</item>
+        </string-array>
+
 </resources>
