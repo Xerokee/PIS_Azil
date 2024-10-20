@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.adapters.RequestListAdapter;
 import com.activity.pis_azil.models.AnimalModel;
+import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 
@@ -33,7 +34,7 @@ public class RequestListFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private RequestListAdapter adapter;
-    private List<AnimalModel> requestList, filteredRequestList;
+    private List<UpdateDnevnikModel> requestList, filteredRequestList;
     private ApiService apiService;
     private Spinner filterRequestSpinner;
     private TextView emptyStateTextView;
@@ -88,15 +89,16 @@ public class RequestListFragment extends Fragment {
         apiService = ApiClient.getClient().create(ApiService.class);
 
         // API poziv za dohvaćanje liste zahtjeva za životinje
-        apiService.getAllAnimals().enqueue(new Callback<List<AnimalModel>>() {
+        apiService.getDnevnikUdomljavanja().enqueue(new Callback<List<UpdateDnevnikModel>>() {
             @Override
-            public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
+            public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    List<UpdateDnevnikModel> allAnimals = response.body();
                     requestList.clear();
 
                     // Filtriraj samo životinje s otvorenim zahtjevom (u tijeku)
-                    for (AnimalModel animal : response.body()) {
-                        if (animal.isZahtjevUdomljavanja()) {
+                    for (UpdateDnevnikModel animal : allAnimals) {
+                        if (animal.isStatus_udomljavanja() && animal.isUdomljen() == false) {
                             requestList.add(animal);
                         }
                     }
@@ -110,7 +112,7 @@ public class RequestListFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
+            public void onFailure(Call<List<UpdateDnevnikModel>> call, Throwable t) {
                 Toast.makeText(getContext(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -126,8 +128,8 @@ public class RequestListFragment extends Fragment {
             filteredRequestList.addAll(requestList);
         } else {
             // Inače filtriramo po tipu životinje
-            for (AnimalModel animal : requestList) {
-                if (animal.getTipLjubimca().equalsIgnoreCase(selectedType)) {
+            for (UpdateDnevnikModel animal : requestList) {
+                if (animal.getTip_ljubimca().equalsIgnoreCase(selectedType)) {
                     filteredRequestList.add(animal);
                 }
             }

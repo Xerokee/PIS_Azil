@@ -1,9 +1,12 @@
 package com.activity.pis_azil.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -58,7 +61,7 @@ public class MyAnimalsFragment extends Fragment {
 
         animalsList = new ArrayList<>();
         filteredAnimalsList = new ArrayList<>();
-        adapter = new MyAnimalsAdapter(getContext(), filteredAnimalsList);
+        adapter = new MyAnimalsAdapter(getContext(), filteredAnimalsList, activityResultLauncher);
         recyclerView.setAdapter(adapter);
 
         setupFilterSpinners();
@@ -172,6 +175,10 @@ public class MyAnimalsFragment extends Fragment {
         filteredAnimalsList.clear();
 
         for (UpdateDnevnikModel animal : animalsList) {
+            if (!animal.isStatus_udomljavanja() && !animal.isUdomljen()) {
+                continue; // Preskačemo životinje koje nemaju status udomljavanja
+            }
+
             boolean matchesType = selectedType.equals("Svi") || animal.getTip_ljubimca().equalsIgnoreCase(selectedType);
             boolean matchesStatus = selectedStatus.equals("Svi") ||
                     (selectedStatus.equals("Udomljeno") && animal.isUdomljen()) ||
@@ -193,4 +200,11 @@ public class MyAnimalsFragment extends Fragment {
 
         adapter.notifyDataSetChanged();
     }
+
+    private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                fetchMyAnimals();
+            }
+    );
 }

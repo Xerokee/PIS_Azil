@@ -24,6 +24,9 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:enableOnBackInvokedCallback="true"
         tools:targetApi="34">
+        <activity
+            android:name=".activities.AnimalDetailActivity"
+            android:exported="false" />
 
         <receiver android:name=".AlarmReceiver" />
 

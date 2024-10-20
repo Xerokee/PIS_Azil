@@ -6,6 +6,7 @@ import java.util.List;
 
 public class UpdateDnevnikModel implements Serializable {
 
+    private int id;
     private int id_ljubimca;
     private int id_korisnika;
     private String ime_ljubimca;
@@ -28,7 +29,8 @@ public class UpdateDnevnikModel implements Serializable {
         activities = new ArrayList<>();
     }
 
-    public UpdateDnevnikModel(int id_ljubimca, int id_korisnika, String ime_ljubimca, String tip_ljubimca, boolean udomljen, String datum, String vrijeme, String imgUrl, boolean stanje_zivotinje, boolean status_udomljavanja, boolean zahtjev_udomljen) {
+    public UpdateDnevnikModel(int id, int id_ljubimca, int id_korisnika, String ime_ljubimca, String tip_ljubimca, boolean udomljen, String datum, String vrijeme, String imgUrl, boolean stanje_zivotinje, boolean status_udomljavanja, boolean zahtjev_udomljen) {
+        this.id = id;
         this.id_ljubimca = id_ljubimca;
         this.id_korisnika = id_korisnika;
         this.ime_ljubimca = ime_ljubimca;
@@ -44,6 +46,13 @@ public class UpdateDnevnikModel implements Serializable {
         activities = new ArrayList<>();
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getIme_ljubimca() {
         return ime_ljubimca;

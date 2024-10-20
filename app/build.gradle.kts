@@ -98,4 +98,7 @@ dependencies {
 
     // Circle ImageView
     implementation("de.hdodenhof:circleimageview:3.1.0")
+
+    //Dialog Plus
+    implementation ("com.orhanobut:dialogplus:1.11@aar")
 }

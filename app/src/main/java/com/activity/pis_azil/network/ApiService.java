@@ -2,6 +2,7 @@ package com.activity.pis_azil.network;
 
 import com.activity.pis_azil.models.RejectAdoptionModel;
 import com.activity.pis_azil.models.RejectAdoptionModelRead;
+import com.activity.pis_azil.models.UpdateAnimalModel;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserByEmailResponseModel;
 import com.activity.pis_azil.models.MyAdoptionModel;
@@ -114,4 +115,7 @@ public interface ApiService {
 
     @DELETE("OdbijeneZivotinje/{id}")
     Call<Void> deleteOdbijenaZivotinja(@Path("id") int id);
+
+    @POST("KucniLjubimci/{id}/update")
+    Call<Void> updateAnimalDetail(@Path("id") int id, @Body UpdateAnimalModel updateAnimalModel);
 }

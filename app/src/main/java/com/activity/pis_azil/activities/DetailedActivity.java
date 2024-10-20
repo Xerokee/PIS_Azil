@@ -293,6 +293,7 @@ public class DetailedActivity extends AppCompatActivity {
         }
 
         MyAdoptionModel adoptionModel = new MyAdoptionModel();
+        adoptionModel.setId(animalModel.getIdLjubimca());
         adoptionModel.setIdLjubimca(animalModel.getIdLjubimca());
 
         // Postavljanje imena ljubimca

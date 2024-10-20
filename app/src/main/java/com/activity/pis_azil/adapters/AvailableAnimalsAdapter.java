@@ -47,7 +47,7 @@ public class AvailableAnimalsAdapter extends RecyclerView.Adapter<AvailableAnima
 
         // Set status text and background color
         if (animal.isZahtjevUdomljavanja()) {
-            holder.animalStatus.setText("Status: Udomljeno");
+            holder.animalStatus.setText("Status: Nedostupno");
             holder.itemView.setBackgroundColor(Color.GRAY); // Grey for adopted animals
         } else {
             holder.animalStatus.setText("Status: Dostupno");

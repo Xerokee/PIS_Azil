@@ -1,6 +1,7 @@
 package com.activity.pis_azil.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,11 +11,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.pis_azil.R;
+import com.activity.pis_azil.activities.AnimalDetailActivity;
 import com.activity.pis_azil.fragments.EditAnimalDialogFragment;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.bumptech.glide.Glide;
@@ -24,10 +28,12 @@ import java.util.List;
 public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.ViewHolder> {
     private Context context;
     private List<UpdateDnevnikModel> animalsList;
+    private ActivityResultLauncher<Intent> activityResultLauncher;
 
-    public MyAnimalsAdapter(Context context, List<UpdateDnevnikModel> animalsList) {
+    public MyAnimalsAdapter(Context context, List<UpdateDnevnikModel> animalsList, ActivityResultLauncher<Intent> activityResultLauncher) {
         this.context = context;
         this.animalsList = animalsList;
+        this.activityResultLauncher = activityResultLauncher;
     }
 
     @NonNull
@@ -63,7 +69,17 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
             // Otvori detalje za ažuriranje podataka o životinji, dodavanje slika i aktivnosti
             openEditAnimalDialog(animal);
         });
-    }
+
+    holder.animalFrame.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            Intent i = new Intent(v.getContext().getApplicationContext(), AnimalDetailActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            i.putExtra("id",String.valueOf(animal.getId()));
+            activityResultLauncher.launch(i);
+        }
+    });
+}
 
     private void openEditAnimalDialog(UpdateDnevnikModel animal) {
         // Implementacija dijaloga za uređivanje podataka o životinji
@@ -81,6 +97,7 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
         TextView animalName, animalType, animalStatus;
         ImageView animalImage;
         Button actionButton;
+        ConstraintLayout animalFrame;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -89,6 +106,7 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
             animalStatus = itemView.findViewById(R.id.animal_status);
             animalImage = itemView.findViewById(R.id.animal_image);
             actionButton = itemView.findViewById(R.id.action_button);
+            animalFrame = itemView.findViewById(R.id.animal_frame);
         }
     }
 }

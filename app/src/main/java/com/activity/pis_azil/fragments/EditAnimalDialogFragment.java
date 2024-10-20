@@ -183,4 +183,3 @@ public class EditAnimalDialogFragment extends DialogFragment {
         });
     }
 }
-

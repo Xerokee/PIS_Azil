@@ -11,15 +11,16 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.models.AnimalModel;
+import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.bumptech.glide.Glide;
 import java.util.List;
 
 public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.ViewHolder> {
 
     private Context context;
-    private List<AnimalModel> requestList;
+    private List<UpdateDnevnikModel> requestList;
 
-    public RequestListAdapter(Context context, List<AnimalModel> requestList) {
+    public RequestListAdapter(Context context, List<UpdateDnevnikModel> requestList) {
         this.context = context;
         this.requestList = requestList;
     }
@@ -33,10 +34,10 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        AnimalModel animal = requestList.get(position);
+        UpdateDnevnikModel animal = requestList.get(position);
 
-        holder.animalName.setText(animal.getImeLjubimca());
-        holder.animalType.setText("Tip: " + animal.getTipLjubimca());
+        holder.animalName.setText(animal.getIme_ljubimca());
+        holder.animalType.setText("Tip: " + animal.getTip_ljubimca());
         holder.animalStatus.setText("Zahtjev na čekanju");
 
         // Use Glide to load the animal image

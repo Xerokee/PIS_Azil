@@ -13,7 +13,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp">
+        android:padding="12dp"
+        android:id="@+id/animal_frame">
 
         <!-- Animal Image aligned to the start (left) of the layout, reduced size -->
         <ImageView
