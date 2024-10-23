@@ -64,7 +64,6 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
             animalType = itemView.findViewById(R.id.animal_type);
             animalStatus = itemView.findViewById(R.id.animal_status);
             animalImage = itemView.findViewById(R.id.animal_image);
-            actionButton = itemView.findViewById(R.id.action_button);
         }
     }
 }

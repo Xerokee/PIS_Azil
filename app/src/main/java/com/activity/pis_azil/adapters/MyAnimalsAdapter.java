@@ -64,12 +64,6 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
             holder.itemView.setBackgroundColor(Color.RED); // Red background for rejected requests
         }
 
-        // listener dugme za akciju
-        holder.actionButton.setOnClickListener(v -> {
-            // Otvori detalje za ažuriranje podataka o životinji, dodavanje slika i aktivnosti
-            openEditAnimalDialog(animal);
-        });
-
     holder.animalFrame.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -105,7 +99,6 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
             animalType = itemView.findViewById(R.id.animal_type);
             animalStatus = itemView.findViewById(R.id.animal_status);
             animalImage = itemView.findViewById(R.id.animal_image);
-            actionButton = itemView.findViewById(R.id.action_button);
             animalFrame = itemView.findViewById(R.id.animal_frame);
         }
     }

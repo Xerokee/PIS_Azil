@@ -6,161 +6,213 @@
     android:layout_height="match_parent"
     tools:context=".activities.AnimalDetailActivity">
 
-    <ImageView
-        android:id="@+id/arrowBack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="15dp"
-        android:layout_marginLeft="15dp"
-        android:src="@drawable/arrow_back" />
-
-    <Button
-        android:id="@+id/animalEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginRight="25dp"
-        android:layout_marginTop="25dp"
-        android:text="Uredi" />
-
-    <!-- Wrap the content you want to scroll in a ScrollView -->
-    <ScrollView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/animalEdit"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
-
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginHorizontal="35dp"
-            android:layout_marginTop="30dp"
-            android:paddingBottom="20dp"
-            android:background="@drawable/rounded_button_logoblue">
-
+            >
             <ImageView
-                android:id="@+id/animalImage"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_marginEnd="12dp"
-                android:layout_marginTop="10dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/profile"
-                android:background="@drawable/rounded"
-                android:layout_gravity="center_horizontal" />
-
-            <LinearLayout
+                android:id="@+id/arrowBack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginLeft="35dp"
-                android:layout_marginTop="20dp">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="15dp"
+                android:layout_marginLeft="15dp"
+                android:src="@drawable/arrow_back" />
+
+            <Button
+                android:id="@+id/animalEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginRight="25dp"
+                android:layout_marginTop="25dp"
+                android:text="Uredi" />
+
+
+            <LinearLayout
+                android:id="@+id/detailCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginHorizontal="35dp"
+                android:layout_marginTop="30dp"
+                android:paddingBottom="20dp"
+                app:layout_constraintTop_toBottomOf="@+id/animalEdit"
+                android:background="@drawable/rounded_button_logoblue"
+                >
+
+                <ImageView
+                    android:id="@+id/animalImage"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginTop="10dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/profile"
+                    android:background="@drawable/rounded"
+                    android:layout_gravity="center_horizontal" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="35dp"
+                    android:layout_marginTop="20dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Ime: "
+                        android:textColor="@color/white"
+                        android:textSize="20dp" />
+                    <TextView
+                        android:id="@+id/animalName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="ime životinje"
+                        android:textColor="@color/white"
+                        android:textSize="20dp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="35dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tip: "
+                        android:textColor="@color/white"
+                        android:textSize="20dp" />
+                    <TextView
+                        android:id="@+id/animalType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="tip životinje"
+                        android:textColor="@color/white"
+                        android:textSize="20dp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="35dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Dob: "
+                        android:textColor="@color/white"
+                        android:textSize="20dp" />
+                    <TextView
+                        android:id="@+id/animalAge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="dob životinje"
+                        android:textColor="@color/white"
+                        android:textSize="20dp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginLeft="35dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Boja: "
+                        android:textColor="@color/white"
+                        android:textSize="20dp" />
+                    <TextView
+                        android:id="@+id/animalColor"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="boja životinje"
+                        android:textColor="@color/white"
+                        android:textSize="20dp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Ime: "
-                    android:textColor="@color/white"
-                    android:textSize="20dp" />
-                <TextView
-                    android:id="@+id/animalName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="ime životinje"
+                    android:text="Opis: "
                     android:textColor="@color/white"
                     android:textSize="20dp"
-                    android:textStyle="bold" />
+                    android:layout_marginLeft="35dp" />
+                <TextView
+                    android:id="@+id/animalDescription"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="opis životinje"
+                    android:textColor="@color/white"
+                    android:textSize="20dp"
+                    android:textStyle="bold"
+                    android:layout_marginLeft="35dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginBottom="30dp"
+                    />
+
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginLeft="35dp">
+                android:id="@+id/naslovAktivnosti">
                 <TextView
+                    android:id="@+id/tvPopisAktivnosti"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tip: "
-                    android:textColor="@color/white"
-                    android:textSize="20dp" />
-                <TextView
-                    android:id="@+id/animalType"
+                    android:textSize="22dp"
+                    app:layout_constraintTop_toBottomOf="@+id/detailCard"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginLeft="30dp"
+                    android:text="Popis aktivnosti"
+                    android:layout_marginBottom="10dp"/>
+
+                <ImageButton
+                    android:id="@+id/addAktivnost"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="tip životinje"
-                    android:textColor="@color/white"
-                    android:textSize="20dp"
-                    android:textStyle="bold" />
+                    android:src="@drawable/add_24"
+                    android:layout_marginLeft="20dp"
+                    android:layout_gravity="bottom"></ImageButton>
+
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginLeft="35dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Dob: "
-                    android:textColor="@color/white"
-                    android:textSize="20dp" />
-                <TextView
-                    android:id="@+id/animalAge"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="dob životinje"
-                    android:textColor="@color/white"
-                    android:textSize="20dp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginLeft="35dp">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Boja: "
-                    android:textColor="@color/white"
-                    android:textSize="20dp" />
-                <TextView
-                    android:id="@+id/animalColor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="boja životinje"
-                    android:textColor="@color/white"
-                    android:textSize="20dp"
-                    android:textStyle="bold" />
-            </LinearLayout>
 
             <TextView
+                android:id="@+id/tvNemaAktivnosti"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Opis: "
-                android:textColor="@color/white"
-                android:textSize="20dp"
-                android:layout_marginLeft="35dp" />
-            <TextView
-                android:id="@+id/animalDescription"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="opis životinje"
-                android:textColor="@color/white"
-                android:textSize="20dp"
-                android:textStyle="bold"
-                android:layout_marginLeft="35dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginBottom="30dp"
-                />
+                android:textSize="18dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@+id/naslovAktivnosti"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="30dp"
+                android:text="Nema dodanih aktivnosti!" />
 
+            <LinearLayout
+                android:id="@+id/linearLayoutAktivnosti"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/naslovAktivnosti"></LinearLayout>
         </LinearLayout>
-    </ScrollView>
-
+    </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

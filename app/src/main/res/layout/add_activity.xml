@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:paddingTop="10dp"
+        android:text="Dodaj aktivnost"
+        android:textStyle="italic"
+        android:textSize="20dp"
+        android:gravity="center_horizontal"
+        android:background="@color/green_700"
+        android:textColor="@color/white"
+        android:layout_marginBottom="10dp"/>
+
+    <TextView
+        android:background="@drawable/rounded"
+        android:id="@+id/inputDateActivity"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="20dp"
+        android:drawablePadding="5dp"
+        android:padding="10dp"
+        android:layout_weight="1"
+        android:textSize="18dp"
+        android:drawableLeft="@drawable/baseline_calendar_month_24"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:hint="Datum aktivnosti" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:id="@+id/inputDescriptionActivity"
+        android:inputType="textMultiLine"
+        android:minLines="2"
+        android:maxLines="6"
+        android:textSize="19dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rounded"
+        android:textColor="@android:color/black"
+        android:hint="Opis aktivnosti"
+        android:gravity="center"
+        android:textAlignment="center"
+    />
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal">
+
+        <Button
+            android:id="@+id/closeActivity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:padding="5dp"
+            android:text="Odustani"
+            android:layout_marginRight="20dp" />
+
+        <Button
+            android:id="@+id/addActivity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:padding="5dp"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/green_700"
+            android:text="Dodaj"
+            android:layout_marginLeft="20dp"/>
+    </LinearLayout>
+
+</LinearLayout>

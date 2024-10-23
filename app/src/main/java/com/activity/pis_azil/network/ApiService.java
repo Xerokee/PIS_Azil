@@ -1,5 +1,6 @@
 package com.activity.pis_azil.network;
 
+import com.activity.pis_azil.models.Aktivnost;
 import com.activity.pis_azil.models.RejectAdoptionModel;
 import com.activity.pis_azil.models.RejectAdoptionModelRead;
 import com.activity.pis_azil.models.UpdateAnimalModel;
@@ -118,4 +119,10 @@ public interface ApiService {
 
     @POST("KucniLjubimci/{id}/update")
     Call<Void> updateAnimalDetail(@Path("id") int id, @Body UpdateAnimalModel updateAnimalModel);
+
+    @GET("Aktivnosti/{id}")
+    Call<HttpRequestResponseList<Aktivnost>> getAktivnostiById(@Path("id") int id);
+
+    @POST("Aktivnosti/add")
+    Call<Void> addAktivnost(@Body Aktivnost novaAktivnost);
 }
