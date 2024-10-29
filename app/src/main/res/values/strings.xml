@@ -65,7 +65,7 @@
         <string-array name="animal_statuses2">
             <item>Svi</item>
             <item>Dostupno</item>
-            <item>Udomljeno</item>
+            <item>Nedostupno</item>
         </string-array>
 
 </resources>

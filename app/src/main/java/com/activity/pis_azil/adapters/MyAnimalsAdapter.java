@@ -59,20 +59,24 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
         } else if (animal.isStatus_udomljavanja()) {
             holder.animalStatus.setText("Status: Zahtjev u tijeku");
             holder.itemView.setBackgroundColor(Color.parseColor("#FFA500")); // Orange background for requests in process
+            holder.animalFrame.setOnClickListener(null); // Disable click if request is in progress
         } else {
             holder.animalStatus.setText("Status: Odbijen zahtjev");
             holder.itemView.setBackgroundColor(Color.RED); // Red background for rejected requests
+            holder.animalFrame.setClickable(false); // Disable click if request is in progress
         }
 
-    holder.animalFrame.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent i = new Intent(v.getContext().getApplicationContext(), AnimalDetailActivity.class);
-            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            i.putExtra("id",String.valueOf(animal.getId()));
-            activityResultLauncher.launch(i);
-        }
-    });
+        holder.animalFrame.setOnClickListener(v -> {
+            if (holder.animalFrame.isClickable() && animal.isStatus_udomljavanja() == false) {
+                Intent i = new Intent(v.getContext().getApplicationContext(), AnimalDetailActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                i.putExtra("id", String.valueOf(animal.getId()));
+                activityResultLauncher.launch(i);
+            } else {
+                // Show a message indicating why it can't be clicked
+                Toast.makeText(context, "Životinja ima zahtjev u tijeku - nedostupno", Toast.LENGTH_SHORT).show();
+            }
+        });
 }
 
     private void openEditAnimalDialog(UpdateDnevnikModel animal) {

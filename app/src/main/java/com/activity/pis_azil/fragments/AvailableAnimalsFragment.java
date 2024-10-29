@@ -133,7 +133,7 @@ public class AvailableAnimalsFragment extends Fragment {
             boolean matchesType = selectedType.equals("Svi") || animal.getTipLjubimca().equalsIgnoreCase(selectedType);
             boolean matchesStatus = selectedStatus.equals("Svi") ||
                     (selectedStatus.equals("Dostupno") && !animal.isZahtjevUdomljavanja()) ||
-                    (selectedStatus.equals("Udomljeno") && animal.isZahtjevUdomljavanja());
+                    (selectedStatus.equals("Nedostupno") && animal.isZahtjevUdomljavanja());
 
             if (matchesType && matchesStatus) {
                 filteredAnimalsList.add(animal);

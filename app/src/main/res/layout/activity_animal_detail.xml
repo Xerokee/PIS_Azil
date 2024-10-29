@@ -213,6 +213,51 @@
                 android:layout_marginLeft="20dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/naslovAktivnosti"></LinearLayout>
-        </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:id="@+id/naslovSlike" >
+                <TextView
+                    android:id="@+id/tvGalerijaSlika"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="22dp"
+                    app:layout_constraintTop_toBottomOf="@+id/detailCard"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginLeft="30dp"
+                    android:text="Galerija slika"
+                    android:layout_marginBottom="10dp"/>
+
+                <ImageButton
+                    android:id="@+id/addSlika"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/add_24"
+                    android:layout_marginLeft="20dp"
+                    android:layout_gravity="bottom"></ImageButton>
+
+            </LinearLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvSlike"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp" />
+
+            <TextView
+                android:id="@+id/tvNemaSlika"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@+id/naslovAktivnosti"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="30dp"
+                android:text="Nema dodanih slika!" />
+
+            </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
