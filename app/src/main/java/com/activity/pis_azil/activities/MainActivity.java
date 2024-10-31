@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
 
         Menu menu = navigationView.getMenu();
         if (!isAdmin) {
+            menu.findItem(R.id.nav_users).setVisible(false);
             menu.findItem(R.id.nav_new_products).setVisible(false);
             menu.findItem(R.id.nav_admin_menu).setVisible(false);
             menu.findItem(R.id.nav_my_orders).setVisible(false);

@@ -103,6 +103,7 @@ public class AnimalsFragment extends Fragment implements DataRefreshListener {
 
                             Log.d(TAG, "Animal fetched: " + animal.toString());
                             MyAdoptionModel adoption = new MyAdoptionModel();
+                            adoption.setId(animal.getId());
                             adoption.setIdLjubimca(animal.getId_ljubimca());
                             adoption.setImeLjubimca(animal.getIme_ljubimca() != null ? animal.getIme_ljubimca() : "N/A");
                             adoption.setTipLjubimca(animal.getTip_ljubimca() != null ? animal.getTip_ljubimca() : "N/A");

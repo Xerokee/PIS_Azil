@@ -2,10 +2,12 @@ package com.activity.pis_azil.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -37,6 +39,7 @@ public class AnimalsAdapter extends RecyclerView.Adapter<AnimalsAdapter.AnimalVi
 
     @Override
     public void onBindViewHolder(@NonNull AnimalViewHolder holder, int position) {
+        Log.i("zivotinje", String.valueOf(animalsAdapterList));
         IsBlockedAnimalModel animal = animalsAdapterList.get(position);
         holder.animalName.setText(animal.getImeLjubimca());
         holder.animalDescription.setText(animal.getOpisLjubimca());
@@ -51,20 +54,28 @@ public class AnimalsAdapter extends RecyclerView.Adapter<AnimalsAdapter.AnimalVi
             holder.animalImage.setImageResource(R.drawable.paw);
         }
 
-        if (animal.isBlocked()) {
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.gray));
+        if (animalsAdapterList.get(position).isBlocked() == true) {
+            holder.animalFrame.setBackgroundResource(R.color.gray);
+            //holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.gray));
             holder.itemView.setOnClickListener(null);
-        } else {
-            holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.white));
         }
-
-        if (!animal.isBlocked()) {
+        else {
+            //holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.white));
+            holder.animalFrame.setBackgroundResource(R.color.white);
             holder.itemView.setOnClickListener(v -> {
                 Intent intent = new Intent(context, DetailedActivity.class);
                 intent.putExtra("animal", animal);
                 context.startActivity(intent);
             });
         }
+
+        /*if (!animal.isBlocked()) {
+            holder.itemView.setOnClickListener(v -> {
+                Intent intent = new Intent(context, DetailedActivity.class);
+                intent.putExtra("animal", animal);
+                context.startActivity(intent);
+            });
+        }*/
     }
 
     @Override
@@ -76,12 +87,14 @@ public class AnimalsAdapter extends RecyclerView.Adapter<AnimalsAdapter.AnimalVi
         public ImageView animalImage;
         public TextView animalName;
         public TextView animalDescription;
+        public LinearLayout animalFrame;
 
         public AnimalViewHolder(@NonNull View itemView) {
             super(itemView);
             animalImage = itemView.findViewById(R.id.animal_image);
             animalName = itemView.findViewById(R.id.animal_name);
             animalDescription = itemView.findViewById(R.id.animal_description);
+            animalFrame = itemView.findViewById(R.id.animal_frame);
         }
     }
 }

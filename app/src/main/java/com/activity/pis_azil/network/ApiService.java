@@ -71,7 +71,7 @@ public interface ApiService {
     Call<Void> updateAnimal(@Path("id") int id, @Body UpdateDnevnikModel animalModel);
 
     @PUT("KucniLjubimci/{id}/odbij")
-    Call<Void> rejectAnimal(@Path("id") int id, @Body AnimalModel animalModel);
+    Call<Void> rejectAnimal(@Path("id") int id);
 
     @PUT("KucniLjubimci/{id}/udomi")
     Call<Void> adoptAnimal(@Path("id") int id);
@@ -125,7 +125,7 @@ public interface ApiService {
     Call<Void> updateAnimalDetail(@Path("id") int id, @Body UpdateAnimalModel updateAnimalModel);
 
     @GET("Aktivnosti/{id}")
-    Call<HttpRequestResponseList<Aktivnost>> getAktivnostiById(@Path("id") int id);
+    Call<HttpRequestResponseList<Aktivnost>> getAktivnostiById (@Path("id") int id);
 
     @POST("Aktivnosti/add")
     Call<Void> addAktivnost(@Body Aktivnost novaAktivnost);
@@ -135,7 +135,7 @@ public interface ApiService {
     Call<Void> addSlika(@Path("id_ljubimca") int id_ljubimca, @Part MultipartBody.Part image);
 
     @GET("Slike/{id_ljubimca}")
-    Call<HttpRequestResponseList<SlikaModel>> getSlikeById (@Path("id_ljubimca") int id_ljubimca);
+    Call<HttpRequestResponseList<SlikaModel>> getSlikeById(@Path("id_ljubimca") int id_ljubimca);
 
     @DELETE("Slike/delete/{id}")
     Call<Void> deleteSlika (@Path("id") int id);

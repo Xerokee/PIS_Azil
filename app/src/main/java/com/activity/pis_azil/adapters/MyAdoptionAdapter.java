@@ -467,7 +467,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                             rm.setIdKorisnika(cartModel.getIdKorisnika());
                             rm.setImeLjubimca(cartModel.getImeLjubimca());
                             // rm.setIdLjubimca(animal.getIdLjubimca());
-                            rm.setIdLjubimca(cartModel.getIdLjubimca());
+                            rm.setIdLjubimca(cartModel.getId());
                             Gson gson = new Gson();
 
                             String requestJson = gson.toJson(rm);
@@ -878,7 +878,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
     private void updateAnimal(AnimalModel updatedAnimal) {
         Log.d(TAG, "Usli u funkciju update animal" + updatedAnimal.getIdLjubimca());
-        apiService.rejectAnimal(updatedAnimal.getIdLjubimca(), updatedAnimal).enqueue(new Callback<Void>() {
+        apiService.rejectAnimal(updatedAnimal.getIdLjubimca()).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
