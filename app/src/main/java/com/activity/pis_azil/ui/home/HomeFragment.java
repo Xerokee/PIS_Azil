@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,6 +35,7 @@ import com.activity.pis_azil.models.AnimalModel;
 import com.activity.pis_azil.models.IsBlockedAnimalModel;
 import com.activity.pis_azil.models.MyAdoptionModel;
 import com.activity.pis_azil.models.RejectAdoptionModelRead;
+import com.activity.pis_azil.models.SharedViewModel;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
@@ -600,9 +602,12 @@ public class HomeFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     List<RejectAdoptionModelRead> odbijeneZivotinje = response.body();
                     for (RejectAdoptionModelRead zivotinja : odbijeneZivotinje){
-                        if (Objects.equals(7,zivotinja.getId_korisnika())){
-                            listaOdbijenih.add(zivotinja.getId_ljubimca());
-                        }
+                        SharedViewModel sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+                        sharedViewModel.getUserId().observe(getViewLifecycleOwner(), userId -> {
+                            if (Objects.equals(Integer.parseInt(userId),zivotinja.getId_korisnika())){
+                                listaOdbijenih.add(zivotinja.getId_ljubimca());
+                            }
+                        });
                     }
                     loadAllAnimals();
                 } else {

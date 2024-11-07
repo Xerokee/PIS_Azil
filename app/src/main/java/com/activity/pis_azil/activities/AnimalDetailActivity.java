@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -128,7 +130,9 @@ public class AnimalDetailActivity extends AppCompatActivity {
             }
         });
 
+        refreshAnimalDetails();
         refreshPopisAktivnosti();
+        initializeRecyclerView();
         getSlike();
 
         animalEdit.setOnClickListener(new View.OnClickListener() {
@@ -136,7 +140,7 @@ public class AnimalDetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final DialogPlus dialogPlus = DialogPlus.newDialog(v.getContext())
                         .setContentHolder(new com.orhanobut.dialogplus.ViewHolder(R.layout.update_animal))
-                        .setExpanded(true,2200)
+                        .setExpanded(true,2000)
                         .setGravity(Gravity.CENTER)
                         .setCancelable(true)
                         .create();
@@ -279,12 +283,44 @@ public class AnimalDetailActivity extends AppCompatActivity {
                 startActivityForResult(i, SELECT_IMAGE_CODE);
             }
         });
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Ponovno učitavanje podataka kada se aktivnost pojavi na ekranu
+        refreshAnimalDetails();
+        refreshPopisAktivnosti();
+        getSlike();
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    private void refreshAnimalDetails() {
+        apiService.getAnimalById(animalId).enqueue(new Callback<AnimalModel>() {
+            @Override
+            public void onResponse(Call<AnimalModel> call, Response<AnimalModel> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    animal = response.body();
+                    animalName.setText(animal.getImeLjubimca());
+                    animalType.setText(animal.getTipLjubimca());
+                    animalAge.setText(String.valueOf(animal.getDob()));
+                    animalColor.setText(animal.getBoja());
+                    animalDescription.setText(animal.getOpisLjubimca());
+                    Glide.with(AnimalDetailActivity.this).load(animal.getImgUrl()).into(animalImage);
+                } else {
+                    // Toast.makeText(AnimalDetailActivity.this, "Greška pri dohvaćanju podataka o životinji.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AnimalModel> call, Throwable t) {
+                Toast.makeText(AnimalDetailActivity.this, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     public void refreshPopisAktivnosti(){
@@ -302,9 +338,10 @@ public class AnimalDetailActivity extends AppCompatActivity {
                             TextView tv = new TextView(getApplicationContext());
                             String text = a.getDatum() + " " + a.getOpis();
                             tv.setText(text);
-                            tv.setTypeface(tv.getTypeface(), Typeface.BOLD_ITALIC);
+                            tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
                             tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                            tv.setTextSize(18);
+                            tv.setTextSize(17);
+                            tv.setTextColor(Color.parseColor("#FFFFFF"));
                             linearLayoutAktivnosti.addView(tv);
                         }
                     }
@@ -363,12 +400,20 @@ public class AnimalDetailActivity extends AppCompatActivity {
         }
     }
 
+    private void initializeRecyclerView() {
+        slikeAdapter = new SlikeAdapter(this, listaSlika);
+        rvSlike.setAdapter(slikeAdapter);
+        rvSlike.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+    }
+
     private void getSlike(){
         apiService.getSlikeById(animalId).enqueue(new Callback<HttpRequestResponseList<SlikaModel>>() {
             @Override
             public void onResponse(Call<HttpRequestResponseList<SlikaModel>> call, Response<HttpRequestResponseList<SlikaModel>> response) {
                 if (response.isSuccessful() && response.body() != null) {
+                    listaSlika.clear();
                     listaSlika = response.body().getResult();
+                    slikeAdapter.notifyDataSetChanged();
                     if (listaSlika.size() == 0){
                         //Log.i("getSlike","Nema dodanih slika");
                     }

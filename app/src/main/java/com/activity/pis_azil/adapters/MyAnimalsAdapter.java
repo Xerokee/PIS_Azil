@@ -14,12 +14,10 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.activities.AnimalDetailActivity;
-import com.activity.pis_azil.fragments.EditAnimalDialogFragment;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.bumptech.glide.Glide;
 
@@ -74,13 +72,6 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
             }
         });
 }
-
-    private void openEditAnimalDialog(UpdateDnevnikModel animal) {
-        // Implementacija dijaloga za uređivanje podataka o životinji
-        // Korisnik može menjati ime, dodavati slike u galeriju i dodavati aktivnosti
-        EditAnimalDialogFragment editDialog = EditAnimalDialogFragment.newInstance(animal);
-        editDialog.show(((FragmentActivity) context).getSupportFragmentManager(), "EditAnimalDialog");
-    }
 
     @Override
     public int getItemCount() {

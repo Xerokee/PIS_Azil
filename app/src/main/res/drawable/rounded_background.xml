@@ -1,0 +1,6 @@
+<!-- res/drawable/rounded_background.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@android:color/white"/> <!-- Pozadinska boja -->
+    <corners android:radius="16dp"/> <!-- Zaobljenje uglova -->
+    <stroke android:width="2dp" android:color="@color/green_200"/> <!-- Okvir i boja -->
+</shape>

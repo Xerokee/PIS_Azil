@@ -24,6 +24,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.activity.pis_azil.AlarmReceiver;
 import com.activity.pis_azil.R;
+import com.activity.pis_azil.models.SharedViewModel;
 import com.activity.pis_azil.models.UserByEmailResponseModel;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
@@ -53,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
         Intent intent=getIntent();
         Bundle valueFromFirstActivity = intent.getExtras();
         String userId = intent.getStringExtra("korisnikId");
+        SharedViewModel sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
+        sharedViewModel.setUserId(userId);
         Log.i("korisnikid",userId);
 
         AlarmReceiver.setAlarm(this);
@@ -85,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
         Menu menu = navigationView.getMenu();
         if (!isAdmin) {
+            menu.findItem(R.id.nav_users).setVisible(false);
             menu.findItem(R.id.nav_new_products).setVisible(false);
             menu.findItem(R.id.nav_admin_menu).setVisible(false);
             menu.findItem(R.id.nav_my_orders).setVisible(false);

@@ -26,7 +26,8 @@
         tools:targetApi="34">
         <activity
             android:name=".activities.AnimalDetailActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan"/>
 
         <receiver android:name=".AlarmReceiver" />
 
