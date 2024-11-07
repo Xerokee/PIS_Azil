@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,6 +42,7 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -598,7 +600,9 @@ public class HomeFragment extends Fragment {
                 if (response.isSuccessful() && response.body() != null) {
                     List<RejectAdoptionModelRead> odbijeneZivotinje = response.body();
                     for (RejectAdoptionModelRead zivotinja : odbijeneZivotinje){
-                        listaOdbijenih.add(zivotinja.getId_ljubimca());
+                        if (Objects.equals(7,zivotinja.getId_korisnika())){
+                            listaOdbijenih.add(zivotinja.getId_ljubimca());
+                        }
                     }
                     loadAllAnimals();
                 } else {

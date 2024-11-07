@@ -139,4 +139,7 @@ public interface ApiService {
 
     @DELETE("Slike/delete/{id}")
     Call<Void> deleteSlika (@Path("id") int id);
+
+    @PUT ("KucniLjubimci/{id}/udomljen")
+    Call<Void> adoptAnimalByAdmin (@Path("id") int id);
 }

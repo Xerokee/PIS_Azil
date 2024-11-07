@@ -295,6 +295,7 @@ public class DetailedActivity extends AppCompatActivity {
         MyAdoptionModel adoptionModel = new MyAdoptionModel();
         adoptionModel.setId(animalModel.getIdLjubimca());
         adoptionModel.setIdLjubimca(animalModel.getIdLjubimca());
+        Log.i("id ljubimca", String.valueOf(animalModel.getIdLjubimca()));
 
         // Postavljanje imena ljubimca
         if (animalModel.getImeLjubimca() != null && !animalModel.getImeLjubimca().isEmpty()) {
@@ -360,6 +361,25 @@ public class DetailedActivity extends AppCompatActivity {
             // Ako admin odobrava odmah, označava se kao udomljena
             adoptionModel.setUdomljen(true);
             adoptionModel.setStatusUdomljavanja(false);
+            apiService.adoptAnimalByAdmin(animalModel.getIdLjubimca()).enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        Log.e(TAG, "Uspješno udomljavanje životinje kod admina. " + response.message());
+
+                    } else {
+                        Log.e(TAG, "Greška u procesu udomljavanja: " + response.message());
+                        Toast.makeText(DetailedActivity.this, "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Log.e(TAG, "Greška prilikom udomljavanja: ", t);
+                    Toast.makeText(DetailedActivity.this, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+
         }
 
         Log.d(TAG, "Slanje modela udomljavanja na API: " + adoptionModel);

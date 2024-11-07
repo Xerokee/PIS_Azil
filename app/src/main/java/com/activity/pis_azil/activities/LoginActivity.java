@@ -101,6 +101,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                             intent.putExtra("user_data", user); // pass user data to MainActivity
+                                            intent.putExtra("korisnikId", String.valueOf(user.getIdKorisnika()));
                                             startActivity(intent);
                                             finish();
                                         } else {

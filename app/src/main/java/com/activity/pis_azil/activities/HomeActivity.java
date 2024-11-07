@@ -28,7 +28,9 @@ public class HomeActivity extends AppCompatActivity {
 
         if (isLoggedIn && userId != -1) {
             progressBar.setVisibility(View.VISIBLE);
-            startActivity(new Intent(HomeActivity.this, MainActivity.class));
+            Intent i = new Intent(HomeActivity.this, MainActivity.class);
+            i.putExtra("korisnikId", String.valueOf(userId));
+            startActivity(i);
             Toast.makeText(this, "Molimo vas pričekajte, već ste prijavljeni!", Toast.LENGTH_SHORT).show();
             finish();
         }

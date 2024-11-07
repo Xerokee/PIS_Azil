@@ -48,7 +48,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -61,7 +60,7 @@ public class AnimalDetailActivity extends AppCompatActivity {
 
     String sAnimalId;
     int animalId;
-    TextView animalName, animalType, animalAge, animalColor, animalDescription, tvNemaAktivnosti, tvNemaSlika;
+    TextView animalName, animalType, animalAge, animalColor, animalDescription, tvNemaAktivnosti;
     Button animalEdit;
     ImageView animalImage, arrowBack;
     ApiService apiService;
@@ -92,8 +91,7 @@ public class AnimalDetailActivity extends AppCompatActivity {
         animalEdit=findViewById(R.id.animalEdit);
         animalImage=findViewById(R.id.animalImage);
         arrowBack = findViewById(R.id.arrowBack);
-        tvNemaAktivnosti = findViewById(R.id.tvNemaAktivnosti);
-        tvNemaSlika = findViewById(R.id.tvNemaSlika);
+        tvNemaAktivnosti= findViewById(R.id.tvNemaAktivnosti);
         linearLayoutAktivnosti = findViewById(R.id.linearLayoutAktivnosti);
         addAktivnost = findViewById(R.id.addAktivnost);
         addSlika = findViewById(R.id.addSlika);
@@ -130,12 +128,15 @@ public class AnimalDetailActivity extends AppCompatActivity {
             }
         });
 
+        refreshPopisAktivnosti();
+        getSlike();
+
         animalEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final DialogPlus dialogPlus = DialogPlus.newDialog(v.getContext())
                         .setContentHolder(new com.orhanobut.dialogplus.ViewHolder(R.layout.update_animal))
-                        .setExpanded(true,1700)
+                        .setExpanded(true,2200)
                         .setGravity(Gravity.CENTER)
                         .setCancelable(true)
                         .create();
@@ -279,92 +280,6 @@ public class AnimalDetailActivity extends AppCompatActivity {
             }
         });
 
-        getAnimalData();
-        getActivities();
-        getImages();
-        refreshPopisAktivnosti();
-        getSlike();
-    }
-
-    // Dohvati podatke o životinji
-    private void getAnimalData() {
-        apiService.getAnimalById(animalId).enqueue(new Callback<AnimalModel>() {
-            @Override
-            public void onResponse(Call<AnimalModel> call, Response<AnimalModel> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    AnimalModel animal = response.body();
-                    animalName.setText(animal.getImeLjubimca());
-                    animalType.setText(animal.getTipLjubimca());
-                    animalAge.setText(String.valueOf(animal.getDob()));
-                    animalColor.setText(animal.getBoja());
-                    animalDescription.setText(animal.getOpisLjubimca());
-                    Glide.with(AnimalDetailActivity.this).load(animal.getImgUrl()).into(animalImage);
-                } else {
-                    // Toast.makeText(AnimalDetailActivity.this, "Greška pri dohvaćanju životinje", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<AnimalModel> call, Throwable t) {
-                Toast.makeText(AnimalDetailActivity.this, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    // Dohvati aktivnosti
-    private void getActivities() {
-        apiService.getAktivnostiById(animalId).enqueue(new Callback<HttpRequestResponseList<Aktivnost>>() {
-            @Override
-            public void onResponse(Call<HttpRequestResponseList<Aktivnost>> call, Response<HttpRequestResponseList<Aktivnost>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Aktivnost> listaAktivnosti = response.body().getResult();
-                    if (listaAktivnosti.isEmpty()) {
-                        tvNemaAktivnosti.setVisibility(View.VISIBLE);
-                    } else {
-                        tvNemaAktivnosti.setVisibility(View.GONE);
-                        linearLayoutAktivnosti.removeAllViews();
-                        for (Aktivnost a : listaAktivnosti) {
-                            TextView tv = new TextView(getApplicationContext());
-                            tv.setText(a.getDatum() + " " + a.getOpis());
-                            tv.setTypeface(tv.getTypeface(), Typeface.BOLD_ITALIC);
-                            tv.setTextSize(18);
-                            linearLayoutAktivnosti.addView(tv);
-                        }
-                    }
-                } else {
-                    // Toast.makeText(AnimalDetailActivity.this, "Greška pri dohvaćanju aktivnosti", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<HttpRequestResponseList<Aktivnost>> call, Throwable t) {
-                Toast.makeText(AnimalDetailActivity.this, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    // Dohvati slike
-    private void getImages() {
-        apiService.getSlikeById(animalId).enqueue(new Callback<HttpRequestResponseList<SlikaModel>>() {
-            @Override
-            public void onResponse(Call<HttpRequestResponseList<SlikaModel>> call, Response<HttpRequestResponseList<SlikaModel>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<SlikaModel> listaSlika = response.body().getResult();
-                    if (!listaSlika.isEmpty()) {
-                        slikeAdapter = new SlikeAdapter(AnimalDetailActivity.this, listaSlika);
-                        rvSlike.setAdapter(slikeAdapter);
-                        rvSlike.setLayoutManager(new LinearLayoutManager(AnimalDetailActivity.this, LinearLayoutManager.HORIZONTAL, false));
-                    }
-                } else {
-                    // Toast.makeText(AnimalDetailActivity.this, "Greška pri dohvaćanju slika", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<HttpRequestResponseList<SlikaModel>> call, Throwable t) {
-                Toast.makeText(AnimalDetailActivity.this, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override
@@ -382,7 +297,6 @@ public class AnimalDetailActivity extends AppCompatActivity {
                         tvNemaAktivnosti.setVisibility(View.VISIBLE);
                     }
                     else{
-                        tvNemaAktivnosti.setVisibility(View.GONE);
                         linearLayoutAktivnosti.removeAllViews();
                         for (Aktivnost a : listaAktivnosti){
                             TextView tv = new TextView(getApplicationContext());
@@ -440,7 +354,6 @@ public class AnimalDetailActivity extends AppCompatActivity {
                         // Toast.makeText(AnimalDetailActivity.this, "Greška pri dodavanju slike..", Toast.LENGTH_SHORT).show();
                     }
                 }
-
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
                     Toast.makeText(AnimalDetailActivity.this, "Greška u API pozivu.", Toast.LENGTH_SHORT).show();
@@ -457,11 +370,9 @@ public class AnimalDetailActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     listaSlika = response.body().getResult();
                     if (listaSlika.size() == 0){
-                        tvNemaSlika.setVisibility(View.VISIBLE);
-                        Log.i("getSlike","Nema dodanih slika");
+                        //Log.i("getSlike","Nema dodanih slika");
                     }
-                    else {
-                        linearLayoutAktivnosti.removeAllViews();
+                    else{
                         slikeAdapter = new SlikeAdapter(AnimalDetailActivity.this, listaSlika);
                         rvSlike.setAdapter(slikeAdapter);
                         rvSlike.setLayoutManager(new LinearLayoutManager(AnimalDetailActivity.this, LinearLayoutManager.HORIZONTAL, false));
@@ -473,7 +384,6 @@ public class AnimalDetailActivity extends AppCompatActivity {
                         //byte[] decodedString = Base64.decode(listaSlika.get(0).slika_data, Base64.DEFAULT);
                         //Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
                         //ivSlika.setImageBitmap(decodedBitmap);
-
                     }
                 } else {
                     // Toast.makeText(AnimalDetailActivity.this, "Greška pri dohvaćanju slika", Toast.LENGTH_SHORT).show();

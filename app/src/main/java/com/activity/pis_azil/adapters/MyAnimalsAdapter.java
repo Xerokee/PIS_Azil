@@ -60,10 +60,6 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
             holder.animalStatus.setText("Status: Zahtjev u tijeku");
             holder.itemView.setBackgroundColor(Color.parseColor("#FFA500")); // Orange background for requests in process
             holder.animalFrame.setOnClickListener(null); // Disable click if request is in progress
-        } else {
-            holder.animalStatus.setText("Status: Odbijen zahtjev");
-            holder.itemView.setBackgroundColor(Color.RED); // Red background for rejected requests
-            holder.animalFrame.setClickable(false); // Disable click if request is in progress
         }
 
         holder.animalFrame.setOnClickListener(v -> {

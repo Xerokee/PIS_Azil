@@ -1,5 +1,6 @@
 package com.activity.pis_azil.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,9 +9,11 @@ import android.os.Bundle;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,6 +50,12 @@ public class MyAnimalsFragment extends Fragment {
 
     public MyAnimalsFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        fetchMyAnimals();
     }
 
     @Override
@@ -146,7 +155,7 @@ public class MyAnimalsFragment extends Fragment {
                                     }
                                 }
                             } else {
-                                Toast.makeText(getContext(), "Greška pri dohvaćanju odbijenih zahtjeva", Toast.LENGTH_SHORT).show();
+                                // Toast.makeText(getContext(), "Greška pri dohvaćanju odbijenih zahtjeva", Toast.LENGTH_SHORT).show();
                             }
                         }
 
@@ -157,7 +166,7 @@ public class MyAnimalsFragment extends Fragment {
                     });
 
                 } else {
-                    Toast.makeText(getContext(), "Greška pri dohvaćanju podataka", Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(getContext(), "Greška pri dohvaćanju podataka", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -175,10 +184,6 @@ public class MyAnimalsFragment extends Fragment {
         filteredAnimalsList.clear();
 
         for (UpdateDnevnikModel animal : animalsList) {
-            if (!animal.isStatus_udomljavanja() && !animal.isUdomljen()) {
-                continue; // Preskačemo životinje koje nemaju status udomljavanja
-            }
-
             boolean matchesType = selectedType.equals("Svi") || animal.getTip_ljubimca().equalsIgnoreCase(selectedType);
             boolean matchesStatus = selectedStatus.equals("Svi") ||
                     (selectedStatus.equals("Udomljeno") && animal.isUdomljen()) ||
@@ -204,7 +209,7 @@ public class MyAnimalsFragment extends Fragment {
     private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                fetchMyAnimals();
+
             }
     );
 }

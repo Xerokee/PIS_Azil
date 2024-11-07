@@ -626,6 +626,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         model.setImgUrl(updatedImgUrl);
         model.setVrijeme(updatedTime);
         model.setStanje_zivotinje(stanjeZivotinje);
+        model.setStatus_udomljavanja(true);
         model.setTip_ljubimca(updatedType);
         model.setIme_ljubimca(updatedName);
 

@@ -50,6 +50,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Intent intent=getIntent();
+        Bundle valueFromFirstActivity = intent.getExtras();
+        String userId = intent.getStringExtra("korisnikId");
+        Log.i("korisnikid",userId);
+
         AlarmReceiver.setAlarm(this);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -80,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
 
         Menu menu = navigationView.getMenu();
         if (!isAdmin) {
-            menu.findItem(R.id.nav_users).setVisible(false);
             menu.findItem(R.id.nav_new_products).setVisible(false);
             menu.findItem(R.id.nav_admin_menu).setVisible(false);
             menu.findItem(R.id.nav_my_orders).setVisible(false);
