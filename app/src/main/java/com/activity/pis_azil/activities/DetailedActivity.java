@@ -59,6 +59,7 @@ public class DetailedActivity extends AppCompatActivity {
     Toolbar toolbar;
     ApiService apiService;
     IsBlockedAnimalModel animalModel = null;
+    private boolean isRequestInProgress = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,16 +82,6 @@ public class DetailedActivity extends AppCompatActivity {
         name = findViewById(R.id.detailed_name);
         description = findViewById(R.id.detailed_dec);
 
-        if (animalModel != null) {
-            // Fetch full details of the animal
-            Log.d(TAG, "ID ljubimca: " + animalModel.getIdLjubimca());
-            fetchAnimalDetails(animalModel.getIdLjubimca());
-        } else {
-            Log.e(TAG, "AnimalModel je null, završavam aktivnost.");
-            Toast.makeText(this, "Greška u dohvaćanju podataka o ljubimcu", Toast.LENGTH_SHORT).show();
-            finish();
-        }
-
         addToCart = findViewById(R.id.add_to_cart);
 
         // Dohvaćanje trenutnog korisnika iz SharedPreferences
@@ -108,10 +99,32 @@ public class DetailedActivity extends AppCompatActivity {
         // Prikaži gumb "Udomi" za sve korisnike, ali s različitim funkcionalnostima
         if (currentUser != null && currentUser.isAdmin()) {
             // Admin bira udomitelja
-            addToCart.setOnClickListener(v -> showAdoptionDialogWithAllUsers());
+            addToCart.setOnClickListener(v -> {
+                if (!isRequestInProgress) {
+                    isRequestInProgress = true;
+                    addToCart.setEnabled(false);  // privremeno onemogućimo gumb
+                    showAdoptionDialogWithAllUsers();
+                }
+            });
         } else {
             // Obični korisnici mogu samo poslati zahtjev za udomljavanje
-            addToCart.setOnClickListener(v -> requestAdoptionForUser(currentUser));
+            addToCart.setOnClickListener(v -> {
+                if (!isRequestInProgress) {
+                    isRequestInProgress = true;
+                    addToCart.setEnabled(false);  // privremeno onemogućimo gumb
+                    requestAdoptionForUser(currentUser);
+                }
+            });
+        }
+
+        if (animalModel != null) {
+            // Fetch full details of the animal
+            Log.d(TAG, "ID ljubimca: " + animalModel.getIdLjubimca());
+            fetchAnimalDetails(animalModel.getIdLjubimca());
+        } else {
+            Log.e(TAG, "AnimalModel je null, završavam aktivnost.");
+            Toast.makeText(this, "Greška u dohvaćanju podataka o ljubimcu", Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 
@@ -391,6 +404,7 @@ public class DetailedActivity extends AppCompatActivity {
                     Log.d(TAG, "Proces udomljavanja uspješno završen.");
                     if (requiresApproval) {
                         Toast.makeText(DetailedActivity.this, "Zahtjev za udomljavanje poslan.", Toast.LENGTH_SHORT).show();
+                        resetRequestState();
                     } else {
                         Toast.makeText(DetailedActivity.this, "Životinja je uspješno udomljena!", Toast.LENGTH_SHORT).show();
                     }
@@ -410,84 +424,14 @@ public class DetailedActivity extends AppCompatActivity {
             public void onFailure(Call<Void> call, Throwable t) {
                 Log.e(TAG, "Greška prilikom udomljavanja: ", t);
                 Toast.makeText(DetailedActivity.this, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                resetRequestState();
             }
         });
     }
 
-    private void adoptAnimal(int animalId) {
-        apiService.adoptAnimal(animalId).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    Log.d(TAG, "Životinja uspješno udomljena.");
-                    Intent resultIntent = new Intent();
-                    resultIntent.putExtra("udomljena_zivotinja_id", animalId);
-                    Log.d(TAG, "Adopted animal ID sent back: " + animalModel.getIdLjubimca()); // Provjeri da li se ID ispravno šalje
-                    setResult(RESULT_OK, resultIntent);
-                    finish();
-                } else {
-                    Log.e(TAG, "Greška prilikom udomljavanja: " + response.message());
-                    Toast.makeText(DetailedActivity.this, "Greška prilikom udomljavanja.", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Log.e(TAG, "API poziv nije uspio: ", t);
-                Toast.makeText(DetailedActivity.this, "Greška u API pozivu.", Toast.LENGTH_SHORT).show();
-            }
-        });
+    // Metoda za resetiranje stanja nakon API zahtjeva
+    private void resetRequestState() {
+        isRequestInProgress = false;
+        addToCart.setEnabled(true);  // ponovno omogućimo gumb
     }
-
-    /*
-    private void rejectAnimal(int animalId) {
-        // Slanje PUT zahtjeva za odbijanje životinje
-        apiService.rejectAnimal(animalId).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    Log.d(TAG, "Životinja je uspješno odbijena!");
-
-                    // Postavi rezultat kako bi HomeFragment znao da ukloni životinju
-                    Intent resultIntent = new Intent();
-                    resultIntent.putExtra("odbijena_zivotinja_id", animalId);
-                    setResult(RESULT_OK, resultIntent);
-
-                    finish(); // Zatvori aktivnost nakon što je životinja odbijena
-                } else {
-                    Log.e(TAG, "Greška prilikom odbijanja: " + response.message());
-                    Toast.makeText(DetailedActivity.this, "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Log.e(TAG, "Greška prilikom odbijanja: ", t);
-                Toast.makeText(DetailedActivity.this, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-    */
-
-    /*
-    private void updateAnimal(AnimalModel updatedAnimal) {
-        apiService.updateAnimal(updatedAnimal.getIdLjubimca(), updatedAnimal).enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    Log.d(TAG, "Životinja uspješno ažurirana.");
-                    updatedAnimal.setZahtjevUdomljavanja(true);
-                    // Ažuriranje UI ili povratak na prethodnu aktivnost
-                } else {
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                Log.e(TAG, "API poziv nije uspio: ", t);
-                Toast.makeText(DetailedActivity.this, "Greška u API pozivu.", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-    */
 }

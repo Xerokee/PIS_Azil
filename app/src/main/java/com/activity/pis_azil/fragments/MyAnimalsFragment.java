@@ -53,12 +53,6 @@ public class MyAnimalsFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        fetchMyAnimals();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_my_animals, container, false);
 
@@ -74,9 +68,15 @@ public class MyAnimalsFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         setupFilterSpinners();
-        fetchMyAnimals();
+        fetchRejectedAnimals();
 
         return root;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        fetchMyAnimals();
     }
 
     private void setupFilterSpinners() {
@@ -115,7 +115,6 @@ public class MyAnimalsFragment extends Fragment {
     }
 
     private void fetchMyAnimals() {
-        // Get current user
         SharedPreferences prefs = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         String userJson = prefs.getString("current_user", null);
         UserModel currentUser = new Gson().fromJson(userJson, UserModel.class);
@@ -124,7 +123,6 @@ public class MyAnimalsFragment extends Fragment {
             return;
         }
 
-        // API call to fetch animals related to the current user
         apiService = ApiClient.getClient().create(ApiService.class);
         apiService.getDnevnikUdomljavanja().enqueue(new Callback<List<UpdateDnevnikModel>>() {
             @Override
@@ -133,45 +131,48 @@ public class MyAnimalsFragment extends Fragment {
                     List<UpdateDnevnikModel> allAnimals = response.body();
                     animalsList.clear();
 
-                    // Filter animals for the current user
                     for (UpdateDnevnikModel animal : allAnimals) {
                         if (animal.getId_korisnika() == currentUser.getIdKorisnika()) {
                             animalsList.add(animal);
                         }
                     }
-
                     applyFilter();
-
-                    // API call to fetch rejected animals for current user
-                    apiService.getOdbijeneZivotinje().enqueue(new Callback<List<RejectAdoptionModelRead>>() {
-                        @Override
-                        public void onResponse(Call<List<RejectAdoptionModelRead>> call, Response<List<RejectAdoptionModelRead>> response) {
-                            if (response.isSuccessful() && response.body() != null) {
-                                List<RejectAdoptionModelRead> rejectedAnimals = response.body();
-                                for (RejectAdoptionModelRead rejectedAnimal : rejectedAnimals) {
-                                    if (rejectedAnimal.getId_korisnika().equals(currentUser.getIdKorisnika())) {
-                                        // Notify user that the request was rejected
-                                        Toast.makeText(getContext(), "Admin je odbio zahtjev za " + rejectedAnimal.getIme_ljubimca(), Toast.LENGTH_LONG).show();
-                                    }
-                                }
-                            } else {
-                                // Toast.makeText(getContext(), "Greška pri dohvaćanju odbijenih zahtjeva", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<List<RejectAdoptionModelRead>> call, Throwable t) {
-                            Toast.makeText(getContext(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-                } else {
-                    // Toast.makeText(getContext(), "Greška pri dohvaćanju podataka", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<UpdateDnevnikModel>> call, Throwable t) {
+                Toast.makeText(getContext(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void fetchRejectedAnimals() {
+        SharedPreferences prefs = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        String userJson = prefs.getString("current_user", null);
+        UserModel currentUser = new Gson().fromJson(userJson, UserModel.class);
+
+        if (currentUser == null) {
+            return;
+        }
+
+        apiService = ApiClient.getClient().create(ApiService.class);
+        apiService.getOdbijeneZivotinje().enqueue(new Callback<List<RejectAdoptionModelRead>>() {
+            @Override
+            public void onResponse(Call<List<RejectAdoptionModelRead>> call, Response<List<RejectAdoptionModelRead>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<RejectAdoptionModelRead> rejectedAnimals = response.body();
+
+                    for (RejectAdoptionModelRead rejectedAnimal : rejectedAnimals) {
+                        if (rejectedAnimal.getId_korisnika().equals(currentUser.getIdKorisnika())) {
+                            Toast.makeText(getContext(), "Admin je odbio zahtjev za " + rejectedAnimal.getIme_ljubimca(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<RejectAdoptionModelRead>> call, Throwable t) {
                 Toast.makeText(getContext(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

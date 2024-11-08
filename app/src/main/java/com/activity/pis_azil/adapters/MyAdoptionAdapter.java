@@ -437,10 +437,8 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d(TAG, "USLI ZADNJE" + response.body().size());
 
-
                     // Filtriraj životinje koje su već udomljene
-                    List<AnimalModel> availableAnimals = response.body().stream()
-                            .collect(Collectors.toList());
+                    List<AnimalModel> availableAnimals = new ArrayList<>(response.body());
 
                     for (AnimalModel animal : availableAnimals) {
                         if (animal.getImeLjubimca().equals(cartModel.getImeLjubimca())) {
