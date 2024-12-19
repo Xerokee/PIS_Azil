@@ -25,6 +25,16 @@
         android:enableOnBackInvokedCallback="true"
         tools:targetApi="34">
         <activity
+            android:name=".activities.NewUserActivity"
+            android:theme="@style/Theme.PIS_Azil.NoActionBar"
+            android:exported="true" />
+
+        <activity
+            android:name=".activities.UpdateUserActivity"
+            android:theme="@style/Theme.PIS_Azil.NoActionBar"
+            android:exported="true" />
+
+        <activity
             android:name=".activities.AnimalDetailActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan"/>

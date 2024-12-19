@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/nav_home"
         android:name="com.activity.pis_azil.ui.home.HomeFragment"
-        android:label="@string/po_etna"
+        android:label="Raspoložive životinje"
         tools:layout="@layout/fragment_home" />
 
     <fragment
@@ -21,7 +21,11 @@
         android:id="@+id/nav_animal_list"
         android:name="com.activity.pis_azil.fragments.AnimalListFragment"
         android:label="Animal List"
-        tools:layout="@layout/fragment_animal_list" />
+        tools:layout="@layout/fragment_animal_list" >
+        <action
+            android:id="@+id/action_nav_animal_list_to_nav_new_products"
+            app:destination="@id/nav_new_products" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_profile"
@@ -30,16 +34,21 @@
         tools:layout="@layout/fragment_profile" />
 
     <fragment
+        android:id="@+id/nav_admin_settings"
+        android:name="com.activity.pis_azil.fragments.UsersFragmentAdmin"
+        android:label="Admin postavke"
+        tools:layout="@layout/user_item_admin" />
+
+    <fragment
         android:id="@+id/nav_new_products"
         android:name="com.activity.pis_azil.fragments.NewAnimalsFragment"
         android:label="Nove Životinje"
         tools:layout="@layout/fragment_new_animals" />
 
-    <!-- Izbornik administratora koji prikazuje sve životinje -->
     <fragment
         android:id="@+id/nav_admin_menu"
         android:name="com.activity.pis_azil.fragments.AnimalsFragment"
-        android:label="Izbornik administrator"
+        android:label="Dnevnik udomljavanja"
         tools:layout="@layout/fragment_my_adopted" />
 
     <!-- Udomljene životinje - administrator vidi sve udomljene životinje -->

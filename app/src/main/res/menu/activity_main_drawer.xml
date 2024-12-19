@@ -7,7 +7,7 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_menuhome"
-            android:title="@string/po_etna" />
+            android:title="Raspoložive životinje" />
         <item
             android:id="@+id/nav_users"
             android:icon="@drawable/ic_action_name"
@@ -17,32 +17,25 @@
             android:icon="@drawable/menu_person"
             android:title="@string/profil" />
         <item
+            android:id="@+id/nav_admin_settings"
+            android:icon="@drawable/ic_admin_menu"
+            android:title="Admin postavke" />
+        <item
             android:id="@+id/nav_new_products"
             android:icon="@drawable/autorenew"
             android:title="@string/nove_ivotinje" />
         <item
-            android:id="@+id/nav_admin_menu"
-            android:icon="@drawable/ic_admin_menu"
-            android:title="Izbornik administrator" />
-        <item
             android:id="@+id/nav_my_orders"
             android:icon="@drawable/ic_adopted_animals"
             android:title="Udomljene životinje" />
-
+        <item
+            android:id="@+id/nav_admin_menu"
+            android:icon="@drawable/baseline_view_list_24"
+            android:title="Dnevnik udomljavanja" />
         <item
             android:id="@+id/nav_my_animals"
             android:icon="@drawable/ic_my_animals"
             android:title="Moje životinje" />
-
-        <item
-            android:id="@+id/nav_available_animals"
-            android:icon="@drawable/ic_available_animals"
-            android:title="Raspoložive životinje" />
-
-        <item
-            android:id="@+id/nav_user_animals"
-            android:icon="@drawable/ic_available_animals_user"
-            android:title="Izbornik korisnika" />
 
         <item
             android:id="@+id/nav_request_list"
