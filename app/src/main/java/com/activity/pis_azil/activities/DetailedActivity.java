@@ -76,7 +76,7 @@ public class DetailedActivity extends AppCompatActivity {
         animalModel = (IsBlockedAnimalModel) getIntent().getSerializableExtra("animal");
 
         // Logiranje proslijeđenog modela životinje
-        Log.d(TAG, "Proslijeđeni model životinje: " + animalModel);
+        //Log.d(TAG, "Proslijeđeni model životinje: " + animalModel);
 
         detailedImg = findViewById(R.id.detailed_img);
         name = findViewById(R.id.detailed_name);

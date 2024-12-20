@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.pis_azil.R;
+import com.activity.pis_azil.activities.Detailed2Activity;
 import com.activity.pis_azil.activities.DetailedActivity;
 import com.activity.pis_azil.models.IsBlockedAnimalModel;
 import com.bumptech.glide.Glide;
@@ -63,7 +64,7 @@ public class AnimalsAdapter extends RecyclerView.Adapter<AnimalsAdapter.AnimalVi
             //holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.white));
             holder.animalFrame.setBackgroundResource(R.color.white);
             holder.itemView.setOnClickListener(v -> {
-                Intent intent = new Intent(context, DetailedActivity.class);
+                Intent intent = new Intent(context, Detailed2Activity.class);
                 intent.putExtra("animal", animal);
                 context.startActivity(intent);
             });

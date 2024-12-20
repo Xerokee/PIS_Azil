@@ -25,6 +25,10 @@
         android:enableOnBackInvokedCallback="true"
         tools:targetApi="34">
         <activity
+            android:name=".activities.Detailed2Activity"
+            android:exported="false" />
+
+        <activity
             android:name=".activities.NewUserActivity"
             android:theme="@style/Theme.PIS_Azil.NoActionBar"
             android:exported="true" />
