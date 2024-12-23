@@ -63,7 +63,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class ProfileFragment extends Fragment {
 
     CircleImageView profileImage;
-    EditText ime, email, lozinka;
+    EditText korisnickoIme, ime, prezime, email, lozinka;
     Button update, logout;
     ApiService apiService;
     SharedPreferences preferences;
@@ -84,7 +84,9 @@ public class ProfileFragment extends Fragment {
         preferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
 
         profileImage = root.findViewById(R.id.profileImage);
+        korisnickoIme = root.findViewById(R.id.profileUserName);
         ime = root.findViewById(R.id.profileName);
+        prezime = root.findViewById(R.id.profileSurName);
         email = root.findViewById(R.id.profileEmail);
         lozinka = root.findViewById(R.id.profilePassword);
         update = root.findViewById(R.id.update);
@@ -194,10 +196,11 @@ public class ProfileFragment extends Fragment {
             public void onResponse(Call<UserByEmailResponseModel> call, Response<UserByEmailResponseModel> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     UserByEmailResponseModel userModel = response.body();
+                    korisnickoIme.setText(userModel.getResult().getKorisnickoIme());
                     ime.setText(userModel.getResult().getIme());
+                    prezime.setText(userModel.getResult().getPrezime());
                     email.setText(userModel.getResult().getEmail());
                     lozinka.setText(userModel.getResult().getLozinka());
-
 
                     // Provjera je li slika profila null
                     if (userModel.getResult().getProfileImg() != null) {
@@ -248,7 +251,9 @@ public class ProfileFragment extends Fragment {
     }
 
     private void updateUserProfile() {
+        String KorisnickoIme = korisnickoIme.getText().toString().trim();
         String Ime = ime.getText().toString().trim();
+        String Prezime = prezime.getText().toString().trim();
         String Mail = email.getText().toString().trim();
         String Lozinka = lozinka.getText().toString().trim();
         String ImgUrl = imageUri.toString();
@@ -267,7 +272,9 @@ public class ProfileFragment extends Fragment {
         }
 
         Map<String, Object> userUpdates = new HashMap<>();
+        userUpdates.put("korisnickoIme", KorisnickoIme);
         userUpdates.put("ime", Ime);
+        userUpdates.put("prezime", Prezime);
         userUpdates.put("email", Mail);
         userUpdates.put("lozinka", Lozinka);
         userUpdates.put("profileImg", ImgUrl);
@@ -282,7 +289,9 @@ public class ProfileFragment extends Fragment {
                     LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(ACTION_PROFILE_UPDATED));
                     // Update local preferences
                     SharedPreferences.Editor editor = preferences.edit();
+                    editor.putString("korisnickoIme", KorisnickoIme);
                     editor.putString("ime", Ime);
+                    editor.putString("prezime", Prezime);
                     editor.putString("email", Mail);
                     editor.putString("lozinka", Lozinka);
                     editor.apply();

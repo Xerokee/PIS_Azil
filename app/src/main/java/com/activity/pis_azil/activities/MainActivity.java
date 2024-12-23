@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         apiService = ApiClient.getClient().create(ApiService.class);
 
         View headerView = navigationView.getHeaderView(0);
-        TextView headerName = headerView.findViewById(R.id.profileNam);
+        TextView headerUserName = headerView.findViewById(R.id.profileUserNam);
         TextView headerEmail = headerView.findViewById(R.id.profileEml);
         CircleImageView headerImg = headerView.findViewById(R.id.profileImg);
 
@@ -103,18 +103,18 @@ public class MainActivity extends AppCompatActivity {
         // Get user data from intent
         UserModel user = (UserModel) getIntent().getSerializableExtra("user_data");
         if (user != null) {
-            updateNavigationHeader(user, headerName, headerEmail, headerImg);
+            updateNavigationHeader(user, headerUserName, headerEmail, headerImg);
         } else {
             // If user data is not available in the intent, fetch from SharedPreferences
             SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
             userEmail = preferences.getString("email", "email@example.com"); // Fetch from saved preferences
-            String userName = preferences.getString("ime", "");
+            String userName = preferences.getString("korisnickoIme", "");
             String userImg = preferences.getString("profileImg", "");
             UserModel sharedPrefsUser = new UserModel();
-            sharedPrefsUser.setIme(userName);
+            sharedPrefsUser.setKorisnickoIme(userName);
             sharedPrefsUser.setEmail(userEmail);
             sharedPrefsUser.setProfileImg(userImg);
-            updateNavigationHeader(sharedPrefsUser, headerName, headerEmail, headerImg);
+            updateNavigationHeader(sharedPrefsUser, headerUserName, headerEmail, headerImg);
         }
 
         // Listen for profile updates
@@ -125,8 +125,8 @@ public class MainActivity extends AppCompatActivity {
         fetchUserData();
     }
 
-    private void updateNavigationHeader(UserModel user, TextView headerName, TextView headerEmail, CircleImageView headerImg) {
-        headerName.setText(user.getIme());
+    private void updateNavigationHeader(UserModel user, TextView headerUserName, TextView headerEmail, CircleImageView headerImg) {
+        headerUserName.setText(user.getKorisnickoIme());
         headerEmail.setText(user.getEmail());
         if (user.getProfileImg() != null && !user.getProfileImg().isEmpty()) {
             Glide.with(this).load(user.getProfileImg()).into(headerImg);
@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
                         // Update navigation header
                         View headerView = ((NavigationView) findViewById(R.id.nav_view)).getHeaderView(0);
                         updateNavigationHeader(user,
-                                headerView.findViewById(R.id.profileNam),
+                                headerView.findViewById(R.id.profileUserNam),
                                 headerView.findViewById(R.id.profileEml),
                                 headerView.findViewById(R.id.profileImg));
                     }

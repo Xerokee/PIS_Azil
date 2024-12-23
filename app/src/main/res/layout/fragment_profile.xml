@@ -5,104 +5,134 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.profile.ProfileFragment"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:padding="8dp">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profileImage"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="15dp"
+        android:layout_width="150dp"
+        android:layout_height="180dp"
         android:src="@drawable/profile"
         app:civ_border_width="2dp"
         app:civ_border_color="#FF000000"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp" />
+
+    <EditText
+        android:id="@+id/profileUserName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/edittext_bg"
+        android:drawableLeft="@drawable/baseline_person_pin_24"
+        android:drawablePadding="10dp"
+        android:hint="Vaše Korisničko ime"
+        android:padding="10dp"
+        android:textColor="@color/green_700"
+        android:textColorHint="@color/green_700"
+        app:layout_constraintTop_toBottomOf="@+id/profileImage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.9" />
 
     <EditText
         android:id="@+id/profileName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:background="@drawable/edittext_bg"
         android:drawableLeft="@drawable/ic_baseline_person_24"
         android:drawablePadding="10dp"
-        android:elevation="3dp"
         android:hint="Vaše Ime"
-        android:padding="13dp"
+        android:padding="10dp"
         android:textColor="@color/green_700"
         android:textColorHint="@color/green_700"
-        app:layout_constraintTop_toBottomOf="@+id/profileImage"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileUserName"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_percent=".8"
-        android:layout_marginTop="16dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.9" />
+
+    <EditText
+        android:id="@+id/profileSurName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/edittext_bg"
+        android:drawableLeft="@drawable/baseline_person_outline_24"
+        android:drawablePadding="10dp"
+        android:hint="Vaše Prezime"
+        android:padding="10dp"
+        android:textColor="@color/green_700"
+        android:textColorHint="@color/green_700"
+        app:layout_constraintTop_toBottomOf="@+id/profileName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.9" />
 
     <EditText
         android:id="@+id/profileEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:background="@drawable/edittext_bg"
         android:drawableLeft="@drawable/account"
         android:drawablePadding="10dp"
-        android:elevation="3dp"
         android:hint="Vaš Mail"
         android:inputType="textEmailAddress"
-        android:padding="13dp"
+        android:padding="10dp"
         android:textColor="@color/green_700"
         android:textColorHint="@color/green_700"
-        app:layout_constraintTop_toBottomOf="@+id/profileName"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileSurName"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_percent=".8"
-        android:layout_marginTop="16dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.9" />
 
     <EditText
         android:id="@+id/profilePassword"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:background="@drawable/edittext_bg"
         android:drawableLeft="@drawable/keylog"
         android:drawablePadding="10dp"
-        android:elevation="3dp"
         android:hint="Vaša Lozinka"
         android:inputType="textPassword"
-        android:padding="13dp"
+        android:padding="10dp"
         android:textColor="@color/green_700"
         android:textColorHint="@color/green_700"
         app:layout_constraintTop_toBottomOf="@+id/profileEmail"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintWidth_percent=".8"
-        android:layout_marginTop="16dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.9" />
 
     <Button
         android:id="@+id/update"
         android:layout_width="150dp"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
+        android:layout_marginTop="16dp"
         android:backgroundTint="@color/green_700"
-        android:padding="14dp"
         android:text="Ažuriraj"
         android:textAllCaps="false"
         android:textColor="@color/white"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@+id/profilePassword"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/logout"
         android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:padding="14dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="@color/red"
         android:text="Odjava"
         android:textAllCaps="false"
         android:textColor="@color/white"
-        android:background="@color/red"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@+id/update"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginTop="16dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

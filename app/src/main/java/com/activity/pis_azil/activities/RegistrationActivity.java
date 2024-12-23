@@ -37,7 +37,7 @@ import java.io.IOException;
 public class RegistrationActivity extends AppCompatActivity {
 
     Button signUp;
-    EditText ime, email, lozinka;
+    EditText korisnickoIme, ime, prezime, email, lozinka;
     ImageView regProfileImg;
     TextView signIn;
     ApiService apiService;
@@ -61,7 +61,9 @@ public class RegistrationActivity extends AppCompatActivity {
         progressBar.setVisibility(View.GONE);
 
         signUp = findViewById(R.id.reg_btn);
+        korisnickoIme = findViewById(R.id.reg_username);
         ime = findViewById(R.id.reg_name);
+        prezime = findViewById(R.id.reg_surname);
         email = findViewById(R.id.reg_email);
         lozinka = findViewById(R.id.reg_password);
         regProfileImg = findViewById(R.id.regProfileImg);
@@ -167,18 +169,22 @@ public class RegistrationActivity extends AppCompatActivity {
 
 
     private void createUser() {
+        String userNickName = korisnickoIme.getText().toString();
         String userName = ime.getText().toString();
+        String userSurName = prezime.getText().toString();
         String userEmail = email.getText().toString();
         String userPassword = lozinka.getText().toString();
 
         // Provjera praznih polja
-        if (TextUtils.isEmpty(userName) || TextUtils.isEmpty(userEmail) || TextUtils.isEmpty(userPassword)) {
+        if (TextUtils.isEmpty(userNickName) || TextUtils.isEmpty(userName) || TextUtils.isEmpty(userSurName) || TextUtils.isEmpty(userEmail) || TextUtils.isEmpty(userPassword)) {
             Toast.makeText(this, "Sva polja su obavezna", Toast.LENGTH_SHORT).show();
             return;
         }
 
         UserModel userModel = new UserModel();
+        userModel.setKorisnickoIme(userNickName);
         userModel.setIme(userName);
+        userModel.setPrezime(userSurName);
         userModel.setEmail(userEmail);
         userModel.setLozinka(userPassword);
         userModel.setAdmin(false);

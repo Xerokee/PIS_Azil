@@ -4,16 +4,20 @@ import java.io.Serializable;
 
 public class UserModel implements Serializable {
     public int id_korisnika;
+    public String korisnickoIme;
     public String ime;
+    public String prezime;
     public String email;
     private String lozinka;
     public boolean admin;
     public String profileImg;
     private UserRoleModel userRole;
 
-    public UserModel(int id_korisnika, String ime, String email, String lozinka, boolean admin, String profileImg) {
+    public UserModel(int id_korisnika, String korisnickoIme, String ime, String prezime, String email, String lozinka, boolean admin, String profileImg) {
         this.id_korisnika = id_korisnika;
+        this.korisnickoIme = korisnickoIme;
         this.ime = ime;
+        this.prezime = prezime;
         this.email = email;
         this.lozinka = lozinka;
         this.admin = admin;
@@ -32,12 +36,28 @@ public class UserModel implements Serializable {
         this.id_korisnika = idKorisnika;
     }
 
+    public String getKorisnickoIme() {
+        return korisnickoIme;
+    }
+
+    public void setKorisnickoIme(String KorisnickoIme) {
+        this.korisnickoIme = KorisnickoIme;
+    }
+
     public String getIme() {
         return ime;
     }
 
     public void setIme(String Ime) {
         this.ime = Ime;
+    }
+
+    public String getPrezime() {
+        return prezime;
+    }
+
+    public void setPrezime(String Prezime) {
+        this.prezime = Prezime;
     }
 
     public String getEmail() {
