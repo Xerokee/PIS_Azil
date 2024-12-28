@@ -52,6 +52,9 @@ public interface ApiService {
     @POST("Korisnici/add")
     Call<Void> addUser(@Header("RequestUserId") int requestUserId, @Body UserModel user);
 
+    @DELETE("Korisnici/delete/{id}")
+    Call<Void> deleteUser(@Header("RequestUserId") int requestUserId, @Path("id") int userId);
+
     @PUT("KucniLjubimci/update/{id}")
     Call<Void> updateAnimal(@Path("id") String id, @Body Map<String, Object> updateData);
 

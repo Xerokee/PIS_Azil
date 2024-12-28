@@ -28,17 +28,23 @@ public class UpdateUserFragment extends Fragment {
         View view = inflater.inflate(R.layout.activity_update_user, container, false);
         UserModel user = (UserModel) getArguments().getSerializable(ARG_USER);
 
-        EditText etUserName = view.findViewById(R.id.editTextUsername);
+        EditText etName = view.findViewById(R.id.editTextName);
+        EditText etSurname = view.findViewById(R.id.editTextSurname);
+        EditText etUsername = view.findViewById(R.id.editTextUsername);
         EditText etMail = view.findViewById(R.id.editTextMail);
         EditText etPassword = view.findViewById(R.id.editTextPassword);
 
-        etUserName.setText(user.getIme());
+        etName.setText(user.getIme());
+        etSurname.setText(user.getPrezime());
+        etUsername.setText(user.getKorisnickoIme());
         etMail.setText(user.getEmail());
         etPassword.setText(user.getLozinka());
 
         Button btnUpdate = view.findViewById(R.id.buttonUpdateUser);
         btnUpdate.setOnClickListener(v -> {
-            user.setIme(etUserName.getText().toString());
+            user.setIme(etName.getText().toString());
+            user.setPrezime(etSurname.getText().toString());
+            user.setKorisnickoIme(etUsername.getText().toString());
             user.setEmail(etMail.getText().toString());
             user.setLozinka(etPassword.getText().toString());
 

@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
 
         Menu menu = navigationView.getMenu();
         if (!isAdmin) {
-            menu.findItem(R.id.nav_users).setVisible(false);
             menu.findItem(R.id.nav_admin_settings).setVisible(false);
             menu.findItem(R.id.nav_new_products).setVisible(false);
             menu.findItem(R.id.rejectedAnimalsFragment).setVisible(false);
@@ -97,7 +96,6 @@ public class MainActivity extends AppCompatActivity {
             menu.findItem(R.id.nav_new_products).setVisible(true);
             menu.findItem(R.id.nav_admin_menu).setVisible(true);
             menu.findItem(R.id.nav_my_orders).setVisible(true);
-            menu.findItem(R.id.nav_request_list).setVisible(true);
         }
 
         // Get user data from intent

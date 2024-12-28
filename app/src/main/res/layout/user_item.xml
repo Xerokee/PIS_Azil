@@ -10,8 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="ID: "
-        android:textSize="16sp"
-        android:textColor="@android:color/darker_gray" />
+        android:textSize="18sp" />
 
     <TextView
         android:id="@+id/user_name"
@@ -21,9 +20,30 @@
         android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/user_email"
+        android:id="@+id/user_surname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Email: "
+        android:text="Prezime: "
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/user_nickname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Korisničko ime: "
+        android:textSize="18sp" />
+
+    <TextView
+    android:id="@+id/user_email"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Email: "
+    android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/user_admin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Admin: "
         android:textSize="16sp" />
 </LinearLayout>

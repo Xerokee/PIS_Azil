@@ -29,8 +29,16 @@ public class UsersAdapterAdmin extends RecyclerView.Adapter<UsersAdapterAdmin.Us
         UserModel user = users.get(position);
         holder.idTextView.setText(String.format("ID: %d", user.getIdKorisnika()));
         holder.nameTextView.setText(String.format("Ime: %s", user.getIme()));
+        holder.surnameTextView.setText(String.format("Prezime: %s", user.getPrezime()));
+        holder.nicknameTextView.setText(String.format("Korisničko ime: %s", user.getKorisnickoIme()));
         holder.emailTextView.setText(String.format("Email: %s", user.getEmail()));
         holder.passwordTextView.setText(String.format("Lozinka: %s", user.getLozinka()));
+
+        if (user.isAdmin()) {
+            holder.adminTextView.setText("Admin: Da");
+        } else {
+            holder.adminTextView.setText("Admin: Ne");
+        }
 
         holder.editUser.setOnClickListener(v -> {
             // Otvaranje fragmenta za ažuriranje korisnika
@@ -83,15 +91,21 @@ public class UsersAdapterAdmin extends RecyclerView.Adapter<UsersAdapterAdmin.Us
         public View deleteUser;
         TextView idTextView;
         TextView nameTextView;
+        TextView surnameTextView;
+        TextView nicknameTextView;
         TextView emailTextView;
         TextView passwordTextView;
+        TextView adminTextView;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
             idTextView = itemView.findViewById(R.id.user_id);
             nameTextView = itemView.findViewById(R.id.user_name);
+            surnameTextView = itemView.findViewById(R.id.user_surname);
+            nicknameTextView = itemView.findViewById(R.id.user_nickname);
             emailTextView = itemView.findViewById(R.id.user_email);
             passwordTextView = itemView.findViewById(R.id.user_password);
+            adminTextView = itemView.findViewById(R.id.user_admin);
             editUser = itemView.findViewById(R.id.edit_user);
             deleteUser = itemView.findViewById(R.id.delete_user);
         }

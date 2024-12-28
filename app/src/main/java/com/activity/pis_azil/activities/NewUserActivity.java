@@ -1,7 +1,7 @@
 package com.activity.pis_azil.activities;
 
-import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,19 +12,29 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.models.UserModel;
+import com.activity.pis_azil.network.ApiClient;
+import com.activity.pis_azil.network.ApiService;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class NewUserActivity extends AppCompatActivity {
 
-    private EditText etUserName, etMail, etPassword;
+    private EditText etName, etSurname, etUsername, etMail, etPassword;
     private ImageView ivUserImage;
+    private Uri selectedImageUri;  // Store URI of the selected image
     private static final int PICK_IMAGE_REQUEST = 1;
+    private ApiService apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_user);
 
-        etUserName = findViewById(R.id.editTextUsername);
+        etName = findViewById(R.id.editTextName);
+        etSurname = findViewById(R.id.editTextSurname);
+        etUsername = findViewById(R.id.editTextUsername);
         etMail = findViewById(R.id.editTextMail);
         etPassword = findViewById(R.id.editTextPassword);
         ivUserImage = findViewById(R.id.imageViewUser);
@@ -33,6 +43,9 @@ public class NewUserActivity extends AppCompatActivity {
         btnSubmitUser.setOnClickListener(v -> addNewUser());
 
         ivUserImage.setOnClickListener(v -> openImageChooser());
+
+        // Initialize the API service
+        apiService = ApiClient.getClient().create(ApiService.class);
     }
 
     private void openImageChooser() {
@@ -42,7 +55,9 @@ public class NewUserActivity extends AppCompatActivity {
     }
 
     private void addNewUser() {
-        String ime_korisnika = etUserName.getText().toString().trim();
+        String ime_korisnika = etName.getText().toString().trim();
+        String prezime_korisnika = etSurname.getText().toString().trim();
+        String korisnicko_ime_korisnika = etUsername.getText().toString().trim();
         String mail_korisnika = etMail.getText().toString().trim();
         String lozinka_korisnika = etPassword.getText().toString().trim();
 
@@ -51,23 +66,44 @@ public class NewUserActivity extends AppCompatActivity {
             return;
         }
 
+        // Check if an image is selected
+        String profileImgUri = selectedImageUri != null ? selectedImageUri.toString() : null;
+
         UserModel newUser = new UserModel();
         newUser.setIme(ime_korisnika);
+        newUser.setPrezime(prezime_korisnika);
+        newUser.setKorisnickoIme(korisnicko_ime_korisnika);
         newUser.setEmail(mail_korisnika);
         newUser.setLozinka(lozinka_korisnika);
+        newUser.setProfileImg(profileImgUri);  // Set the profile image URI
 
-        // Poziv API-ja za dodavanje korisnika
+        // Make the API call to add the user
+        apiService.addUser(1, newUser)  // Assuming '1' is the ID of the admin making the request
+                .enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(NewUserActivity.this, "Korisnik uspješno dodan", Toast.LENGTH_SHORT).show();
+                            setResult(RESULT_OK);
+                            finish();
+                        } else {
+                            Toast.makeText(NewUserActivity.this, "Pogreška pri dodavanju korisnika", Toast.LENGTH_SHORT).show();
+                        }
+                    }
 
-        // Nakon uspješnog dodavanja korisnika, završite aktivnost
-        Toast.makeText(this, "Korisnik uspješno dodan", Toast.LENGTH_SHORT).show();
-        finish();
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Toast.makeText(NewUserActivity.this, "Greška u mreži", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
-            ivUserImage.setImageURI(data.getData());
+            selectedImageUri = data.getData();  // Get the URI of the selected image
+            ivUserImage.setImageURI(selectedImageUri);  // Display the selected image in ImageView
         }
     }
 }

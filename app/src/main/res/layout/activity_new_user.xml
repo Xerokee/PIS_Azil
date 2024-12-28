@@ -7,12 +7,28 @@
     android:gravity="center">
 
 <EditText
-    android:id="@+id/editTextUsername"
+    android:id="@+id/editTextName"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:textSize="18sp"
     android:hint="Ime korisnika"
     android:padding="16dp" />
+
+    <EditText
+        android:id="@+id/editTextSurname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:hint="Prezime korisnika"
+        android:padding="16dp" />
+
+    <EditText
+        android:id="@+id/editTextUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:hint="Korisničko ime korisnika"
+        android:padding="16dp" />
 
 <EditText
     android:id="@+id/editTextMail"

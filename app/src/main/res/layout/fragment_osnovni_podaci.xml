@@ -144,6 +144,7 @@
                 android:layout_height="70dp"
                 android:text="Udomi"
                 android:textSize="20sp"
+                android:textStyle="bold"
                 android:textColor="@color/green_500"
                 android:layout_gravity="center"
                 android:padding="10dp" />

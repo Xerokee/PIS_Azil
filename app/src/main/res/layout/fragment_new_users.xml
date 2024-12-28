@@ -56,10 +56,28 @@
                     app:layout_constraintVertical_bias="1.0">
 
                     <EditText
-                        android:id="@+id/editTextUsername"
+                        android:id="@+id/editTextName"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
                         android:hint="Ime korisnika"
+                        android:inputType="textPersonName"
+                        android:textColor="@color/green_700"
+                        android:textColorHint="@color/green_700" />
+
+                    <EditText
+                        android:id="@+id/editTextSurname"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:hint="Prezime korisnika"
+                        android:inputType="textPersonName"
+                        android:textColor="@color/green_700"
+                        android:textColorHint="@color/green_700" />
+
+                    <EditText
+                        android:id="@+id/editTextUsername"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:hint="Korisničko ime korisnika"
                         android:inputType="textPersonName"
                         android:textColor="@color/green_700"
                         android:textColorHint="@color/green_700" />

@@ -43,7 +43,7 @@ public class NewUsersFragment extends Fragment {
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int REQUEST_USER_ID = 1; // Ovdje definiramo RequestUserId
 
-    private EditText etUserName, etMail, etPassword;
+    private EditText etName, etSurname, etUsername, etMail, etPassword;
     private ImageView ivUserImage;
     private Uri imageUri;
     private LinearLayout userFormContainer;
@@ -61,7 +61,9 @@ public class NewUsersFragment extends Fragment {
 
         apiService = ApiClient.getClient().create(ApiService.class);
 
-        etUserName = root.findViewById(R.id.editTextUsername);
+        etUsername = root.findViewById(R.id.editTextName);
+        etSurname = root.findViewById(R.id.editTextSurname);
+        etUsername = root.findViewById(R.id.editTextUsername);
         etMail = root.findViewById(R.id.editTextMail);
         etPassword = root.findViewById(R.id.editTextPassword);
         ivUserImage = root.findViewById(R.id.imageViewUser);
@@ -118,12 +120,16 @@ public class NewUsersFragment extends Fragment {
     }
 
     private void addNewUser() {
-        String ime_korisnika = etUserName.getText().toString().trim();
+        String ime_korisnika = etName.getText().toString().trim();
+        String prezime_korisnika = etSurname.getText().toString().trim();
+        String korisnicko_ime_korisnika = etUsername.getText().toString().trim();
         String mail_korisnika = etMail.getText().toString().trim();
         String lozinka_korisnika = etPassword.getText().toString().trim();
 
         Log.d("NewUsersFragment", "Uneseni podaci: " +
                 "Ime korisnika: " + ime_korisnika +
+                "Prezime korisnika: " + prezime_korisnika +
+                "Korisničko ime korisnika: " + korisnicko_ime_korisnika +
                 ", Mail korisnka: " + mail_korisnika +
                 ", Lozinka korisnika: " + lozinka_korisnika);
 
@@ -197,7 +203,9 @@ public class NewUsersFragment extends Fragment {
     }
 
     private void clearForm() {
-        etUserName.setText("");
+        etName.setText("");
+        etSurname.setText("");
+        etName.setText("");
         etMail.setText("");
         etPassword.setText("");
         ivUserImage.setImageResource(R.drawable.ic_baseline_person_24);

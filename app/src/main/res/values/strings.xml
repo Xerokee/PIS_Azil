@@ -58,8 +58,8 @@
 
         <string-array name="animal_statuses">
             <item>Svi</item>
-            <item>Udomljeno</item>
-            <item>Zahtjev u tijeku</item>
+            <item>Udomljen</item>
+            <item>Rezerviran</item>
         </string-array>
 
         <string-array name="animal_statuses2">

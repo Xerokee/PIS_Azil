@@ -7,11 +7,27 @@
     android:gravity="center">
 
     <EditText
-        android:id="@+id/editTextUsername"
+        android:id="@+id/editTextName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:hint="Ime korisnika"
+        android:padding="16dp" />
+
+    <EditText
+        android:id="@+id/editTextSurname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:hint="Prezime korisnika"
+        android:padding="16dp" />
+
+    <EditText
+        android:id="@+id/editTextUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:hint="Korisničko ime korisnika"
         android:padding="16dp" />
 
     <EditText
@@ -30,6 +46,29 @@
         android:hint="Lozinka korisnika"
         android:inputType="textPassword"
         android:padding="16dp" />
+
+    <!-- RadioGroup for Admin selection -->
+    <RadioGroup
+        android:id="@+id/radioGroupAdmin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <RadioButton
+            android:id="@+id/radioAdminYes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Da"
+            android:textSize="18sp" />
+
+        <RadioButton
+            android:id="@+id/radioAdminNo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ne"
+            android:textSize="18sp" />
+    </RadioGroup>
 
     <Button
         android:id="@+id/buttonUpdateUser"

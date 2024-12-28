@@ -9,10 +9,6 @@
             android:icon="@drawable/ic_menuhome"
             android:title="Raspoložive životinje" />
         <item
-            android:id="@+id/nav_users"
-            android:icon="@drawable/ic_action_name"
-            android:title="@string/korisnici" />
-        <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/menu_person"
             android:title="@string/profil" />
@@ -36,11 +32,6 @@
             android:id="@+id/nav_my_animals"
             android:icon="@drawable/ic_my_animals"
             android:title="Moje životinje" />
-
-        <item
-            android:id="@+id/nav_request_list"
-            android:icon="@drawable/ic_requests"
-            android:title="Lista zahtjeva" />
 
         <item
             android:id="@+id/rejectedAnimalsFragment"

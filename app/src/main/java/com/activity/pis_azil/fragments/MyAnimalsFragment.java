@@ -187,8 +187,8 @@ public class MyAnimalsFragment extends Fragment {
         for (UpdateDnevnikModel animal : animalsList) {
             boolean matchesType = selectedType.equals("Svi") || animal.getTip_ljubimca().equalsIgnoreCase(selectedType);
             boolean matchesStatus = selectedStatus.equals("Svi") ||
-                    (selectedStatus.equals("Udomljeno") && animal.isUdomljen()) ||
-                    (selectedStatus.equals("Zahtjev u tijeku") && animal.isStatus_udomljavanja());
+                    (selectedStatus.equals("Udomljen") && animal.isUdomljen()) ||
+                    (selectedStatus.equals("Rezerviran") && animal.isStatus_udomljavanja());
 
             if (matchesType && matchesStatus) {
                 filteredAnimalsList.add(animal);

@@ -30,6 +30,22 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/user_surname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Prezime: "
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/user_nickname"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Korisničko ime: "
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
             android:id="@+id/user_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -42,6 +58,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Lozinka: "
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/user_admin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Admin: "
             android:textSize="16sp"
             android:textStyle="bold" />
     </LinearLayout>
