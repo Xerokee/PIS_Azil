@@ -1,6 +1,7 @@
 package com.activity.pis_azil.fragments;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,13 +20,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.adapters.MyAnimalsAdapter;
-import com.activity.pis_azil.models.RejectAdoptionModelRead;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
@@ -46,7 +48,8 @@ public class MyAnimalsFragment extends Fragment {
     private List<UpdateDnevnikModel> animalsList, filteredAnimalsList;
     private ApiService apiService;
     private TextView emptyStateTextView;
-    private Spinner filterTypeSpinner, filterStatusSpinner;
+    private EditText searchAnimalBox;  // Search box for filtering animals by name
+    private Button filterButton;  // Button to open the filter dialog
 
     public MyAnimalsFragment() {
         // Required empty public constructor
@@ -59,16 +62,33 @@ public class MyAnimalsFragment extends Fragment {
         recyclerView = root.findViewById(R.id.recyclerview_my_animals);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         emptyStateTextView = root.findViewById(R.id.empty_state_text_view);
-        filterTypeSpinner = root.findViewById(R.id.filter_type_spinner);
-        filterStatusSpinner = root.findViewById(R.id.filter_status_spinner);
+        searchAnimalBox = root.findViewById(R.id.search_adopter_box);  // Search box
+        ImageButton filterButton = root.findViewById(R.id.filter_button);  // Filter button
 
         animalsList = new ArrayList<>();
         filteredAnimalsList = new ArrayList<>();
         adapter = new MyAnimalsAdapter(getContext(), filteredAnimalsList, activityResultLauncher);
         recyclerView.setAdapter(adapter);
 
-        setupFilterSpinners();
-        fetchRejectedAnimals();
+        // Search functionality
+        searchAnimalBox.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String query = charSequence.toString().toLowerCase();
+                filterAnimalsByName(query);
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable editable) {}
+        });
+
+        // Filter button click to show filter dialog
+        filterButton.setOnClickListener(v -> showFilterDialog());
+
+        fetchMyAnimals();  // Fetch user's animals
 
         return root;
     }
@@ -77,41 +97,6 @@ public class MyAnimalsFragment extends Fragment {
     public void onResume() {
         super.onResume();
         fetchMyAnimals();
-    }
-
-    private void setupFilterSpinners() {
-        // Setup the adapter for the animal type filter spinner
-        ArrayAdapter<CharSequence> typeSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),
-                R.array.animal_types2, android.R.layout.simple_spinner_item);
-        typeSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        filterTypeSpinner.setAdapter(typeSpinnerAdapter);
-
-        // Setup the adapter for the status filter spinner
-        ArrayAdapter<CharSequence> statusSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),
-                R.array.animal_statuses, android.R.layout.simple_spinner_item);
-        statusSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        filterStatusSpinner.setAdapter(statusSpinnerAdapter);
-
-        // Add listeners for the spinners
-        filterTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                applyFilter();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
-
-        filterStatusSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                applyFilter();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
     }
 
     private void fetchMyAnimals() {
@@ -136,7 +121,7 @@ public class MyAnimalsFragment extends Fragment {
                             animalsList.add(animal);
                         }
                     }
-                    applyFilter();
+                    applyFilters();
                 }
             }
 
@@ -147,51 +132,84 @@ public class MyAnimalsFragment extends Fragment {
         });
     }
 
-    private void fetchRejectedAnimals() {
-        SharedPreferences prefs = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
-        String userJson = prefs.getString("current_user", null);
-        UserModel currentUser = new Gson().fromJson(userJson, UserModel.class);
+    // Function for filtering animals based on animal name (search query)
+    private void filterAnimalsByName(String query) {
+        filteredAnimalsList.clear();  // Clear previous results
 
-        if (currentUser == null) {
-            return;
-        }
-
-        apiService = ApiClient.getClient().create(ApiService.class);
-        apiService.getOdbijeneZivotinje().enqueue(new Callback<List<RejectAdoptionModelRead>>() {
-            @Override
-            public void onResponse(Call<List<RejectAdoptionModelRead>> call, Response<List<RejectAdoptionModelRead>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<RejectAdoptionModelRead> rejectedAnimals = response.body();
-
-                    for (RejectAdoptionModelRead rejectedAnimal : rejectedAnimals) {
-                        if (rejectedAnimal.getId_korisnika().equals(currentUser.getIdKorisnika())) {
-                            Toast.makeText(getContext(), "Admin je odbio zahtjev za " + rejectedAnimal.getIme_ljubimca(), Toast.LENGTH_LONG).show();
-                        }
-                    }
+        if (query.isEmpty()) {
+            filteredAnimalsList.addAll(animalsList);  // Show all animals if query is empty
+        } else {
+            for (UpdateDnevnikModel animal : animalsList) {
+                if (animal.getIme_ljubimca() != null && animal.getIme_ljubimca().toLowerCase().contains(query.toLowerCase())) {
+                    filteredAnimalsList.add(animal);  // Add animal to filtered list
                 }
             }
+        }
 
-            @Override
-            public void onFailure(Call<List<RejectAdoptionModelRead>> call, Throwable t) {
-                Toast.makeText(getContext(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        adapter.notifyDataSetChanged();  // Notify the adapter that data has changed
     }
 
-    private void applyFilter() {
-        String selectedType = filterTypeSpinner.getSelectedItem().toString();
-        String selectedStatus = filterStatusSpinner.getSelectedItem().toString();
+    // Show filter dialog
+    private void showFilterDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_filters3, null);
 
+        // Filter options
+        android.widget.Spinner typeFilter = dialogView.findViewById(R.id.spinner_type);
+        android.widget.Spinner statusFilter = dialogView.findViewById(R.id.spinner_status);
+        Button cancelButton = dialogView.findViewById(R.id.cancel_button);
+        Button confirmButton = dialogView.findViewById(R.id.confirm_button);
+        Button resetButton = dialogView.findViewById(R.id.reset_button);
+
+        // Populate spinner with available types and statuses
+        ArrayAdapter<CharSequence> typeAdapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.animal_types2, android.R.layout.simple_spinner_item);
+        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        typeFilter.setAdapter(typeAdapter);
+
+        ArrayAdapter<CharSequence> statusAdapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.animal_statuses, android.R.layout.simple_spinner_item);
+        statusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        statusFilter.setAdapter(statusAdapter);
+
+        builder.setView(dialogView).setTitle("Filtriraj životinje");
+
+        AlertDialog dialog = builder.create();
+
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
+
+        confirmButton.setOnClickListener(v -> {
+            String type = typeFilter.getSelectedItem().toString();
+            String status = statusFilter.getSelectedItem().toString();
+            applyFilters(type, status);
+            dialog.dismiss();
+        });
+
+        resetButton.setOnClickListener(v -> {
+            // Reset the filters and show all animals
+            applyFilters("Svi", "Svi");
+            dialog.dismiss();
+        });
+
+        dialog.show();
+    }
+
+    private void applyFilters() {
+        String selectedType = "Svi";
+        String selectedStatus = "Svi";
+
+        applyFilters(selectedType, selectedStatus);
+    }
+
+    private void applyFilters(String type, String status) {
         filteredAnimalsList.clear();
 
         for (UpdateDnevnikModel animal : animalsList) {
-            boolean matchesType = selectedType.equals("Svi") || animal.getTip_ljubimca().equalsIgnoreCase(selectedType);
-            boolean matchesStatus = selectedStatus.equals("Svi") ||
-                    (selectedStatus.equals("Udomljen") && animal.isUdomljen()) ||
-                    (selectedStatus.equals("Rezerviran") && animal.isStatus_udomljavanja());
+            boolean matchesType = type.equals("Svi") || animal.getTip_ljubimca().equalsIgnoreCase(type);
+            boolean matchesStatus = status.equals("Svi") || (status.equals("Udomljen") && animal.isUdomljen() || (status.equals("Rezerviran") && animal.isStatus_udomljavanja()));
 
             if (matchesType && matchesStatus) {
-                filteredAnimalsList.add(animal);
+                filteredAnimalsList.add(animal);  // Add animal to the filtered list
             }
         }
 
@@ -210,7 +228,7 @@ public class MyAnimalsFragment extends Fragment {
     private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-
+                // Handle activity result if necessary
             }
     );
 }
