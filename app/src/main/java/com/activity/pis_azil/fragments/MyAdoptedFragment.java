@@ -1,5 +1,6 @@
 package com.activity.pis_azil.fragments;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -14,8 +15,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,6 +66,7 @@ public class MyAdoptedFragment extends Fragment {
         apiService = ApiClient.getClient().create(ApiService.class);
 
         searchAdopterBox = root.findViewById(R.id.search_adopter_box);
+        root.findViewById(R.id.filter_button).setOnClickListener(v -> showFilterDialog());
         recyclerView = root.findViewById(R.id.adopted_animals_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -93,13 +98,73 @@ public class MyAdoptedFragment extends Fragment {
         return root;
     }
 
+    private void showFilterDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_filters2, null);
+
+        Spinner typeFilter = dialogView.findViewById(R.id.spinner_type);
+        Button cancelButton = dialogView.findViewById(R.id.cancel_button);
+        Button confirmButton = dialogView.findViewById(R.id.confirm_button);
+        Button resetButton = dialogView.findViewById(R.id.reset_button);
+
+        // Popuni Spinner sa podacima iz resursa strings.xml
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
+                R.array.animal_types2, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        typeFilter.setAdapter(adapter);
+
+        builder.setView(dialogView)
+                .setTitle("Filtriraj životinje")
+                .setCancelable(false);  // Disable outside dialog dismiss
+
+        AlertDialog dialog = builder.create();
+
+        // Odustani button (dismiss the dialog without doing anything)
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
+
+        // Filtriraj button (apply selected filter)
+        confirmButton.setOnClickListener(v -> {
+            String type = typeFilter.getSelectedItem().toString();
+            applyFilters(type);
+            dialog.dismiss();  // Dismiss the dialog after applying the filter
+        });
+
+        // Resetiraj button (reset filter to "Svi" and show all animals)
+        resetButton.setOnClickListener(v -> {
+            typeFilter.setSelection(0);  // Set the spinner to "Svi" (first item)
+            applyFilters("Svi");         // Apply "Svi" filter to show all animals
+            dialog.dismiss();            // Dismiss the dialog after resetting
+        });
+
+        dialog.show();
+    }
+
+    private void applyFilters(String type) {
+        filteredAdoptedAnimalsList.clear();
+
+        // Filtriraj životinje prema odabranom tipu
+        if (type.equals("Svi")) {
+            filteredAdoptedAnimalsList.addAll(adoptedAnimalsList); // Show all animals
+        } else {
+            for (UpdateDnevnikModel animal : adoptedAnimalsList) {
+                if (animal.getTip_ljubimca().equalsIgnoreCase(type)) {
+                    filteredAdoptedAnimalsList.add(animal); // Filter by selected type
+                }
+            }
+        }
+
+        adapter.notifyDataSetChanged();
+    }
+
     private void fetchUsers() {
         apiService.getAllUsers().enqueue(new Callback<List<UserModel>>() {
             @Override
             public void onResponse(Call<List<UserModel>> call, Response<List<UserModel>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     for (UserModel user : response.body()) {
-                        userMap.put(user.getIdKorisnika(), user.getIme()); // Spremi ID korisnika i ime u mapu
+                        // Spremi ID korisnika, ime i prezime u mapu kao jedan formatirani string
+                        String fullName = user.getIme() + " " + user.getPrezime();
+                        userMap.put(user.getIdKorisnika(), fullName); // Dodaj ime i prezime u mapu
                     }
                     fetchAdoptedAnimals(); // Zatim dohvati udomljene životinje
                 } else {
@@ -118,19 +183,27 @@ public class MyAdoptedFragment extends Fragment {
 
     // Metoda za filtriranje udomljenih životinja prema imenu udomitelja
     private void filterAdoptedAnimals(String query) {
-        filteredAdoptedAnimalsList.clear();
+        filteredAdoptedAnimalsList.clear();  // Clear the previous filter results
         if (query.isEmpty()) {
-            // Ako je upit prazan, prikaži sve udomljene životinje
             filteredAdoptedAnimalsList.addAll(adoptedAnimalsList);
         } else {
-            // Filtriraj listu prema imenu udomitelja iz modela
             for (UpdateDnevnikModel animal : adoptedAnimalsList) {
+                boolean matches = false;
+
                 if (animal.getImeUdomitelja() != null && animal.getImeUdomitelja().toLowerCase().contains(query.toLowerCase())) {
+                    matches = true;
+                }
+                if (animal.getPrezimeUdomitelja() != null && animal.getPrezimeUdomitelja().toLowerCase().contains(query.toLowerCase())) {
+                    matches = true;
+                }
+
+                if (matches && !filteredAdoptedAnimalsList.contains(animal)) {
                     filteredAdoptedAnimalsList.add(animal);
                 }
             }
         }
-        // Ažurirajte adapter sa novom listom
+
+        // Notify adapter that the data has changed
         adapter.notifyDataSetChanged();
     }
 
@@ -169,8 +242,8 @@ public class MyAdoptedFragment extends Fragment {
 
                     // Dodajte životinje u listu
                     for (UpdateDnevnikModel animal : list) {
-                        String imeUdomitelja = userMap.getOrDefault(animal.getId_korisnika(), "Nepoznato");
-                        animal.setImeUdomitelja(imeUdomitelja);
+                        String fullName = userMap.getOrDefault(animal.getId_korisnika(), "Nepoznato");
+                        animal.setImeUdomitelja(fullName); // Postavljamo cijelo ime (ime + prezime)
                         adoptedAnimalsList.add(animal);
                     }
 

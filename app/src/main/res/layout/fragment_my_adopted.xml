@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
@@ -10,39 +10,41 @@
     <!-- Dodano polje za pretraživanje -->
     <EditText
         android:id="@+id/search_adopter_box"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="Pretraži udomitelja..."
-        android:padding="12dp"
-        android:textColor="@color/green_700"
-        android:textColorHint="@color/green_700"
         android:background="@drawable/search_gb"
         android:drawableLeft="@drawable/ic_baseline_search_24"
         android:drawablePadding="5dp"
         android:elevation="3dp"
-        android:layout_margin="8dp"
+        android:hint="Pretraži udomitelja..."
+        android:padding="12dp"
+        android:textColor="@color/green_700"
+        android:textColorHint="@color/green_700"
+        app:layout_constraintEnd_toStartOf="@+id/filter_button"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintWidth_percent="0.8"
+        android:layout_marginTop="16dp"/> <!-- Added margin to move it down a bit -->
 
-    <!-- Naslov za udomljene životinje -->
-    <TextView
-        android:id="@+id/textView7"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:background="@color/green_700"
-        android:fontFamily="@font/alice"
-        android:padding="10dp"
-        android:text="Udomljene životinje"
-        android:textAlignment="center"
-        android:textColor="@color/white"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@+id/search_adopter_box"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+    <!-- Filtriraj dugme -->
+    <!-- Added margin to move it down a bit -->
 
-    <!-- RecyclerView za udomljene životinje -->
+    <ImageButton
+        android:id="@+id/filter_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Filtriraj"
+        android:scaleType="centerInside"
+        android:src="@drawable/search_filter"
+        app:layout_constraintBottom_toBottomOf="@+id/search_adopter_box"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/search_adopter_box"
+        app:layout_constraintVertical_bias="1.0" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/adopted_animals_recyclerview"
         android:layout_width="0dp"
@@ -50,10 +52,10 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@+id/textView7"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/search_adopter_box" />
 
     <!-- Prikaz kada nema udomljenih životinja -->
     <ImageView
@@ -62,10 +64,10 @@
         android:layout_height="200dp"
         android:src="@drawable/paw"
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/new_animals_textview"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
         tools:visibility="visible" />
 
@@ -73,16 +75,16 @@
         android:id="@+id/new_animals_textview"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/alice"
         android:text="Niste još udomili životinju!"
         android:textAlignment="center"
-        android:textSize="22sp"
-        android:fontFamily="@font/alice"
         android:textColor="@color/green_700"
+        android:textSize="22sp"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/new_animals_img"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/new_animals_img"
         tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

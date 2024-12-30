@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="6dp"
+    app:cardBackgroundColor="@color/green_200"
+    android:background="@android:color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:id="@+id/animal_frame">
+
+        <!-- Animal Image -->
+        <ImageView
+            android:id="@+id/imageViewAnimal"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/paw"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Animal Name -->
+        <TextView
+            android:id="@+id/textViewAnimalName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=" Ime životinje"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/imageViewAnimal"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="start" />
+
+        <!-- "Tip:" Label -->
+        <TextView
+            android:id="@+id/labelAnimalType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="  Tip:"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/textViewAnimalName"
+            app:layout_constraintStart_toEndOf="@id/imageViewAnimal"
+            android:layout_marginTop="4dp" />
+
+        <!-- Animal Type Data -->
+        <TextView
+            android:id="@+id/textViewAnimalType"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=" Pas"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/textViewAnimalName"
+            app:layout_constraintStart_toEndOf="@id/labelAnimalType"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="4dp" />
+
+        <!-- "Status:" Label -->
+        <TextView
+            android:id="@+id/labelAdoptedStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="  Status:"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/labelAnimalType"
+            app:layout_constraintStart_toEndOf="@id/imageViewAnimal"
+            android:layout_marginTop="4dp" />
+
+        <!-- Status Data -->
+        <TextView
+            android:id="@+id/tvAdoptedStatus"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=" Udomljen"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/textViewAnimalType"
+            app:layout_constraintStart_toEndOf="@id/labelAdoptedStatus"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="4dp" />
+
+        <!-- "Udomitelj:" Label -->
+        <TextView
+            android:id="@+id/labelAdopterName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="  Udomitelj:"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/labelAdoptedStatus"
+            app:layout_constraintStart_toEndOf="@id/imageViewAnimal"
+            android:layout_marginTop="4dp" />
+
+        <!-- Adopter Name Data -->
+        <TextView
+            android:id="@+id/textViewAdopterName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text=" Ana "
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/tvAdoptedStatus"
+            app:layout_constraintStart_toEndOf="@id/labelAdopterName"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/textViewAdopterSurname"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="          Anić"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/tvAdoptedStatus"
+            app:layout_constraintStart_toEndOf="@id/labelAdopterName"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="4dp" />
+
+        <!-- Button -->
+        <Button
+            android:id="@+id/returnButton"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@color/green_500"
+            android:fontFamily="@font/alice"
+            android:text="Vrati Životinju"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewAdopterName" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

@@ -19,6 +19,7 @@ public class UpdateDnevnikModel implements Serializable {
     private boolean status_udomljavanja;
     private boolean zahtjev_udomljen;
     private String imeUdomitelja;
+    private String prezimeUdomitelja;
     private String opisLjubimca;
     private List<String> galleryImgUrls;
     private List<String> activities;
@@ -147,6 +148,14 @@ public class UpdateDnevnikModel implements Serializable {
 
     public void setImeUdomitelja(String imeUdomitelja) {
         this.imeUdomitelja = imeUdomitelja;
+    }
+
+    public String getPrezimeUdomitelja() {
+        return imeUdomitelja;
+    }
+
+    public void setPrezimeUdomitelja(String prezimeUdomitelja) {
+        this.prezimeUdomitelja = prezimeUdomitelja;
     }
 
     public String getOpisLjubimca() {
