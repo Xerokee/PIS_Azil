@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="6dp"
+    android:background="@android:color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:id="@+id/animal_frame">
+
+        <!-- Animal Image aligned to the start (left) of the layout -->
+        <ImageView
+            android:id="@+id/animal_image"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginEnd="12dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/paw"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintVertical_bias="0.1" />
+
+        <TextView
+            android:id="@+id/animal_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Ime životinje"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintTop_toTopOf="@id/animal_image"
+            app:layout_constraintStart_toEndOf="@id/animal_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="start"
+            android:layout_marginTop="0dp" />
+
+        <!-- Animal Type TextView aligned just below the name -->
+        <TextView
+            android:id="@+id/animal_type"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Tip: Pas"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/animal_name"
+            app:layout_constraintStart_toEndOf="@id/animal_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="start"
+            android:layout_marginTop="5dp" />
+
+        <!-- Animal Status TextView aligned just below the type -->
+        <TextView
+            android:id="@+id/animal_status"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="  Status: Raspoloživ"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/animal_type"
+            app:layout_constraintStart_toEndOf="@id/animal_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="start"
+            android:layout_marginTop="5dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

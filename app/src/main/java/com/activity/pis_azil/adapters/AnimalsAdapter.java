@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -34,7 +35,7 @@ public class AnimalsAdapter extends RecyclerView.Adapter<AnimalsAdapter.AnimalVi
     @NonNull
     @Override
     public AnimalViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_animal, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_animal2, parent, false);
         return new AnimalViewHolder(view);
     }
 
@@ -42,8 +43,8 @@ public class AnimalsAdapter extends RecyclerView.Adapter<AnimalsAdapter.AnimalVi
     public void onBindViewHolder(@NonNull AnimalViewHolder holder, int position) {
         Log.i("zivotinje", String.valueOf(animalsAdapterList));
         IsBlockedAnimalModel animal = animalsAdapterList.get(position);
-        holder.animalName.setText(animal.getImeLjubimca());
-        holder.animalDescription.setText(animal.getOpisLjubimca());
+        holder.animalName.setText(" " + animal.getImeLjubimca());
+        holder.animalType.setText("  Tip: " + animal.getTipLjubimca());
 
         if (animal.getImgUrl() != null && !animal.getImgUrl().isEmpty()) {
             Glide.with(context)
@@ -87,14 +88,14 @@ public class AnimalsAdapter extends RecyclerView.Adapter<AnimalsAdapter.AnimalVi
     public static class AnimalViewHolder extends RecyclerView.ViewHolder {
         public ImageView animalImage;
         public TextView animalName;
-        public TextView animalDescription;
-        public LinearLayout animalFrame;
+        public TextView animalType;
+        public ConstraintLayout animalFrame;
 
         public AnimalViewHolder(@NonNull View itemView) {
             super(itemView);
             animalImage = itemView.findViewById(R.id.animal_image);
             animalName = itemView.findViewById(R.id.animal_name);
-            animalDescription = itemView.findViewById(R.id.animal_description);
+            animalType = itemView.findViewById(R.id.animal_type);
             animalFrame = itemView.findViewById(R.id.animal_frame);
         }
     }
