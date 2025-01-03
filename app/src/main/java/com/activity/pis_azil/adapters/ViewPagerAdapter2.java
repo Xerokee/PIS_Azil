@@ -31,9 +31,9 @@ public class ViewPagerAdapter2 extends FragmentStateAdapter {
     public Fragment createFragment(int position) {
         switch(position){
             case 1:
-                return new AnimalGalleryFragment(detailedAnimal);
+                return new AnimalGalleryFragment(detailedAnimal, animalId);
             case 2:
-                return new AnimalActivityFragment(detailedAnimal, currentUser);
+                return new AnimalActivityFragment(detailedAnimal, animalId);
             default:
                 return new AnimalDetailFragment(animalId, detailedAnimal, currentUser, animalModel);
         }

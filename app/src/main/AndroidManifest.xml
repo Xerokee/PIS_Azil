@@ -1,95 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.CAMERA"
+    <uses-permission
+        android:name="android.permission.CAMERA"
         tools:ignore="PermissionImpliesUnsupportedChromeOsHardware" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:name=".MyApplication"
-        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
+        android:enableOnBackInvokedCallback="true"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/pis_azil_logo"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/pis_azil_logo"
         android:supportsRtl="true"
         android:theme="@style/Base.Theme.PIS_Azil"
-        android:networkSecurityConfig="@xml/network_security_config"
-        android:enableOnBackInvokedCallback="true"
+        android:usesCleartextTraffic="true"
         tools:targetApi="34">
+        <activity
+            android:name=".activities.AdoptedAnimalDetailActivity"
+            android:exported="false" />
         <activity
             android:name=".activities.Detailed2Activity"
             android:exported="false" />
-
         <activity
             android:name=".activities.NewUserActivity"
-            android:theme="@style/Theme.PIS_Azil.NoActionBar"
-            android:exported="true" />
-
+            android:exported="true"
+            android:theme="@style/Theme.PIS_Azil.NoActionBar" />
         <activity
             android:name=".activities.UpdateUserActivity"
-            android:theme="@style/Theme.PIS_Azil.NoActionBar"
-            android:exported="true" />
-
+            android:exported="true"
+            android:theme="@style/Theme.PIS_Azil.NoActionBar" />
         <activity
             android:name=".activities.AnimalDetail2Activity"
             android:exported="false" />
-
-        <!-- Strelica za nazad <activity
+        <!--
+ Strelica za nazad <activity
             android:name=".activities.AnimalDetailActivity"
             android:exported="false" />
-            !-->
-
+            !
+        -->
         <receiver android:name=".AlarmReceiver" />
 
         <activity
             android:name=".activities.AdoptionStatusActivity"
             android:exported="true"
             android:launchMode="singleTask"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        </activity>
-
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
         <activity
             android:name=".activities.DetailedActivity"
-            android:theme="@style/Theme.PIS_Azil.NoActionBar"
-            android:exported="false" />
-
+            android:exported="false"
+            android:theme="@style/Theme.PIS_Azil.NoActionBar" />
         <activity
             android:name=".activities.ViewAllActivity"
-            android:theme="@style/Theme.PIS_Azil.NoActionBar"
-            android:exported="false" />
-
+            android:exported="false"
+            android:theme="@style/Theme.PIS_Azil.NoActionBar" />
         <activity
             android:name=".activities.RegistrationActivity"
-            android:theme="@style/Base.Theme.PIS_Azil"
-            android:exported="true" />
-
+            android:exported="true"
+            android:theme="@style/Base.Theme.PIS_Azil" />
         <activity
             android:name=".activities.LoginActivity"
-            android:theme="@style/Base.Theme.PIS_Azil"
-            android:exported="false" />
-
+            android:exported="false"
+            android:theme="@style/Base.Theme.PIS_Azil" />
         <activity
             android:name=".activities.HomeActivity"
-            android:theme="@style/Base.Theme.PIS_Azil"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Base.Theme.PIS_Azil">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".activities.MainActivity"
-            android:theme="@style/Theme.PIS_Azil.NoActionBar"
             android:exported="true"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"
+            android:theme="@style/Theme.PIS_Azil.NoActionBar" />
     </application>
+
 </manifest>

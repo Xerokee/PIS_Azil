@@ -43,7 +43,6 @@ public class AnimalActivityFragment extends Fragment {
     TextView tvNemaAktivnosti;
     List<Aktivnost> listaAktivnosti = new ArrayList<>();
     ImageButton addAktivnost;
-    UserModel currentUser;
     AnimalModel detailedActivity;
     ApiService apiService;
     IsBlockedAnimalModel animalModel;
@@ -53,9 +52,9 @@ public class AnimalActivityFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public AnimalActivityFragment(AnimalModel da, UserModel cu) {
+    public AnimalActivityFragment(AnimalModel da, int aid) {
         detailedActivity = da;
-        currentUser = cu;
+        animalId = aid;
     }
 
     @Override
@@ -73,10 +72,6 @@ public class AnimalActivityFragment extends Fragment {
         linearLayoutAktivnosti = view.findViewById(R.id.linearLayoutAktivnosti);
         tvNemaAktivnosti = view.findViewById(R.id.tvNemaAktivnosti);
         addAktivnost = view.findViewById(R.id.addAktivnost);
-
-        if (getArguments() != null) {
-            animalId = getArguments().getInt("animalId", -1);
-        }
 
         apiService = ApiClient.getClient().create(ApiService.class);
 
@@ -195,8 +190,8 @@ public class AnimalActivityFragment extends Fragment {
                             tv.setText(text);
                             tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
                             tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                            tv.setTextSize(17);
-                            tv.setTextColor(Color.parseColor("#FFFFFF"));
+                            tv.setTextSize(18);
+                            tv.setTextColor(Color.parseColor("#000000"));
                             linearLayoutAktivnosti.addView(tv);
                         }
                     }

@@ -75,7 +75,7 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
                 Intent i = new Intent(v.getContext().getApplicationContext(), AnimalDetail2Activity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 i.putExtra("id", String.valueOf(animal.getId())); // ID životinje
-                i.putExtra("animal", animal); // Cijeli UpdateDnevnikModel objekt
+                //i.putExtra("animal", animal); // Cijeli UpdateDnevnikModel objekt
                 activityResultLauncher.launch(i);
             } else {
                 // Show a message indicating why it can't be clicked

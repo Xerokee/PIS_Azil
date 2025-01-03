@@ -2,9 +2,12 @@ package com.activity.pis_azil.fragments;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -73,7 +76,7 @@ public class MyAdoptedFragment extends Fragment {
         adoptedAnimalsList = new ArrayList<>();
         filteredAdoptedAnimalsList = new ArrayList<>();
 
-        adapter = new MyAdoptedAnimalsAdapter(getActivity(), filteredAdoptedAnimalsList);
+        adapter = new MyAdoptedAnimalsAdapter(getActivity(), filteredAdoptedAnimalsList, activityResultLauncher);
         recyclerView.setAdapter(adapter);
 
         newAnimalsTextView = root.findViewById(R.id.new_animals_textview);
@@ -272,4 +275,11 @@ public class MyAdoptedFragment extends Fragment {
             newAnimalsImageView.setVisibility(View.GONE);
         }
     }
+
+    private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                // Handle activity result if necessary
+            }
+    );
 }

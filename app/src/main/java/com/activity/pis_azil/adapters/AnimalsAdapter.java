@@ -58,6 +58,7 @@ public class AnimalsAdapter extends RecyclerView.Adapter<AnimalsAdapter.AnimalVi
 
         if (animalsAdapterList.get(position).isBlocked() == true) {
             holder.animalFrame.setBackgroundResource(R.color.gray);
+            holder.animalStatus.setText("  Status: Odbijen");
             //holder.itemView.setBackgroundColor(ContextCompat.getColor(context, R.color.gray));
             holder.itemView.setOnClickListener(null);
         }
@@ -89,6 +90,7 @@ public class AnimalsAdapter extends RecyclerView.Adapter<AnimalsAdapter.AnimalVi
         public ImageView animalImage;
         public TextView animalName;
         public TextView animalType;
+        public TextView animalStatus;
         public ConstraintLayout animalFrame;
 
         public AnimalViewHolder(@NonNull View itemView) {
@@ -96,6 +98,7 @@ public class AnimalsAdapter extends RecyclerView.Adapter<AnimalsAdapter.AnimalVi
             animalImage = itemView.findViewById(R.id.animal_image);
             animalName = itemView.findViewById(R.id.animal_name);
             animalType = itemView.findViewById(R.id.animal_type);
+            animalStatus = itemView.findViewById(R.id.animal_status);
             animalFrame = itemView.findViewById(R.id.animal_frame);
         }
     }

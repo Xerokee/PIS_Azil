@@ -2,6 +2,7 @@ package com.activity.pis_azil.adapters;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,10 +12,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.pis_azil.SendMail;
+import com.activity.pis_azil.activities.AdoptedAnimalDetailActivity;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserByEmailResponseModel;
 import com.activity.pis_azil.models.UserModel;
@@ -38,11 +42,13 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
     private Context context;
     private List<UpdateDnevnikModel> filteredAdoptedAnimalsList;
     ApiService apiService;
+    private ActivityResultLauncher<Intent> activityResultLauncher;
 
-    public MyAdoptedAnimalsAdapter(Context context, List<UpdateDnevnikModel> filteredAdoptedAnimalsList) {
+    public MyAdoptedAnimalsAdapter(Context context, List<UpdateDnevnikModel> filteredAdoptedAnimalsList, ActivityResultLauncher<Intent> activityResultLauncher) {
         this.context = context;
         this.filteredAdoptedAnimalsList  = filteredAdoptedAnimalsList ;
         this.apiService = ApiClient.getClient().create(ApiService.class);
+        this.activityResultLauncher = activityResultLauncher;
     }
 
     @NonNull
@@ -79,6 +85,17 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
             holder.returnButton.setVisibility(View.VISIBLE);
             holder.returnButton.setOnClickListener(v -> returnAnimal(animal, position));
         }
+
+        holder.animalFrame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(v.getContext().getApplicationContext(), AdoptedAnimalDetailActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                i.putExtra("id", String.valueOf(animal.getId()));
+                i.putExtra("udomitelj", holder.adopterName.getText());
+                activityResultLauncher.launch(i);
+            }
+        });
     }
 
     @Override
@@ -90,6 +107,7 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
         TextView animalName, animalType, tvAdoptedStatus, adopterName, adopterSurname;
         ImageView animalImage;
         Button returnButton;
+        ConstraintLayout animalFrame;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -100,6 +118,7 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
             adopterName = itemView.findViewById(R.id.textViewAdopterName);
             adopterSurname = itemView.findViewById(R.id.textViewAdopterSurname);
             returnButton = itemView.findViewById(R.id.returnButton);
+            animalFrame = itemView.findViewById(R.id.animal_frame);
         }
     }
 

@@ -151,7 +151,7 @@ public class UpdateDnevnikModel implements Serializable {
     }
 
     public String getPrezimeUdomitelja() {
-        return imeUdomitelja;
+        return prezimeUdomitelja;
     }
 
     public void setPrezimeUdomitelja(String prezimeUdomitelja) {

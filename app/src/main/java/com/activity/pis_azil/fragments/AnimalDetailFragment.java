@@ -1,6 +1,11 @@
 package com.activity.pis_azil.fragments;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -91,7 +96,6 @@ public class AnimalDetailFragment extends Fragment {
                     animal = response.body();
                     updateUI();
                 } else {
-                    Toast.makeText(getContext(), "Podaci nisu dostupni.", Toast.LENGTH_SHORT).show();
                 }
             }
 

@@ -48,8 +48,9 @@ public class AnimalGalleryFragment extends Fragment {  // Extend Fragment instea
         // Required empty public constructor
     }
 
-    public AnimalGalleryFragment(AnimalModel di) {
+    public AnimalGalleryFragment(AnimalModel di, int aid) {
         detailedImage = di;
+        animalId= aid;
     }
 
     @Override
@@ -65,7 +66,6 @@ public class AnimalGalleryFragment extends Fragment {  // Extend Fragment instea
         View view = inflater.inflate(R.layout.fragment_galerija_slika, container, false);
 
         rvSlike = view.findViewById(R.id.rvSlike); // Use view.findViewById instead of findViewById
-        animalId = getArguments().getInt("animalId", -1); // Access the activity's intent
         apiService = ApiClient.getClient().create(ApiService.class);
 
         initializeRecyclerView();

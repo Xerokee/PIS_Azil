@@ -27,6 +27,8 @@ import retrofit2.Response;
 
 public class AnimalDetail2Activity extends AppCompatActivity {
 
+    String sAnimalId;
+    int animalId;
     private static final String TAG = "AnimalDetail";
     TabLayout tabLayout;
     ViewPager2 viewPager;
@@ -47,7 +49,11 @@ public class AnimalDetail2Activity extends AppCompatActivity {
         viewPager = findViewById(R.id.viewPager);
 
         // Preuzimamo objekt UpdateDnevnikModel
-        animalModel = (UpdateDnevnikModel) getIntent().getSerializableExtra("animal"); // Promjena
+        //animalModel = (UpdateDnevnikModel) getIntent().getSerializableExtra("animal"); // Promjena
+
+        final Bundle oExtras= getIntent().getExtras();
+        sAnimalId= oExtras.getString("id");
+        animalId= Integer.parseInt(sAnimalId);
         apiService = ApiClient.getClient().create(ApiService.class);
 
         // Dohvaćanje trenutnog korisnika iz SharedPreferences
@@ -63,14 +69,7 @@ public class AnimalDetail2Activity extends AppCompatActivity {
             Log.e(TAG, "Current User is null!");
         }
 
-        if (animalModel != null) {
-            Log.d(TAG, "Animal Model: " + new Gson().toJson(animalModel)); // Logiranje podataka o ljubimcu
-            fetchAnimalDetails(animalModel.getId_ljubimca());
-        } else {
-            Log.e(TAG, "AnimalModel je null!");
-            Toast.makeText(this, "Greška u dohvaćanju podataka o ljubimcu", Toast.LENGTH_SHORT).show();
-            finish();
-        }
+        fetchAnimalDetails(animalId);
     }
 
     private void fetchAnimalDetails(int animalId) {
