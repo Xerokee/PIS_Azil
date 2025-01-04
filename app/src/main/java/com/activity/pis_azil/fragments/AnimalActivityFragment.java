@@ -10,10 +10,13 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -95,7 +98,7 @@ public class AnimalActivityFragment extends Fragment {
                         linearLayoutAktivnosti.removeAllViews();
                         for (Aktivnost a : aktivnosti) {
                             TextView tv = new TextView(getContext());
-                            tv.setText(a.getDatum() + " - " + a.getOpis());
+                            tv.setText(a.getDatum() + " - " + a.getAktivnost() + "\n" + a.getOpis());
                             linearLayoutAktivnosti.addView(tv);
                         }
                     }
@@ -112,9 +115,9 @@ public class AnimalActivityFragment extends Fragment {
     private void openAddActivityDialog() {
         final DialogPlus dialogPlus = DialogPlus.newDialog(getContext())
                 .setContentHolder(new com.orhanobut.dialogplus.ViewHolder(R.layout.add_activity))
-                .setExpanded(true, 1000)
                 .setGravity(Gravity.CENTER)
                 .setCancelable(true)
+                .setExpanded(false)
                 .create();
 
         View dialogView = dialogPlus.getHolderView();
@@ -122,6 +125,31 @@ public class AnimalActivityFragment extends Fragment {
         Button addActivity = dialogView.findViewById(R.id.addActivity);
         Button closeActivity = dialogView.findViewById(R.id.closeActivity);
         EditText inputDescriptionActivity = dialogView.findViewById(R.id.inputDescriptionActivity);
+        Spinner activitySpinner = dialogView.findViewById(R.id.activitySpinner);
+        TextView selectedActivityTextView = dialogView.findViewById(R.id.selectedActivityTextView);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.activity_options, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        activitySpinner.setAdapter(adapter);
+
+        activitySpinner.setSelection(0);
+
+        activitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // Dohvati odabranu aktivnost
+                String selectedActivity = parentView.getItemAtPosition(position).toString();
+
+                // Postavi odabranu aktivnost kao tekst na TextView
+                selectedActivityTextView.setText("Aktivnost: " + selectedActivity);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // Ako ništa nije odabrano
+            }
+        });
 
         dialogPlus.show();
 
@@ -131,10 +159,23 @@ public class AnimalActivityFragment extends Fragment {
         });
 
         addActivity.setOnClickListener(v -> {
+            // Check if all fields are filled
             if (Objects.equals(inputDateActivity.getText().toString(), "") || Objects.equals(inputDescriptionActivity.getText().toString(), "")) {
                 Toast.makeText(getContext(), "Moraju biti popunjeni svi podaci.", Toast.LENGTH_SHORT).show();
             } else {
-                Aktivnost novaAktivnost = new Aktivnost(0, animalId, inputDateActivity.getText().toString(), inputDescriptionActivity.getText().toString());
+                // Get selected activity from the spinner
+                String selectedActivity = activitySpinner.getSelectedItem().toString();
+
+                // Create a new Aktivnost object with the selected data
+                Aktivnost novaAktivnost = new Aktivnost(
+                        0, // Id (set to 0 for now, as it will be created in the database)
+                        animalId, // The id of the animal
+                        inputDateActivity.getText().toString(), // The selected date
+                        selectedActivity, // The selected activity
+                        inputDescriptionActivity.getText().toString() // The activity description
+                );
+
+                // Call the API to add the new activity
                 apiService.addAktivnost(novaAktivnost).enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
@@ -143,7 +184,7 @@ public class AnimalActivityFragment extends Fragment {
                             new Handler().postDelayed(() -> {
                                 dialogPlus.dismiss();
                                 inputDescriptionActivity.setText("");
-                                refreshPopisAktivnosti();
+                                refreshPopisAktivnosti(); // Refresh the activity list
                             }, 3000);
                         }
                     }
@@ -169,10 +210,12 @@ public class AnimalActivityFragment extends Fragment {
                         inputDateActivity.setText(selectedDate);
                     },
                     year, month, day);
+
             datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
             datePickerDialog.show();
         });
     }
+
 
     public void refreshPopisAktivnosti() {
         apiService.getAktivnostiById(animalId).enqueue(new Callback<HttpRequestResponseList<Aktivnost>>() {
@@ -186,11 +229,11 @@ public class AnimalActivityFragment extends Fragment {
                         linearLayoutAktivnosti.removeAllViews();
                         for (Aktivnost a : listaAktivnosti) {
                             TextView tv = new TextView(getContext());
-                            String text = a.getDatum() + " " + a.getOpis();
+                            String text = a.getDatum() + " " + a.getAktivnost() + "\n" + a.getOpis();
                             tv.setText(text);
                             tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
                             tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                            tv.setTextSize(18);
+                            tv.setTextSize(17);
                             tv.setTextColor(Color.parseColor("#000000"));
                             linearLayoutAktivnosti.addView(tv);
                         }

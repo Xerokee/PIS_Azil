@@ -7,14 +7,16 @@ public class Aktivnost {
     private int id;
     private int id_ljubimca;
     private String datum;
+    private String aktivnost;
     private String opis;
 
     public Aktivnost() {}
 
-    public Aktivnost(int id, int id_ljubimca, String datum, String opis) {
+    public Aktivnost(int id, int id_ljubimca, String datum, String aktivnost, String opis) {
         this.id=id;
         this.id_ljubimca = id_ljubimca;
         this.datum = datum;
+        this.aktivnost = aktivnost;
         this.opis= opis;
     }
 
@@ -38,6 +40,15 @@ public class Aktivnost {
     public void setDatum(String datum) {
         this.datum = datum;
     }
+
+    public String getAktivnost() {
+        return aktivnost;
+    }
+
+    public void setAktivnost(String aktivnost) {
+        this.aktivnost = aktivnost;
+    }
+
     public String getOpis() {
         return opis;
     }

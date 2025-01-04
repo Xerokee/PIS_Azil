@@ -68,4 +68,11 @@
             <item>Nedostupno</item>
         </string-array>
 
+        <string-array name="activity_options">
+            <item>Pregled</item>
+            <item>Upoznavanje</item>
+            <item>Šetnja</item>
+            <item>Ostalo</item>
+        </string-array>
+
 </resources>

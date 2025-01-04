@@ -19,7 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.pis_azil.R;
-import com.activity.pis_azil.activities.AnimalDetailActivity;
 import com.activity.pis_azil.models.SlikaModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;

@@ -46,14 +46,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="30dp" />
 
-    <LinearLayout
-        android:id="@+id/linearLayoutAktivnosti"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+    <!-- Wrap the LinearLayout in a ScrollView to allow scrolling -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/tvNemaAktivnosti"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="20dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:paddingLeft="30dp"
+        android:paddingTop="20dp"
+        android:paddingRight="30dp">
 
+        <LinearLayout
+            android:id="@+id/linearLayoutAktivnosti"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

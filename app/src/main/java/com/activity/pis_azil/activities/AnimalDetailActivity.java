@@ -1,3 +1,4 @@
+/*
 package com.activity.pis_azil.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -442,3 +443,4 @@ public class AnimalDetailActivity extends AppCompatActivity {
         });
     }
 }
+*/
