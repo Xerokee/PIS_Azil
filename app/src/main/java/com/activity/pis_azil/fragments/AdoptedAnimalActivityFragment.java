@@ -90,7 +90,7 @@ public class AdoptedAnimalActivityFragment extends Fragment {
                         linearLayoutAktivnosti.removeAllViews();
                         for (Aktivnost a : listaAktivnosti) {
                             TextView tv = new TextView(getContext());
-                            String text = a.getDatum() + " " + a.getOpis();
+                            String text = a.getDatum() + " " + a.getAktivnost() + "\n" + a.getOpis();
                             tv.setText(text);
                             tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
                             tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));

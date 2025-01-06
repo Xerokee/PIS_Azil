@@ -14,8 +14,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -82,7 +84,8 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_animal_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.my_animal_item2, parent, false);
+
         return new ViewHolder(view);
     }
 
@@ -93,6 +96,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         // Provjera je li trenutni korisnik admin
         boolean isAdmin = checkIfUserIsAdmin();
 
+        /*
         holder.adoptButton.setOnClickListener(view -> {
             int adapterPosition = holder.getAdapterPosition();
             if (adapterPosition != RecyclerView.NO_POSITION) {
@@ -118,6 +122,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             holder.adoptButton.setText("Udomi");
             holder.adoptButton.setBackgroundColor(Color.GREEN); // Omogućen gumb postaje zeleni
         }
+        */
 
         // Onemogući gumb "Odobri" ako nema korisnika koji je podnio zahtjev
         if (cartModel.getIdKorisnika() == 0) {
@@ -149,14 +154,16 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             holder.imgUrl.setImageResource(R.drawable.profile);
         }
 
+        holder.itemView.setBackgroundColor(Color.WHITE);
+        /*
         // Postavljanje boje pozadine ovisno o statusu udomljavanja
         if (!cartModel.isStatusUdomljavanja()) {
             holder.itemView.setBackgroundColor(Color.RED); // Crvena boja za odbijeno udomljavanje
         } else {
             holder.itemView.setBackgroundColor(Color.WHITE); // Bijela boja za prihvaćeno udomljavanje
         }
-
-        holder.name.setText(cartModel.getImeLjubimca());
+        */
+        holder.name.setText(" " + cartModel.getImeLjubimca());
 
         // Dohvati email korisnika prema ID-u
         getEmailById(cartModel.getIdKorisnika(), email -> {
@@ -166,10 +173,10 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 holder.requester.setText("Nema dostupnog emaila");
             }
         });
-        holder.type.setText(cartModel.getTipLjubimca());
-        holder.date.setText(cartModel.getDatum());
-        holder.time.setText(cartModel.getVrijeme());
-        holder.state.setText(cartModel.isStanjeZivotinje() ? "Dobro" : "Loše");
+        holder.type.setText("  Tip: " + cartModel.getTipLjubimca());
+        // holder.date.setText(cartModel.getDatum());
+        // holder.time.setText(cartModel.getVrijeme());
+        // holder.state.setText(cartModel.isStanjeZivotinje() ? "Dobro" : "Loše");
 
         if (cartModel.getDatum() != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -194,25 +201,26 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
         if (!isAdmin) {
             // Sakrijte gumbe za normalne korisnike
-            holder.deleteItem.setVisibility(View.GONE);
-            holder.updateItem.setVisibility(View.GONE);
-            holder.adoptButton.setVisibility(View.GONE);
+            // holder.deleteItem.setVisibility(View.GONE);
+            // holder.updateItem.setVisibility(View.GONE);
+            // holder.adoptButton.setVisibility(View.GONE);
             holder.approveButton.setVisibility(View.GONE);
             holder.rejectButton.setVisibility(View.GONE);
         } else {
             // Postavite gumbe za administratore
-            holder.deleteItem.setOnClickListener(v -> showDeleteConfirmationDialog(position));
-            holder.updateItem.setOnClickListener(v -> showUpdateDialog(position));
+            // holder.deleteItem.setOnClickListener(v -> showDeleteConfirmationDialog(position));
+            // holder.updateItem.setOnClickListener(v -> showUpdateDialog(position));
             holder.approveButton.setVisibility(View.VISIBLE);
 
             if (cartModel.isUdomljen()) {
-                holder.adoptButton.setEnabled(false);
-                holder.adoptButton.setText("Udomljeno");
-                holder.adoptButton.setBackgroundColor(Color.GRAY);
+                // holder.adoptButton.setEnabled(false);
+                // holder.adoptButton.setText("Udomljeno");
+                // holder.adoptButton.setBackgroundColor(Color.GRAY);
             } else {
-                holder.adoptButton.setEnabled(true);
-                holder.adoptButton.setText("Udomi");
-                holder.adoptButton.setBackgroundColor(Color.GREEN);
+                // holder.adoptButton.setEnabled(true);
+                // holder.adoptButton.setText("Udomi");
+                // holder.adoptButton.setBackgroundColor(Color.GREEN);
+                /*
                 holder.adoptButton.setOnClickListener(view -> {
                     int adapterPosition = holder.getAdapterPosition();
                     if (adapterPosition != RecyclerView.NO_POSITION) {
@@ -228,6 +236,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                         }
                     }
                 });
+                */
             }
         }
     }
@@ -542,10 +551,12 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
     }
 
     private void deleteItem(int position) {
+        MyAdoptionModel cartModel = cartModelList.get(position);
         apiService.deleteAdoption(1, cartModelList.get(position).getIdLjubimca()).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
+                    cartModel.setZahtjevUdomljavanja(false);
                     Log.d(TAG, "Animal deleted successfully, position: " + position);
                     cartModelList.remove(position);
                     notifyDataSetChanged();
@@ -856,7 +867,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 if (response.isSuccessful() && response.body() != null) {
                     UserModel user = response.body().getResult();
                     if (user != null && user.getEmail() != null) {
-                        listener.onEmailFetched(user.getEmail());
+                        // listener.onEmailFetched(user.getEmail());
                     } else {
                         Log.e(TAG, "Korisnik ili email je null.");
                         listener.onEmailFetched(null);
@@ -907,6 +918,11 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
     @Override
     public int getItemCount() {
         return cartModelList.size();
+    }
+
+    public void updateData(List<MyAdoptionModel> newAnimalsList) {
+        this.cartModelList = newAnimalsList;
+        notifyDataSetChanged();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
