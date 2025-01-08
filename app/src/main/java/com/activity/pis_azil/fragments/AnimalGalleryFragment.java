@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;  // Import Fragment instead of AppCompatActivity
@@ -43,6 +44,7 @@ public class AnimalGalleryFragment extends Fragment {  // Extend Fragment instea
     AnimalModel detailedImage;
     ApiService apiService;
     int animalId;
+    ImageButton addSlika;
 
     public AnimalGalleryFragment() {
         // Required empty public constructor
@@ -65,18 +67,27 @@ public class AnimalGalleryFragment extends Fragment {  // Extend Fragment instea
         // Inflate the fragment layout
         View view = inflater.inflate(R.layout.fragment_galerija_slika, container, false);
 
+        addSlika = view.findViewById(R.id.addSlika);
         rvSlike = view.findViewById(R.id.rvSlike); // Use view.findViewById instead of findViewById
         apiService = ApiClient.getClient().create(ApiService.class);
 
         initializeRecyclerView();
-        loadGallery();
+        // loadGallery();
         getSlike();
+
+        addSlika.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(i, SELECT_IMAGE_CODE);
+            }
+        });
 
         return view;
     }
 
     private void initializeRecyclerView() {
-        slikeAdapter = new SlikeAdapter((Activity) getContext(), listaSlika); // Pass context instead of activity
+        slikeAdapter = new SlikeAdapter(this, listaSlika); // Pass context instead of activity
         rvSlike.setAdapter(slikeAdapter);
         rvSlike.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));  // Use getContext() instead of this
     }
@@ -148,6 +159,16 @@ public class AnimalGalleryFragment extends Fragment {  // Extend Fragment instea
                     listaSlika.clear();
                     listaSlika = response.body().getResult();
                     slikeAdapter.notifyDataSetChanged();
+                    if (listaSlika.size() == 0){
+                        //Log.i("getSlike","Nema dodanih slika");
+                    }
+                    else{
+                        slikeAdapter = new SlikeAdapter(AnimalGalleryFragment.this, listaSlika);
+                        rvSlike.setAdapter(slikeAdapter);
+                        rvSlike.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+                    }
+                } else {
+                    // Toast.makeText(AnimalDetailActivity.this, "Greška pri dohvaćanju slika", Toast.LENGTH_SHORT).show();
                 }
             }
 

@@ -41,7 +41,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MyAnimalsFragment extends Fragment {
+public class MyAnimalsFragment extends Fragment implements MyAnimalsAdapter.OnFetchAnimalsCallback {
 
     private RecyclerView recyclerView;
     private MyAnimalsAdapter adapter;
@@ -67,7 +67,7 @@ public class MyAnimalsFragment extends Fragment {
 
         animalsList = new ArrayList<>();
         filteredAnimalsList = new ArrayList<>();
-        adapter = new MyAnimalsAdapter(getContext(), filteredAnimalsList, activityResultLauncher);
+        adapter = new MyAnimalsAdapter(getContext(), filteredAnimalsList, activityResultLauncher, this);
         recyclerView.setAdapter(adapter);
 
         // Search functionality
@@ -99,7 +99,8 @@ public class MyAnimalsFragment extends Fragment {
         fetchMyAnimals();
     }
 
-    private void fetchMyAnimals() {
+    public void fetchMyAnimals() {
+        Log.i("pozvano","pozvano");
         SharedPreferences prefs = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         String userJson = prefs.getString("current_user", null);
         UserModel currentUser = new Gson().fromJson(userJson, UserModel.class);
@@ -228,7 +229,7 @@ public class MyAnimalsFragment extends Fragment {
     private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                // Handle activity result if necessary
+                // fetchMyAnimals();
             }
     );
 }

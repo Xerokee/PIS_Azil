@@ -3,6 +3,7 @@ package com.activity.pis_azil.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,21 +18,40 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.pis_azil.R;
+import com.activity.pis_azil.activities.AdoptedAnimalDetailActivity;
 import com.activity.pis_azil.activities.AnimalDetail2Activity;
+import com.activity.pis_azil.fragments.MyAnimalsFragment;
+import com.activity.pis_azil.models.AnimalModel;
+import com.activity.pis_azil.models.MyAdoptionModel;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
+import com.activity.pis_azil.network.ApiClient;
+import com.activity.pis_azil.network.ApiService;
 import com.bumptech.glide.Glide;
 
+import java.io.IOException;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.ViewHolder> {
     private Context context;
     private List<UpdateDnevnikModel> animalsList;
     private ActivityResultLauncher<Intent> activityResultLauncher;
+    ApiService apiService;
+    OnFetchAnimalsCallback callback;
 
-    public MyAnimalsAdapter(Context context, List<UpdateDnevnikModel> animalsList, ActivityResultLauncher<Intent> activityResultLauncher) {
+    public interface OnFetchAnimalsCallback{
+        void fetchMyAnimals();
+    }
+
+    public MyAnimalsAdapter(Context context, List<UpdateDnevnikModel> animalsList, ActivityResultLauncher<Intent> activityResultLauncher, OnFetchAnimalsCallback callback) {
         this.context = context;
         this.animalsList = animalsList;
         this.activityResultLauncher = activityResultLauncher;
+        this.apiService = ApiClient.getClient().create(ApiService.class);
+        this.callback = callback;
     }
 
     @NonNull
@@ -68,7 +88,7 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
         }
 
         holder.btnReturn.setOnClickListener(v -> onReturnButtonClicked(animal, position));
-        holder.btnCancel.setOnClickListener(v -> onCancelButtonClicked(animal, position));
+        holder.btnCancel.setOnClickListener(v -> onCancelButtonClicked(animal, position, v));
 
         holder.animalFrame.setOnClickListener(v -> {
             if (holder.animalFrame.isClickable() && !animal.isStatus_udomljavanja()) {
@@ -91,21 +111,73 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
 
     private void onReturnButtonClicked(UpdateDnevnikModel animal, int position) {
         animal.setUdomljen(false); // Set Udomljen to false
-        animalsList.remove(position); // Remove the animal from the list
-        notifyItemRemoved(position); // Notify the adapter that the item is removed
+        animal.setId_korisnika(0);
+        //animalsList.remove(position); // Remove the animal from the list
+        //notifyItemRemoved(position); // Notify the adapter that the item is removed
+
+        apiService.updateAdoption(1, animal.getId_ljubimca(), animal).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    notifyDataSetChanged();
+                    Toast.makeText(context, "Životinja je vraćena!", Toast.LENGTH_SHORT).show();
+                    if (callback != null){
+                        callback.fetchMyAnimals();
+                    }
+                } else {
+                    try {
+                        String errorBody = response.errorBody().string();
+                        Toast.makeText(context, "Greška pri odobravanju: " + errorBody, Toast.LENGTH_LONG).show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(context, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         String status = animal.isUdomljen() ? "nije vraćena" : "vraćena";
         Toast.makeText(context, "Životinja je : " + status, Toast.LENGTH_SHORT).show();
     }
 
-    private void onCancelButtonClicked(UpdateDnevnikModel animal, int position) {
-        animal.setZahtjev_udomljen(false); // Set Status Udomljavanja to false
-        animalsList.remove(position); // Remove the animal from the list
-        notifyItemRemoved(position); // Notify the adapter that the item is removed
+    private void onCancelButtonClicked(UpdateDnevnikModel animal, int position, View v) {
+        MyAdoptionModel animal2 = new MyAdoptionModel();
+        animal2.setZahtjevUdomljavanja(false);  // Postavljanje zahtjeva za udomljavanje na false
 
-        String status = animal.isZahtjev_udomljen() ? "rezervina" : "nije rezervirana";
+        apiService.deleteAdoption(animal.getId_ljubimca(), animal.getId_ljubimca()).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    notifyDataSetChanged();
+                    Toast.makeText(context, "Lista izbrisana", Toast.LENGTH_SHORT).show();
+                    if (callback != null){
+                        callback.fetchMyAnimals();
+                    }
+                } else {
+                    try {
+                        String errorBody = response.errorBody().string();
+                        Toast.makeText(context, "Greška: " + errorBody, Toast.LENGTH_SHORT).show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                // Ako dođe do greške pri povezivanju sa serverom
+                Toast.makeText(context, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        String status = animal.isZahtjev_udomljen() ? "rezervirana" : "nije rezervirana";
         Toast.makeText(context, "Životinja više " + status, Toast.LENGTH_SHORT).show();
     }
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView animalName, animalType, animalStatus;

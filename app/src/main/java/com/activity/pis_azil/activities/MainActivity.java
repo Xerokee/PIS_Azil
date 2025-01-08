@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         String userId = intent.getStringExtra("korisnikId");
         SharedViewModel sharedViewModel = new ViewModelProvider(this).get(SharedViewModel.class);
         sharedViewModel.setUserId(userId);
-        Log.i("korisnikid",userId);
+        // Log.i("korisnikid",userId);
 
         AlarmReceiver.setAlarm(this);
 

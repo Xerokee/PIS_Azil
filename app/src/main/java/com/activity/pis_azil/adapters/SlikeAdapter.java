@@ -16,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.pis_azil.R;
@@ -34,8 +35,8 @@ public class SlikeAdapter  extends RecyclerView.Adapter<SlikeAdapter.ViewHolder>
     List<SlikaModel> listaSlika;
     Activity activity;
 
-    public SlikeAdapter(Activity activity, List<SlikaModel> listaSlika){
-        this.activity=activity;
+    public SlikeAdapter(Fragment fragment, List<SlikaModel> listaSlika){
+        this.activity=fragment.getActivity();
         this.listaSlika=listaSlika;
     }
 
