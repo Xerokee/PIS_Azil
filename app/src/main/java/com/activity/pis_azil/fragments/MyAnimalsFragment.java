@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.adapters.MyAnimalsAdapter;
+import com.activity.pis_azil.models.IsBlockedAnimalModel;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
@@ -46,6 +47,7 @@ public class MyAnimalsFragment extends Fragment implements MyAnimalsAdapter.OnFe
     private RecyclerView recyclerView;
     private MyAnimalsAdapter adapter;
     private List<UpdateDnevnikModel> animalsList, filteredAnimalsList;
+    private List<IsBlockedAnimalModel> animalsList2;
     private ApiService apiService;
     private TextView emptyStateTextView;
     private EditText searchAnimalBox;  // Search box for filtering animals by name
@@ -67,7 +69,8 @@ public class MyAnimalsFragment extends Fragment implements MyAnimalsAdapter.OnFe
 
         animalsList = new ArrayList<>();
         filteredAnimalsList = new ArrayList<>();
-        adapter = new MyAnimalsAdapter(getContext(), filteredAnimalsList, activityResultLauncher, this);
+        animalsList2 = new ArrayList<>();
+        adapter = new MyAnimalsAdapter(getContext(), filteredAnimalsList, animalsList2, activityResultLauncher, this);
         recyclerView.setAdapter(adapter);
 
         // Search functionality

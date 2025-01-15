@@ -37,7 +37,7 @@ public class AdoptedAnimalDetailFragment extends Fragment {
     String udomitelj;
     AnimalModel detailedAnimal;
     ApiService apiService;
-    TextView animalName, animalType, dateAdd, timeAdd, animalState, adoptioUser;
+    TextView animalName, animalType, dateAdd, timeAdd, adoptioUser;
     public AdoptedAnimalDetailFragment() {
 
     }
@@ -62,7 +62,6 @@ public class AdoptedAnimalDetailFragment extends Fragment {
 
         animalName  = view.findViewById(R.id.animalName);
         animalType = view.findViewById(R.id.animalType);
-        animalState = view.findViewById(R.id.animalState);
         dateAdd = view.findViewById(R.id.dateAdd);
         timeAdd = view.findViewById(R.id.timeAdd);
         adoptioUser = view.findViewById(R.id.adoptionUser);
@@ -91,7 +90,6 @@ public class AdoptedAnimalDetailFragment extends Fragment {
         animalName.setText(detailedAnimal.getImeLjubimca());
         animalType.setText(detailedAnimal.getTipLjubimca());
         adoptioUser.setText(udomitelj);
-        animalState.setText(detailedAnimal.StanjeZivotinje() ? "Dobro" : "Loše");
 
         return view;
     }

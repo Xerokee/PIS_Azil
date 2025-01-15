@@ -24,11 +24,18 @@ public class ViewAllModel {
     @SerializedName("IdLjubimca")
     private String idLjubimca;
 
-    public ViewAllModel(String imeLjubimca, String opisLjubimca, String imgUrl, String tipLjubimca) {
+    @SerializedName("Dob")
+    private int dob;
+    @SerializedName("Boja")
+    private String boja;
+
+    public ViewAllModel(String imeLjubimca, String opisLjubimca, String imgUrl, String tipLjubimca, int dob, String boja) {
         this.imeLjubimca = imeLjubimca;
         this.opisLjubimca = opisLjubimca;
         this.imgUrl = imgUrl;
         this.tipLjubimca = tipLjubimca;
+        this.dob = dob;
+        this.boja = boja;
     }
 
     // Getters and setters
@@ -87,4 +94,10 @@ public class ViewAllModel {
     public void setIdLjubimca(String idLjubimca) {
         this.idLjubimca = idLjubimca;
     }
+
+    public int getDob() { return dob; }
+    public void setDob(int dob) { this.dob = dob; }
+
+    public String getBoja() { return boja; }
+    public void setBoja(String boja) { this.boja = boja; }
 }

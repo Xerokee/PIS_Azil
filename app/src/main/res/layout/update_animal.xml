@@ -1,10 +1,11 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:scrollbars="vertical"
+    android:orientation="vertical"
+    android:paddingBottom="100dp"
+    android:focusableInTouchMode="true"
     android:fillViewport="true">
 
-    <!-- LinearLayout unutar ScrollView -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,7 +16,6 @@
         android:gravity="center_vertical"
         android:focusableInTouchMode="true">
 
-        <!-- Naslov -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -27,7 +27,6 @@
             android:text="Uredi"
             android:layout_marginBottom="12dp"/>
 
-        <!-- Polje za unos imena životinje -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -47,7 +46,6 @@
             android:padding="12dp"
             android:importantForAccessibility="yes" />
 
-        <!-- Polje za unos dobi životinje -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -68,7 +66,6 @@
             android:padding="12dp"
             android:importantForAccessibility="yes" />
 
-        <!-- Polje za unos opisa životinje -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -90,18 +87,24 @@
             android:layout_marginVertical="8dp"
             android:importantForAccessibility="yes" />
 
-        <!-- Dugme za spremanje -->
-        <Button
-            android:id="@+id/saveAnimalEdit"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/rounded_button"
-            android:backgroundTint="@color/green_200"
-            android:padding="12dp"
-            android:text="SPREMI"
-            android:textColor="@android:color/white"
-            android:textSize="16sp" />
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal">
+
+            <Button
+                android:id="@+id/saveAnimalEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/rounded_button"
+                android:backgroundTint="@color/green_200"
+                android:padding="12dp"
+                android:text="SPREMI"
+                android:textColor="@android:color/white"
+                android:textSize="16sp" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

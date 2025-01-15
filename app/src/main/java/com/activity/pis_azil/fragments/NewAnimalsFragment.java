@@ -10,14 +10,18 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.activity.pis_azil.R;
@@ -42,7 +46,7 @@ public class NewAnimalsFragment extends Fragment {
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int REQUEST_ANIMAL_ID = 1; // Ovdje definiramo RequestAnimalId
 
-    private EditText etName, etDescription, etType;
+    private EditText etName, etDescription, etType, etDob, etColor;
     private ImageView ivAnimalImage;
     private Uri imageUri;
     private LinearLayout animalFormContainer;
@@ -63,6 +67,8 @@ public class NewAnimalsFragment extends Fragment {
         etName = root.findViewById(R.id.editTextName);
         etDescription = root.findViewById(R.id.editTextDescription);
         etType = root.findViewById(R.id.editTextType);
+        etDob = root.findViewById(R.id.editTextDob);
+        etColor = root.findViewById(R.id.editTextColor);
         ivAnimalImage = root.findViewById(R.id.imageViewAnimal);
         animalFormContainer = root.findViewById(R.id.animalFormContainer);
 
@@ -120,14 +126,26 @@ public class NewAnimalsFragment extends Fragment {
         String ime_ljubimca = etName.getText().toString().trim();
         String opis_ljubimca = etDescription.getText().toString().trim();
         String tip_ljubimca = etType.getText().toString().trim();
+        String dob_ljubimca_str = etDob.getText().toString().trim();
+        String boja_ljubimca = etColor.getText().toString().trim();
 
         Log.d("NewAnimalsFragment", "Uneseni podaci: " +
                 "Ime: " + ime_ljubimca +
                 ", Opis: " + opis_ljubimca +
-                ", Tip: " + tip_ljubimca);
+                ", Tip: " + tip_ljubimca +
+                ", Dob: " + dob_ljubimca_str +
+                ", Boja: " + boja_ljubimca);
 
-        if (ime_ljubimca.isEmpty() || opis_ljubimca.isEmpty() || tip_ljubimca.isEmpty() || imageUri == null) {
+        if (ime_ljubimca.isEmpty() || opis_ljubimca.isEmpty() || tip_ljubimca.isEmpty() || dob_ljubimca_str.isEmpty() || imageUri == null) {
             Toast.makeText(getContext(), "Molimo ispunite sve podatke", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int dob_ljubimca;
+        try {
+            dob_ljubimca = Integer.parseInt(dob_ljubimca_str);
+        } catch (NumberFormatException e) {
+            Toast.makeText(getContext(), "Molimo unesite validan broj za dob", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -135,7 +153,7 @@ public class NewAnimalsFragment extends Fragment {
         String imgUrl = imageUri.toString();
         Log.d("NewAnimalsFragment", "Image URL: " + imgUrl);
 
-        ViewAllModel newAnimal = new ViewAllModel(ime_ljubimca, opis_ljubimca, imgUrl, tip_ljubimca);
+        ViewAllModel newAnimal = new ViewAllModel(ime_ljubimca, opis_ljubimca, imgUrl, tip_ljubimca, dob_ljubimca, boja_ljubimca);
         Log.d("NewAnimalsFragment", "Podaci koje šaljemo: " + new Gson().toJson(newAnimal));
 
         SharedPreferences preferences = getContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
@@ -148,6 +166,10 @@ public class NewAnimalsFragment extends Fragment {
                     Log.d("NewAnimalsFragment", "Životinja uspješno dodana");
                     Toast.makeText(getContext(), "Životinja uspješno dodana", Toast.LENGTH_SHORT).show();
                     toggleFormVisibility();
+
+                    // Navigacija prema HomeFragment
+                    NavHostFragment.findNavController(NewAnimalsFragment.this)
+                            .navigate(R.id.nav_home);
                 } else {
                     try {
                         String errorBody = response.errorBody().string();
@@ -199,6 +221,7 @@ public class NewAnimalsFragment extends Fragment {
         etName.setText("");
         etDescription.setText("");
         etType.setText("");
+        etColor.setText("");
         ivAnimalImage.setImageResource(R.drawable.paw);
     }
 }

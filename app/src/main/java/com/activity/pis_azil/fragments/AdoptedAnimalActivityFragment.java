@@ -76,8 +76,6 @@ public class AdoptedAnimalActivityFragment extends Fragment {
         return view;
     }
 
-
-
     public void refreshPopisAktivnosti() {
         apiService.getAktivnostiById(animalId).enqueue(new Callback<HttpRequestResponseList<Aktivnost>>() {
             @Override

@@ -3,7 +3,6 @@ package com.activity.pis_azil.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +17,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.pis_azil.R;
-import com.activity.pis_azil.activities.AdoptedAnimalDetailActivity;
 import com.activity.pis_azil.activities.AnimalDetail2Activity;
-import com.activity.pis_azil.fragments.MyAnimalsFragment;
-import com.activity.pis_azil.models.AnimalModel;
+import com.activity.pis_azil.models.IsBlockedAnimalModel;
 import com.activity.pis_azil.models.MyAdoptionModel;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.network.ApiClient;
@@ -38,6 +35,7 @@ import retrofit2.Response;
 public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.ViewHolder> {
     private Context context;
     private List<UpdateDnevnikModel> animalsList;
+    private List<IsBlockedAnimalModel> animalsList2;
     private ActivityResultLauncher<Intent> activityResultLauncher;
     ApiService apiService;
     OnFetchAnimalsCallback callback;
@@ -46,9 +44,10 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
         void fetchMyAnimals();
     }
 
-    public MyAnimalsAdapter(Context context, List<UpdateDnevnikModel> animalsList, ActivityResultLauncher<Intent> activityResultLauncher, OnFetchAnimalsCallback callback) {
+    public MyAnimalsAdapter(Context context, List<UpdateDnevnikModel> animalsList, List<IsBlockedAnimalModel> animalsList2, ActivityResultLauncher<Intent> activityResultLauncher, OnFetchAnimalsCallback callback) {
         this.context = context;
         this.animalsList = animalsList;
+        this.animalsList2 = animalsList2;
         this.activityResultLauncher = activityResultLauncher;
         this.apiService = ApiClient.getClient().create(ApiService.class);
         this.callback = callback;
@@ -64,6 +63,15 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         UpdateDnevnikModel animal = animalsList.get(position);
+        // Nađi status blokiranja na osnovu ID-a
+        boolean isBlocked = false;
+        for (IsBlockedAnimalModel blockedAnimal : animalsList2) {
+            if (blockedAnimal.getIdLjubimca() == animal.getId_ljubimca() && blockedAnimal.isBlocked()) {
+                isBlocked = true;
+                break;
+            }
+        }
+
         holder.animalName.setText(" " + animal.getIme_ljubimca());
         holder.animalType.setText("  Tip: " + animal.getTip_ljubimca());
 
@@ -82,9 +90,14 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
             holder.animalFrame.setOnClickListener(null);
             holder.btnCancel.setVisibility(View.VISIBLE);
             holder.btnReturn.setVisibility(View.GONE);
-        } else {
+        } else if (isBlocked) {
+            holder.animalStatus.setText("Status: Odbijen zahtjev");
+            holder.itemView.setBackgroundColor(Color.RED);
             holder.btnReturn.setVisibility(View.GONE);
             holder.btnCancel.setVisibility(View.GONE);
+
+            // Obavijest o odbijanju
+            Toast.makeText(context, "Administrator je odbio zahtjev za " + animal.getIme_ljubimca(), Toast.LENGTH_LONG).show();
         }
 
         holder.btnReturn.setOnClickListener(v -> onReturnButtonClicked(animal, position));
@@ -106,8 +119,10 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
 
     @Override
     public int getItemCount() {
-        return animalsList.size();
+        // Vraća maksimalnu veličinu između dve liste
+        return Math.max(animalsList.size(), animalsList2.size());
     }
+
 
     private void onReturnButtonClicked(UpdateDnevnikModel animal, int position) {
         animal.setUdomljen(false); // Set Udomljen to false

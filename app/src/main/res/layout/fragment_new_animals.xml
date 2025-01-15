@@ -82,6 +82,24 @@
                         android:textColor="@color/green_700"
                         android:textColorHint="@color/green_700" />
 
+                    <EditText
+                        android:id="@+id/editTextDob"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Dob ljubimca"
+                        android:inputType="number"
+                        android:textColor="@color/green_700"
+                        android:textColorHint="@color/green_700"/>
+
+                    <EditText
+                        android:id="@+id/editTextColor"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:hint="Boja ljubimca"
+                        android:inputType="text"
+                        android:textColor="@color/green_700"
+                        android:textColorHint="@color/green_700" />
+
                     <ImageView
                         android:id="@+id/imageViewAnimal"
                         android:layout_width="match_parent"
@@ -92,10 +110,12 @@
 
                     <Button
                         android:id="@+id/buttonSubmitAnimal"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
+                        android:layout_width="200dp"
+                        android:layout_height="52dp"
                         android:layout_marginTop="16dp"
+                        android:layout_gravity="center"
                         android:text="Potvrdi dodavanje"
+                        android:textSize="19dp"
                         android:textColor="@color/black"
                         android:textStyle="bold"
                         android:background="@color/green_200"/>

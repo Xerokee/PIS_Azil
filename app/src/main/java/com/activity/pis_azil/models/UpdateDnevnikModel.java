@@ -23,6 +23,7 @@ public class UpdateDnevnikModel implements Serializable {
     private String opisLjubimca;
     private List<String> galleryImgUrls;
     private List<String> activities;
+    private boolean isNotificationShown = false;
 
     // Defaultni konstruktor sa inicijalizacijom
     public UpdateDnevnikModel() {
@@ -184,5 +185,13 @@ public class UpdateDnevnikModel implements Serializable {
 
     public void addActivity(String activity) {
         activities.add(activity);
+    }
+
+    public boolean isNotificationShown() {
+        return isNotificationShown;
+    }
+
+    public void setNotificationShown(boolean notificationShown) {
+        isNotificationShown = notificationShown;
     }
 }

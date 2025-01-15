@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -57,6 +58,9 @@ public class AnimalDetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         apiService = ApiClient.getClient().create(ApiService.class);
+
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         // Ako fragment nije dobio animalId kroz konstruktor, provjeri da li postoji u argumentima
         if (getArguments() != null) {
@@ -120,9 +124,10 @@ public class AnimalDetailFragment extends Fragment {
     private void openEditDialog() {
         final DialogPlus dialogPlus = DialogPlus.newDialog(getContext())
                 .setContentHolder(new com.orhanobut.dialogplus.ViewHolder(R.layout.update_animal))
-                .setExpanded(true, 2000)
+                .setExpanded(true, 1900)
                 .setGravity(Gravity.CENTER)
                 .setCancelable(true)
+                .setPadding(30, 30, 30, 30)
                 .create();
 
         View dialogView = dialogPlus.getHolderView();

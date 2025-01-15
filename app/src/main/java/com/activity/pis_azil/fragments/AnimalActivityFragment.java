@@ -10,6 +10,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -76,6 +77,9 @@ public class AnimalActivityFragment extends Fragment {
         tvNemaAktivnosti = view.findViewById(R.id.tvNemaAktivnosti);
         addAktivnost = view.findViewById(R.id.addAktivnost);
 
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
         apiService = ApiClient.getClient().create(ApiService.class);
 
         loadActivityLog();
@@ -115,9 +119,10 @@ public class AnimalActivityFragment extends Fragment {
     private void openAddActivityDialog() {
         final DialogPlus dialogPlus = DialogPlus.newDialog(getContext())
                 .setContentHolder(new com.orhanobut.dialogplus.ViewHolder(R.layout.add_activity))
+                .setExpanded(false, 2000)
                 .setGravity(Gravity.CENTER)
                 .setCancelable(true)
-                .setExpanded(false)
+                .setPadding(30, 30, 30, 30)
                 .create();
 
         View dialogView = dialogPlus.getHolderView();
