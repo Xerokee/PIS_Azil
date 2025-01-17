@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,6 +33,7 @@ import com.activity.pis_azil.network.ApiService;
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
+import com.activity.pis_azil.models.SifrTipLjubimca;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,13 +42,17 @@ import retrofit2.Response;
 import static android.app.Activity.RESULT_OK;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class NewAnimalsFragment extends Fragment {
 
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int REQUEST_ANIMAL_ID = 1; // Ovdje definiramo RequestAnimalId
 
-    private EditText etName, etDescription, etType, etDob, etColor;
+    private EditText etName, etDescription, etDob, etColor;
+    private List<SifrTipLjubimca> animalTypesList = new ArrayList<>(); // Lista za tipove ljubimaca
+    private ArrayAdapter<String> spinnerAdapter; // Adapter za spinner
     private ImageView ivAnimalImage;
     private Uri imageUri;
     private LinearLayout animalFormContainer;
@@ -66,11 +72,49 @@ public class NewAnimalsFragment extends Fragment {
 
         etName = root.findViewById(R.id.editTextName);
         etDescription = root.findViewById(R.id.editTextDescription);
-        etType = root.findViewById(R.id.editTextType);
         etDob = root.findViewById(R.id.editTextDob);
         etColor = root.findViewById(R.id.editTextColor);
         ivAnimalImage = root.findViewById(R.id.imageViewAnimal);
         animalFormContainer = root.findViewById(R.id.animalFormContainer);
+
+        Spinner spinnerAnimalType = root.findViewById(R.id.spinnerAnimalType);
+
+        spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAnimalType.setAdapter(spinnerAdapter);
+
+        // Postavljanje adaptera za spinner
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                getContext(),
+                R.array.animal_types3,
+                android.R.layout.simple_spinner_item
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerAnimalType.setAdapter(adapter);
+
+        // Pozivanje metode za učitavanje tipova iz API-ja
+        fetchAnimalTypes();
+
+        // Dobivanje odabranog tipa
+        spinnerAnimalType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Odabir psa ili mačke sa int vrednostima
+                int selectedType = position; // 0: Tip životinje , 1: Pas, 2: Mačka
+                if (selectedType == 1) {
+                    Log.d("SpinnerSelection", "Odabrali ste psa (int: 1)");
+                } else if (selectedType == 2) {
+                    Log.d("SpinnerSelection", "Odabrali ste mačku (int: 2)");
+                } else {
+                    Log.w("SpinnerSelection", "Odabrali ste nevažeći tip (int: " + selectedType + ")");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Log.w("SpinnerSelection", "Nije odabran tip ljubimca.");
+            }
+        });
 
         fabAddAnimal = root.findViewById(R.id.fabAddAnimal);
         fabAddAnimal.setOnClickListener(v -> {
@@ -122,22 +166,64 @@ public class NewAnimalsFragment extends Fragment {
         galleryLauncher.launch(intent);
     }
 
+    private void fetchAnimalTypes() {
+        apiService.getAnimalTypes().enqueue(new Callback<List<SifrTipLjubimca>>() {
+            @Override
+            public void onResponse(Call<List<SifrTipLjubimca>> call, Response<List<SifrTipLjubimca>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    animalTypesList.clear();
+                    animalTypesList.addAll(response.body());
+
+                    // Dodavanje naziva tipova u spinner adapter
+                    List<String> typeNames = new ArrayList<>();
+                    for (SifrTipLjubimca type : animalTypesList) {
+                        typeNames.add(type.getNaziv());
+                    }
+                    spinnerAdapter.clear();
+                    spinnerAdapter.addAll(typeNames);
+                    spinnerAdapter.notifyDataSetChanged();
+                } else {
+                    Log.e("NewAnimalsFragment", "Greška pri dohvaćanju tipova: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<SifrTipLjubimca>> call, Throwable t) {
+                Log.e("NewAnimalsFragment", "Greška pri dohvaćanju tipova", t);
+            }
+        });
+    }
+
     private void addNewAnimal() {
         String ime_ljubimca = etName.getText().toString().trim();
         String opis_ljubimca = etDescription.getText().toString().trim();
-        String tip_ljubimca = etType.getText().toString().trim();
         String dob_ljubimca_str = etDob.getText().toString().trim();
         String boja_ljubimca = etColor.getText().toString().trim();
 
-        Log.d("NewAnimalsFragment", "Uneseni podaci: " +
-                "Ime: " + ime_ljubimca +
-                ", Opis: " + opis_ljubimca +
-                ", Tip: " + tip_ljubimca +
-                ", Dob: " + dob_ljubimca_str +
-                ", Boja: " + boja_ljubimca);
+        Spinner spinnerAnimalType = getView().findViewById(R.id.spinnerAnimalType);
+        String selectedAnimalType = spinnerAnimalType.getSelectedItem().toString();
 
-        if (ime_ljubimca.isEmpty() || opis_ljubimca.isEmpty() || tip_ljubimca.isEmpty() || dob_ljubimca_str.isEmpty() || imageUri == null) {
+        // Mapiranje naziva tipova na numeričke vrijednosti
+        int tip_ljubimca = 2;
+        if (selectedAnimalType.equals("Pas")) {
+            tip_ljubimca = 1;
+        } else if (selectedAnimalType.equals("Mačka")) {
+            tip_ljubimca = 0;
+        } else {
+            tip_ljubimca = 2; // Ako nije odabran valjani tip
+        }
+
+        Log.d("MappedValue", "Mapped tip_ljubimca: " + tip_ljubimca);
+        Log.d("NewAnimalsFragment", "Tip životinje (int): " + tip_ljubimca);
+
+        if (ime_ljubimca.isEmpty() || opis_ljubimca.isEmpty() || dob_ljubimca_str.isEmpty() || boja_ljubimca.isEmpty() || imageUri == null) {
             Toast.makeText(getContext(), "Molimo ispunite sve podatke", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Provjera da li je validan tip
+        if (selectedAnimalType.equals("Tip životinje")) {
+            Toast.makeText(getContext(), "Molimo odaberite tip životinje", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -149,7 +235,7 @@ public class NewAnimalsFragment extends Fragment {
             return;
         }
 
-        // Pretvaranje URI slike u URL (u stvarnom scenariju biste trebali uploadati sliku na server i dobiti URL)
+        // Pretvaranje URI slike u URL
         String imgUrl = imageUri.toString();
         Log.d("NewAnimalsFragment", "Image URL: " + imgUrl);
 
@@ -176,6 +262,7 @@ public class NewAnimalsFragment extends Fragment {
                         Log.e("NewAnimalsFragment", "Greška pri dodavanju životinje: " + response.message() + " - " + errorBody);
                         Toast.makeText(getContext(), "Došlo je do greške: " + response.message(), Toast.LENGTH_SHORT).show();
                     } catch (IOException e) {
+                        Log.e("NewAnimalsFragment", "Greška pri čitanju errorBody: " + e.getMessage());
                         e.printStackTrace();
                     }
                 }
@@ -188,6 +275,7 @@ public class NewAnimalsFragment extends Fragment {
             }
         });
     }
+
 
     private void checkIfUserIsAdmin() {
         SharedPreferences preferences = getContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
@@ -220,7 +308,6 @@ public class NewAnimalsFragment extends Fragment {
     private void clearForm() {
         etName.setText("");
         etDescription.setText("");
-        etType.setText("");
         etColor.setText("");
         ivAnimalImage.setImageResource(R.drawable.paw);
     }

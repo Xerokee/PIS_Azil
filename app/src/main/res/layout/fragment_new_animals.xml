@@ -73,14 +73,16 @@
                         android:textColor="@color/green_700"
                         android:textColorHint="@color/green_700" />
 
-                    <EditText
-                        android:id="@+id/editTextType"
+                    <!-- Dropdown za izbor tipa životinje -->
+                    <Spinner
+                        android:id="@+id/spinnerAnimalType"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
-                        android:hint="Tip životinje"
-                        android:inputType="text"
-                        android:textColor="@color/green_700"
-                        android:textColorHint="@color/green_700" />
+                        android:layout_marginTop="8dp"
+                        android:spinnerMode="dropdown"
+                        android:entries="@array/animal_types2"
+                        android:background="@drawable/spinner_background"
+                        android:padding="8dp" />
 
                     <EditText
                         android:id="@+id/editTextDob"
@@ -89,7 +91,7 @@
                         android:hint="Dob ljubimca"
                         android:inputType="number"
                         android:textColor="@color/green_700"
-                        android:textColorHint="@color/green_700"/>
+                        android:textColorHint="@color/green_700" />
 
                     <EditText
                         android:id="@+id/editTextColor"
@@ -118,7 +120,7 @@
                         android:textSize="19dp"
                         android:textColor="@color/black"
                         android:textStyle="bold"
-                        android:background="@color/green_200"/>
+                        android:background="@color/green_200" />
 
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>

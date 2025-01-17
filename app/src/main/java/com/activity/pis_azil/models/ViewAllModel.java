@@ -13,7 +13,7 @@ public class ViewAllModel {
     private String imgUrl;
 
     @SerializedName("TipLjubimca")
-    private String tipLjubimca;
+    private int tipLjubimca;
 
     @SerializedName("Udomljen")
     private boolean udomljen;
@@ -29,7 +29,7 @@ public class ViewAllModel {
     @SerializedName("Boja")
     private String boja;
 
-    public ViewAllModel(String imeLjubimca, String opisLjubimca, String imgUrl, String tipLjubimca, int dob, String boja) {
+    public ViewAllModel(String imeLjubimca, String opisLjubimca, String imgUrl, int tipLjubimca, int dob, String boja) {
         this.imeLjubimca = imeLjubimca;
         this.opisLjubimca = opisLjubimca;
         this.imgUrl = imgUrl;
@@ -63,11 +63,11 @@ public class ViewAllModel {
         this.imgUrl = imgUrl;
     }
 
-    public String getTipLjubimca() {
+    public int getTipLjubimca() {
         return tipLjubimca;
     }
 
-    public void setTipLjubimca(String tipLjubimca) {
+    public void setTipLjubimca(int tipLjubimca) {
         this.tipLjubimca = tipLjubimca;
     }
 

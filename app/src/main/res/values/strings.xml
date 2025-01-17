@@ -56,6 +56,12 @@
             <item>Macka</item>
         </string-array>
 
+        <string-array name="animal_types3">
+            <item>Tip životinje</item>
+            <item>Pas</item>
+            <item>Macka</item>
+        </string-array>
+
         <string-array name="animal_statuses">
             <item>Svi</item>
             <item>Udomljen</item>

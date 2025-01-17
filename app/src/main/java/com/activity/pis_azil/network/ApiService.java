@@ -3,6 +3,7 @@ package com.activity.pis_azil.network;
 import com.activity.pis_azil.models.Aktivnost;
 import com.activity.pis_azil.models.RejectAdoptionModel;
 import com.activity.pis_azil.models.RejectAdoptionModelRead;
+import com.activity.pis_azil.models.SifrTipLjubimca;
 import com.activity.pis_azil.models.SlikaModel;
 import com.activity.pis_azil.models.UpdateAnimalModel;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
@@ -87,6 +88,9 @@ public interface ApiService {
             @Query("dob") Integer dob,
             @Query("boja") String boja
     );
+
+    @GET("sifrTipLjubimca")
+    Call<List<SifrTipLjubimca>> getAnimalTypes();
 
     @POST("KucniLjubimci/add")
     Call<Void> addAnimal(@Header("RequestAnimalId") int requestAnimalId, @Body ViewAllModel animal);
