@@ -113,8 +113,8 @@ public interface ApiService {
     @GET("DnevnikUdomljavanja/{idLjubimca}/status")
     Call<Boolean> getAdoptionStatus(@Path("idLjubimca") int idLjubimca);
 
-    @PUT("DnevnikUdomljavanja/{idLjubimca}/update/status")
-    Call<Void> updateAdoptionStatus(@Path("idLjubimca") int idLjubimca, @Body Map<String, Boolean> statusUpdate);
+    @PUT("DnevnikUdomljavanja/{idLjubimca}/vrati/{idUdomljavanja}")
+    Call<Void> updateAdoptionStatus(@Path("idLjubimca") int idLjubimca, @Path("idUdomljavanja") int idUdomljavanja);
 
     @GET("SearchAnimals")
     Call<List<AnimalModel>> searchAnimals(@Query("keyword") String keyword);
@@ -149,4 +149,5 @@ public interface ApiService {
 
     @PUT ("KucniLjubimci/{id}/udomljen")
     Call<Void> adoptAnimalByAdmin (@Path("id") int id);
+
 }

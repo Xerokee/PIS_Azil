@@ -194,7 +194,7 @@ public class OsnovniPodaciFragment extends Fragment {
         adoptAnimal(userId, false); // Admin odmah odobrava udomljavanje
 
         // Nakon odabira udomitelja, dohvatite email korisnika i pošaljite email
-        getEmailById(userId, email -> {
+        /*getEmailById(userId, email -> {
             if (email != null && !email.isEmpty()) {
                 String subject = "Životinja je uspješno udomljena!";
                 String body = "Poštovani, " + userName + " je uspješno udomio/udomila životinju " + animalModel.getImeLjubimca() + ".";
@@ -214,7 +214,7 @@ public class OsnovniPodaciFragment extends Fragment {
             } else {
                 //Log.e(TAG, "Korisnik nema email adresu ili email nije dostupan.");
             }
-        });
+        });*/
     }
 
     private void getEmailById(int userId, OnEmailFetchedListener listener) {
@@ -305,6 +305,40 @@ public class OsnovniPodaciFragment extends Fragment {
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.isSuccessful()) {
                         //Log.d(TAG, "Životinja uspješno ažurirana.");
+                        apiService.addAdoption(adoptionModel).enqueue(new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                if (response.isSuccessful()) {
+                                    //Log.d(TAG, "Proces udomljavanja uspješno završen.");
+                                    if (requiresApproval) {
+                                        Toast.makeText(getContext(), "Zahtjev za udomljavanje poslan.", Toast.LENGTH_SHORT).show();
+                                        resetRequestState();
+                                    } else {
+                                        Toast.makeText(getContext(), "Životinja je uspješno udomljena!", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    // Postavi rezultat kao uspješan i vrati ID udomljene životinje
+                                    //Intent resultIntent = new Intent();
+                                    //resultIntent.putExtra("udomljena_zivotinja_id", animalModel.getIdLjubimca());
+                                    //setResult(RESULT_OK, resultIntent);
+                                    //finish();
+                                    Log.i("uspjesno", "uspjesno");
+                                    Intent i = new Intent(getContext(), MainActivity.class);
+                                    startActivity(i);
+
+                                } else {
+                                    //Log.e(TAG, "Greška u procesu udomljavanja: " + response.message());
+                                    Toast.makeText(getContext(), "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                //Log.e(TAG, "Greška prilikom udomljavanja: ", t);
+                                Toast.makeText(getContext(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                resetRequestState();
+                            }
+                        });
                     } else {
                     }
                 }
@@ -324,6 +358,40 @@ public class OsnovniPodaciFragment extends Fragment {
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.isSuccessful()) {
                         //Log.e(TAG, "Uspješno udomljavanje životinje kod admina. " + response.message());
+                        apiService.addAdoption(adoptionModel).enqueue(new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                if (response.isSuccessful()) {
+                                    //Log.d(TAG, "Proces udomljavanja uspješno završen.");
+                                    if (requiresApproval) {
+                                        Toast.makeText(getContext(), "Zahtjev za udomljavanje poslan.", Toast.LENGTH_SHORT).show();
+                                        resetRequestState();
+                                    } else {
+                                        Toast.makeText(getContext(), "Životinja je uspješno udomljena!", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    // Postavi rezultat kao uspješan i vrati ID udomljene životinje
+                                    //Intent resultIntent = new Intent();
+                                    //resultIntent.putExtra("udomljena_zivotinja_id", animalModel.getIdLjubimca());
+                                    //setResult(RESULT_OK, resultIntent);
+                                    //finish();
+                                    Log.i("uspjesno", "uspjesno");
+                                    Intent i = new Intent(getContext(), MainActivity.class);
+                                    startActivity(i);
+
+                                } else {
+                                    //Log.e(TAG, "Greška u procesu udomljavanja: " + response.message());
+                                    Toast.makeText(getContext(), "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                //Log.e(TAG, "Greška prilikom udomljavanja: ", t);
+                                Toast.makeText(getContext(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                resetRequestState();
+                            }
+                        });
 
                     } else {
                         //Log.e(TAG, "Greška u procesu udomljavanja: " + response.message());
@@ -337,12 +405,11 @@ public class OsnovniPodaciFragment extends Fragment {
                     Toast.makeText(getContext(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
-
         }
 
         //Log.d(TAG, "Slanje modela udomljavanja na API: " + adoptionModel);
 
-        apiService.addAdoption(adoptionModel).enqueue(new Callback<Void>() {
+        /*apiService.addAdoption(adoptionModel).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
@@ -375,7 +442,7 @@ public class OsnovniPodaciFragment extends Fragment {
                 Toast.makeText(getContext(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 resetRequestState();
             }
-        });
+        });*/
     }
 
     private void resetRequestState() {

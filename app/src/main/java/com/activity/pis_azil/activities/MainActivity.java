@@ -85,17 +85,22 @@ public class MainActivity extends AppCompatActivity {
         boolean isAdmin = prefs.getBoolean("admin", false);
         String userJson = prefs.getString("current_user", null);
         UserModel currentUser = new Gson().fromJson(userJson, UserModel.class);
+        if (currentUser != null) {
+            updateNavigationHeader(currentUser, headerUserName, headerEmail, headerImg);
+        }
 
         Menu menu = navigationView.getMenu();
         if (!isAdmin) {
             menu.findItem(R.id.nav_admin_settings).setVisible(false);
             menu.findItem(R.id.nav_new_products).setVisible(false);
             menu.findItem(R.id.rejectedAnimalsFragment).setVisible(false);
+            menu.findItem(R.id.nav_my_orders).setVisible(false);
         } else {
             // Prikazi sve za admina
             menu.findItem(R.id.nav_new_products).setVisible(true);
             menu.findItem(R.id.nav_admin_menu).setVisible(true);
             menu.findItem(R.id.nav_my_orders).setVisible(true);
+            menu.findItem(R.id.nav_my_animals).setVisible(false);
         }
 
         // Get user data from intent
@@ -131,6 +136,15 @@ public class MainActivity extends AppCompatActivity {
         } else {
             headerImg.setImageResource(R.drawable.fruits);
         }
+    }
+
+    private void saveUserToSharedPreferences(UserModel user) {
+        SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        Gson gson = new Gson();
+        String userJson = gson.toJson(user);
+        editor.putString("current_user", userJson);
+        editor.apply();
     }
 
     private final BroadcastReceiver profileUpdatedReceiver = new BroadcastReceiver() {
@@ -174,15 +188,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Failed to fetch user data: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    private void saveUserToSharedPreferences(UserModel user) {
-        SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        Gson gson = new Gson();
-        String userJson = gson.toJson(user);
-        editor.putString("current_user", userJson);
-        editor.apply();
     }
 
     @Override

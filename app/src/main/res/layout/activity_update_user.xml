@@ -1,81 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="32dp"
-    android:gravity="center">
+    android:fillViewport="true">
 
-    <EditText
-        android:id="@+id/editTextName"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:hint="Ime korisnika"
-        android:padding="16dp" />
+        android:orientation="vertical"
+        android:padding="32dp"
+        android:gravity="center">
 
-    <EditText
-        android:id="@+id/editTextSurname"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:hint="Prezime korisnika"
-        android:padding="16dp" />
-
-    <EditText
-        android:id="@+id/editTextUsername"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:hint="Korisničko ime korisnika"
-        android:padding="16dp" />
-
-    <EditText
-        android:id="@+id/editTextMail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:hint="E-mail korisnika"
-        android:padding="16dp" />
-
-    <EditText
-        android:id="@+id/editTextPassword"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:hint="Lozinka korisnika"
-        android:inputType="textPassword"
-        android:padding="16dp" />
-
-    <!-- RadioGroup for Admin selection -->
-    <RadioGroup
-        android:id="@+id/radioGroupAdmin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp">
-
-        <RadioButton
-            android:id="@+id/radioAdminYes"
+        <!-- Ime korisnika -->
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Da"
-            android:textSize="18sp" />
+            android:text="Ime:"
+            android:textSize="18sp"
+            android:textColor="@color/white"/>
 
-        <RadioButton
-            android:id="@+id/radioAdminNo"
+        <EditText
+            android:id="@+id/editTextName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:hint="Ime korisnika"
+            android:padding="16dp" />
+
+        <!-- Prezime korisnika -->
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Ne"
-            android:textSize="18sp" />
-    </RadioGroup>
+            android:text="Prezime:"
+            android:textSize="18sp"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/white"/>
 
-    <Button
-        android:id="@+id/buttonUpdateUser"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Ažuriraj korisnika"
-        android:textSize="18sp"
-        android:layout_marginTop="24dp" />
+        <EditText
+            android:id="@+id/editTextSurname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:hint="Prezime korisnika"
+            android:padding="16dp" />
 
-</LinearLayout>
+        <!-- Korisničko ime korisnika -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Korisničko ime:"
+            android:textSize="18sp"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/white"/>
+
+        <EditText
+            android:id="@+id/editTextUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:hint="Korisničko ime korisnika"
+            android:padding="16dp" />
+
+        <!-- E-mail korisnika -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="E-mail:"
+            android:textSize="18sp"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/white"/>
+
+        <EditText
+            android:id="@+id/editTextMail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:hint="E-mail korisnika"
+            android:padding="16dp" />
+
+        <!-- Lozinka korisnika -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lozinka:"
+            android:textSize="18sp"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/white"/>
+
+        <EditText
+            android:id="@+id/editTextPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:hint="Lozinka korisnika"
+            android:inputType="textPassword"
+            android:padding="16dp" />
+
+        <!-- Admin -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Admin:"
+            android:textSize="18sp"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/white"/>
+
+        <!-- RadioGroup for Admin selection -->
+        <RadioGroup
+            android:id="@+id/radioGroupAdmin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center">
+
+            <RadioButton
+                android:id="@+id/radioAdminYes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Da"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/radioAdminNo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ne"
+                android:textSize="18sp" />
+        </RadioGroup>
+
+        <!-- Button for updating user -->
+        <Button
+            android:id="@+id/buttonUpdateUser"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ažuriraj korisnika"
+            android:textSize="18sp"
+            android:layout_marginTop="5dp" />
+
+    </LinearLayout>
+</ScrollView>

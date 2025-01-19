@@ -76,7 +76,7 @@ public class MyAdoptedFragment extends Fragment {
         adoptedAnimalsList = new ArrayList<>();
         filteredAdoptedAnimalsList = new ArrayList<>();
 
-        adapter = new MyAdoptedAnimalsAdapter(getActivity(), filteredAdoptedAnimalsList, activityResultLauncher);
+        adapter = new MyAdoptedAnimalsAdapter(getActivity(), filteredAdoptedAnimalsList, activityResultLauncher, this);
         recyclerView.setAdapter(adapter);
 
         newAnimalsTextView = root.findViewById(R.id.new_animals_textview);
@@ -282,4 +282,62 @@ public class MyAdoptedFragment extends Fragment {
                 // Handle activity result if necessary
             }
     );
+
+    public void refreshAdoptedAnimals(){
+        apiService.getDnevnikUdomljavanja().enqueue(new Callback<List<UpdateDnevnikModel>>() {
+            @Override
+            public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    adoptedAnimalsList.clear();
+                    filteredAdoptedAnimalsList.clear();
+
+                    List<UpdateDnevnikModel> list = response.body();
+
+                    // Dohvati podatke o trenutnom korisniku iz SharedPreferences
+                    SharedPreferences prefs = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+                    String userJson = prefs.getString("current_user", null);
+                    UserModel currentUser;
+                    if (userJson != null) {
+                        Gson gson = new Gson();
+                        currentUser = gson.fromJson(userJson, UserModel.class);
+                    } else {
+                        currentUser = null;
+                    }
+
+                    if (currentUser != null) {
+                        if (!currentUser.isAdmin()) {
+                            // Filtriraj samo životinje koje je udomio trenutni korisnik
+                            list = list.stream()
+                                    .filter(animal -> animal.isUdomljen() && animal.getId_korisnika() == currentUser.getIdKorisnika())
+                                    .collect(Collectors.toList());
+                        } else {
+                            // Admin vidi sve udomljene životinje
+                            list = list.stream().filter(UpdateDnevnikModel::isUdomljen).collect(Collectors.toList());
+                        }
+                    }
+
+                    // Dodajte životinje u listu
+                    for (UpdateDnevnikModel animal : list) {
+                        String fullName = userMap.getOrDefault(animal.getId_korisnika(), "Nepoznato");
+                        animal.setImeUdomitelja(fullName); // Postavljamo cijelo ime (ime + prezime)
+                        adoptedAnimalsList.add(animal);
+                    }
+
+                    filteredAdoptedAnimalsList.addAll(adoptedAnimalsList);
+                    adapter = new MyAdoptedAnimalsAdapter(getActivity(), filteredAdoptedAnimalsList, activityResultLauncher, MyAdoptedFragment.this);
+                    recyclerView.setAdapter(adapter);
+                    updateEmptyState();
+                } else {
+                    Toast.makeText(getActivity(), "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<UpdateDnevnikModel>> call, Throwable t) {
+                Log.e("MyAdoptedFragment", "Error fetching documents: ", t);
+                Toast.makeText(getActivity(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
 }

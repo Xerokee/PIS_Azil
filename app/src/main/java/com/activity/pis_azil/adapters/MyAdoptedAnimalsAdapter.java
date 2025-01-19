@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.activity.pis_azil.SendMail;
 import com.activity.pis_azil.activities.AdoptedAnimalDetailActivity;
+import com.activity.pis_azil.fragments.MyAdoptedFragment;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserByEmailResponseModel;
 import com.activity.pis_azil.models.UserModel;
@@ -43,12 +45,14 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
     private List<UpdateDnevnikModel> filteredAdoptedAnimalsList;
     ApiService apiService;
     private ActivityResultLauncher<Intent> activityResultLauncher;
+    private MyAdoptedFragment fragment;
 
-    public MyAdoptedAnimalsAdapter(Context context, List<UpdateDnevnikModel> filteredAdoptedAnimalsList, ActivityResultLauncher<Intent> activityResultLauncher) {
+    public MyAdoptedAnimalsAdapter(Context context, List<UpdateDnevnikModel> filteredAdoptedAnimalsList, ActivityResultLauncher<Intent> activityResultLauncher, MyAdoptedFragment fr) {
         this.context = context;
         this.filteredAdoptedAnimalsList  = filteredAdoptedAnimalsList ;
         this.apiService = ApiClient.getClient().create(ApiService.class);
         this.activityResultLauncher = activityResultLauncher;
+        this.fragment = fr;
     }
 
     @NonNull
@@ -83,7 +87,12 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
             holder.returnButton.setVisibility(View.GONE);
         } else {
             holder.returnButton.setVisibility(View.VISIBLE);
-            holder.returnButton.setOnClickListener(v -> returnAnimal(animal, position));
+            holder.returnButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    returnAnimal(animal.getId(), animal, animal.getId_ljubimca());
+                }
+            });
         }
 
         holder.animalFrame.setOnClickListener(new View.OnClickListener() {
@@ -173,18 +182,19 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
         });
     }
 
-    private void returnAnimal(UpdateDnevnikModel animal, int position) {
-        animal.setId_korisnika(0);
-        animal.setUdomljen(false);
+    private void returnAnimal(int animalId, UpdateDnevnikModel animal, int adoptionId) {
+        //animal.setId_korisnika(0);
+        //animal.setUdomljen(false);
 
-        apiService.updateAdoption(1, animal.getId_ljubimca(), animal).enqueue(new Callback<Void>() {
+        apiService.updateAdoptionStatus(animalId, adoptionId).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    filteredAdoptedAnimalsList.remove(position);
-                    notifyItemRemoved(position);
+                    //update list
+                    //filteredAdoptedAnimalsList.remove(position);
+                    //notifyItemRemoved(position);
                     Toast.makeText(context, "Životinja je vraćena u azil", Toast.LENGTH_SHORT).show();
-                    String subject = "Životinja je vraćena!";
+                    /*String subject = "Životinja je vraćena!";
                     String body = "Poštovani, životinja " + animal.getIme_ljubimca() + " je vraćena!";
 
                     new Thread(new Runnable() {
@@ -201,7 +211,8 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
                             }
                             System.out.println("Send email...");
                         }
-                    }).start();
+                    }).start();*/
+                    fragment.refreshAdoptedAnimals();
                 } else {
                     Toast.makeText(context, "Greška pri vraćanju: " + response.message(), Toast.LENGTH_SHORT).show();
                 }

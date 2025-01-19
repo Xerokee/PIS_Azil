@@ -604,8 +604,16 @@ public class HomeFragment extends Fragment {
                     for (RejectAdoptionModelRead zivotinja : odbijeneZivotinje){
                         SharedViewModel sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
                         sharedViewModel.getUserId().observe(getViewLifecycleOwner(), userId -> {
-                            if (Objects.equals(Integer.parseInt(userId),zivotinja.getId_korisnika())){
-                                listaOdbijenih.add(zivotinja.getId_ljubimca());
+                            if (userId != null && !userId.isEmpty()) { // Proverite da li userId nije null i nije prazan
+                                try {
+                                    if (Objects.equals(Integer.parseInt(userId), zivotinja.getId_korisnika())) {
+                                        listaOdbijenih.add(zivotinja.getId_ljubimca());
+                                    }
+                                } catch (NumberFormatException e) {
+                                    Log.e(TAG, "Invalid userId format: " + userId, e);
+                                }
+                            } else {
+                                Log.w(TAG, "userId is null or empty, skipping comparison");
                             }
                         });
                     }

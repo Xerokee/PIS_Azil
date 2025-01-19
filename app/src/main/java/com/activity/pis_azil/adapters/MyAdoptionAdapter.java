@@ -468,43 +468,122 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                                     false
                             );
 
-                            updateAnimal(am);
-                            RejectAdoptionModel rm = new RejectAdoptionModel();
-                            Log.d(TAG, "zadnji log " + cartModel.getIdLjubimca() + " " + cartModel.getIdKorisnika() + cartModel.getImeLjubimca());
-                            rm.setIdKorisnika(cartModel.getIdKorisnika());
-                            rm.setImeLjubimca(cartModel.getImeLjubimca());
-                            // rm.setIdLjubimca(animal.getIdLjubimca());
-                            rm.setIdLjubimca(cartModel.getId());
-                            Gson gson = new Gson();
+                            //updateAnimal(am);
 
-                            String requestJson = gson.toJson(rm);
-
-                            Log.d(TAG, "Prije poziva oncreate odbijena zivotinja Primjer: " + requestJson);
-                            apiService.createOdbijenaZivotinja(
-                                    rm).enqueue(new Callback<Void>() {
+                            Log.d(TAG, "Usli u funkciju update animal" + am.getIdLjubimca());
+                            apiService.rejectAnimal(am.getIdLjubimca()).enqueue(new Callback<Void>() {
                                 @Override
                                 public void onResponse(Call<Void> call, Response<Void> response) {
                                     if (response.isSuccessful()) {
-                                        deleteItem(position);
-                                        Log.d(TAG, "Odbijanje uspješno: " + position);
+                                        Log.d(TAG, "Životinja uspješno ažurirana.");
+                                        am.setZahtjevUdomljavanja(false);
+                                        // Ažuriranje UI ili povratak na prethodnu aktivnost
+
+                                        RejectAdoptionModel rm = new RejectAdoptionModel();
+                                        Log.d(TAG, "zadnji log " + cartModel.getIdLjubimca() + " " + cartModel.getIdKorisnika() + cartModel.getImeLjubimca());
+                                        rm.setIdKorisnika(cartModel.getIdKorisnika());
+                                        rm.setImeLjubimca(cartModel.getImeLjubimca());
+                                        // rm.setIdLjubimca(animal.getIdLjubimca());
+                                        rm.setIdLjubimca(am.getIdLjubimca());
+                                        Gson gson = new Gson();
+
+                                        String requestJson = gson.toJson(rm);
+
+                                        Log.d(TAG, "Prije poziva oncreate odbijena zivotinja Primjer: " + requestJson);
+                                        apiService.createOdbijenaZivotinja(
+                                                rm).enqueue(new Callback<Void>() {
+                                            @Override
+                                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                                if (response.isSuccessful()) {
+                                                    //deleteItem(position);
+                                                    MyAdoptionModel cartModel = cartModelList.get(position);
+                                                    apiService.deleteAdoption(1, cartModelList.get(position).getIdLjubimca()).enqueue(new Callback<Void>() {
+                                                        @Override
+                                                        public void onResponse(Call<Void> call, Response<Void> response) {
+                                                            if (response.isSuccessful()) {
+                                                                cartModel.setZahtjevUdomljavanja(false);
+                                                                Log.d(TAG, "Animal deleted successfully, position: " + position);
+                                                                cartModelList.remove(position);
+                                                                notifyDataSetChanged();
+                                                                Toast.makeText(context, "Lista izbrisana", Toast.LENGTH_SHORT).show();
+                                                            } else {
+                                                                try {
+                                                                    String errorBody = response.errorBody().string();
+                                                                    Log.e(TAG, "Server-side error body: " + errorBody);
+                                                                } catch (IOException e) {
+                                                                    e.printStackTrace();
+                                                                }
+                                                                Log.e(TAG, "Error deleting animal: " + response.message());
+                                                                Toast.makeText(context, "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        }
+
+                                                        @Override
+                                                        public void onFailure(Call<Void> call, Throwable t) {
+                                                            Log.e(TAG, "Error deleting animal: ", t);
+                                                            Toast.makeText(context, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                                    Log.d(TAG, "Odbijanje uspješno: " + position);
+                                                } else {
+                                                    try {
+                                                        String errorBody = response.errorBody().string();
+                                                        //deleteItem(position);
+                                                        MyAdoptionModel cartModel = cartModelList.get(position);
+                                                        apiService.deleteAdoption(1, cartModelList.get(position).getIdLjubimca()).enqueue(new Callback<Void>() {
+                                                            @Override
+                                                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                                                if (response.isSuccessful()) {
+                                                                    cartModel.setZahtjevUdomljavanja(false);
+                                                                    Log.d(TAG, "Animal deleted successfully, position: " + position);
+                                                                    cartModelList.remove(position);
+                                                                    notifyDataSetChanged();
+                                                                    Toast.makeText(context, "Lista izbrisana", Toast.LENGTH_SHORT).show();
+                                                                } else {
+                                                                    try {
+                                                                        String errorBody = response.errorBody().string();
+                                                                        Log.e(TAG, "Server-side error body: " + errorBody);
+                                                                    } catch (IOException e) {
+                                                                        e.printStackTrace();
+                                                                    }
+                                                                    Log.e(TAG, "Error deleting animal: " + response.message());
+                                                                    Toast.makeText(context, "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            }
+
+                                                            @Override
+                                                            public void onFailure(Call<Void> call, Throwable t) {
+                                                                Log.e(TAG, "Error deleting animal: ", t);
+                                                                Toast.makeText(context, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        });
+                                                        Log.e(TAG, "Server-side error body: " + errorBody);
+                                                    } catch (IOException e) {
+                                                        e.printStackTrace();
+                                                    }
+                                                    Log.e(TAG, "Greška u odgovoru: " + response.message() + ", Kod: " + response.code());
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<Void> call, Throwable t) {
+                                                Log.e(TAG, "Greška prilikom slanja zahtjeva: ", t);
+                                                System.out.println("dd");
+                                            }
+                                        });
+
                                     } else {
-                                        try {
-                                            String errorBody = response.errorBody().string();
-                                            deleteItem(position);
-                                            Log.e(TAG, "Server-side error body: " + errorBody);
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                        Log.e(TAG, "Greška u odgovoru: " + response.message() + ", Kod: " + response.code());
+                                        Log.d(TAG, "PRIMJER");
                                     }
                                 }
 
                                 @Override
                                 public void onFailure(Call<Void> call, Throwable t) {
-                                    Log.e(TAG, "Greška prilikom slanja zahtjeva: ", t);
-                                    System.out.println("dd");
+                                    Log.e(TAG, "API poziv nije uspio: ", t);
                                 }
                             });
+
+
                             break;
                         }
                     }
