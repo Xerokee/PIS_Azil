@@ -33,7 +33,7 @@
         <string-array name="animal_types">
             <item>Sve</item>
             <item>Pas</item>
-            <item>Macka</item>
+            <item>Mačka</item>
         </string-array>
 
         <string-array name="animal_ages">
@@ -53,13 +53,13 @@
         <string-array name="animal_types2">
             <item>Svi</item>
             <item>Pas</item>
-            <item>Macka</item>
+            <item>Mačka</item>
         </string-array>
 
         <string-array name="animal_types3">
             <item>Tip životinje</item>
             <item>Pas</item>
-            <item>Macka</item>
+            <item>Mačka</item>
         </string-array>
 
         <string-array name="animal_statuses">

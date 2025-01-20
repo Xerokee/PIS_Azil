@@ -36,6 +36,7 @@ import com.activity.pis_azil.models.IsBlockedAnimalModel;
 import com.activity.pis_azil.models.MyAdoptionModel;
 import com.activity.pis_azil.models.RejectAdoptionModelRead;
 import com.activity.pis_azil.models.SharedViewModel;
+import com.activity.pis_azil.models.SifrTipLjubimca;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
@@ -43,7 +44,9 @@ import com.activity.pis_azil.network.ApiService;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -65,6 +68,7 @@ public class HomeFragment extends Fragment {
     private EditText searchBox;
     private ImageButton filterButton;
     List<Integer> listaOdbijenih = new ArrayList<>();
+    private List<SifrTipLjubimca> tipLjubimcaList = new ArrayList<>();
 
     @Override
     public void onResume() {
@@ -94,6 +98,7 @@ public class HomeFragment extends Fragment {
 
         apiService = ApiClient.getClient().create(ApiService.class);
         Log.d(TAG,"fsdfsdd");
+        getTipoveLjubimaca();
         getOdbijeneZivotinje();
         //loadAllAnimals();
         // loadAllAdoptedAnimals();
@@ -161,7 +166,7 @@ public class HomeFragment extends Fragment {
         Spinner ageSpinner = filterView.findViewById(R.id.spinner_age);
         Spinner colorSpinner = filterView.findViewById(R.id.spinner_color);
 
-        // Postavljanje opcija u Spinner (ovo možete dohvatiti iz API-a ili hardcodirati)
+        // Postavljanje opcija u Spinner
         ArrayAdapter<CharSequence> typeAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.animal_types, android.R.layout.simple_spinner_item);
         typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -186,7 +191,9 @@ public class HomeFragment extends Fragment {
             String selectedAge = ageSpinner.getSelectedItem().toString();
             String selectedColor = colorSpinner.getSelectedItem().toString();
 
-            applyFilters(selectedType, selectedAge, selectedColor);
+            // Find the corresponding integer ID for the selected type
+            Integer typeId = getTypeIdByName(selectedType);
+            applyFilters(typeId, selectedAge, selectedColor);
             dialog.dismiss();
         });
 
@@ -218,8 +225,18 @@ public class HomeFragment extends Fragment {
         progressBar.setVisibility(View.GONE);
     }
 
+    // Method to get the integer ID of the pet type based on the name
+    private Integer getTypeIdByName(String name) {
+        for (SifrTipLjubimca tip : tipLjubimcaList) {
+            if (tip.getNaziv().equalsIgnoreCase(name)) {
+                return tip.getId(); // Assuming 'getSifra()' returns the integer ID for the type
+            }
+        }
+        return null; // Return null if no match found, indicating "All types"
+    }
+
     // Metoda za primjenu filtera
-    private void applyFilters(String type, String age, String color) {
+    private void applyFilters(Integer typeId, String age, String color) {
         Integer minDob = null;
         Integer maxDob = null;
 
@@ -242,13 +259,13 @@ public class HomeFragment extends Fragment {
         }
 
         // Provjerite vrijednosti prije poziva API-a
-        Log.d(TAG, "Filtriraj: tip=" + type + ", dobMin=" + minDob + ", dobMax=" + maxDob + ", boja=" + color);
+        Log.d(TAG, "Filtriraj: tip=" + (typeId != null ? typeId : "Sve") + ", dobMin=" + minDob + ", dobMax=" + maxDob + ", boja=" + color);
 
         progressBar.setVisibility(View.VISIBLE);
 
         // Jedan API poziv za dohvaćanje životinja s filtrima
         apiService.getFilteredAnimalsByAgeRange(
-                type.equals("Sve") ? null : type,
+                typeId == null ? "Sve" : String.valueOf(typeId),
                 minDob == null ? 0 : minDob,  // Postavljanje minimalne vrijednosti na 0 ako je null
                 maxDob == null ? 100 : maxDob, // Postavljanje maksimalne vrijednosti na 100 ako je null
                 null,  // Nema specifične jedne godine
@@ -281,14 +298,34 @@ public class HomeFragment extends Fragment {
                     animalModelList.addAll(mappedAnimals);
                     animalsAdapter.notifyDataSetChanged();
                 } else {
-                    Toast.makeText(getContext(), "Greška u filtriranju životinja", Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(getContext(), "Greška u filtriranju životinja", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
-                Toast.makeText(getContext(), "Greška u filtriranju životinja", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(getContext(), "Greška u filtriranju životinja", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // Metoda za dohvat tipova ljubimaca
+    private void getTipoveLjubimaca() {
+        apiService.getAnimalTypes().enqueue(new Callback<List<SifrTipLjubimca>>() {
+            @Override
+            public void onResponse(Call<List<SifrTipLjubimca>> call, Response<List<SifrTipLjubimca>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    tipLjubimcaList = response.body();
+                    Log.d(TAG, "Dohvaćeni tipovi ljubimaca: " + tipLjubimcaList.size());
+                } else {
+                    // Toast.makeText(getContext(), "Greška u dohvaćanju tipova ljubimaca", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<SifrTipLjubimca>> call, Throwable t) {
+                // Toast.makeText(getContext(), "Greška u dohvaćanju tipova ljubimaca", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -312,7 +349,7 @@ public class HomeFragment extends Fragment {
                                     animal.getIdLjubimca(),
                                     animal.getIdUdomitelja(),
                                     animal.getImeLjubimca(),
-                                    animal.getTipLjubimca(),
+                                    type,
                                     animal.getOpisLjubimca(),
                                     animal.isUdomljen(),
                                     animal.isZahtjevUdomljavanja(),
