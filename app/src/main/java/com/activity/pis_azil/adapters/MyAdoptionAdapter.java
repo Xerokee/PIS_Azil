@@ -178,6 +178,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         // holder.time.setText(cartModel.getVrijeme());
         // holder.state.setText(cartModel.isStanjeZivotinje() ? "Dobro" : "Loše");
 
+        /*
         if (cartModel.getDatum() != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             try {
@@ -196,6 +197,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 e.printStackTrace();
             }
         }
+        */
 
         Log.d(TAG, "Binding view holder for position: " + position + ", model: " + cartModel.toString());
 
@@ -602,6 +604,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         });
     }
 
+    /*
     private void sendNotification(Context context, String animalName) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         String channelId = "animal_status_channel";
@@ -619,6 +622,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
         notificationManager.notify(animalName.hashCode(), builder.build());
     }
+    */
 
     private void showDeleteConfirmationDialog(int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);

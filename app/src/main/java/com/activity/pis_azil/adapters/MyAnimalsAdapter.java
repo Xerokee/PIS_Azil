@@ -63,6 +63,7 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         UpdateDnevnikModel animal = animalsList.get(position);
+        IsBlockedAnimalModel animal2 = new IsBlockedAnimalModel();
         // Nađi status blokiranja na osnovu ID-a
         boolean isBlocked = false;
         for (IsBlockedAnimalModel blockedAnimal : animalsList2) {
@@ -90,14 +91,11 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
             holder.animalFrame.setOnClickListener(null);
             holder.btnCancel.setVisibility(View.VISIBLE);
             holder.btnReturn.setVisibility(View.GONE);
-        } else if (isBlocked) {
-            holder.animalStatus.setText("Status: Odbijen zahtjev");
-            holder.itemView.setBackgroundColor(Color.RED);
-            holder.btnReturn.setVisibility(View.GONE);
-            holder.btnCancel.setVisibility(View.GONE);
-
+        } else if (animal2.isBlocked()) {
             // Obavijest o odbijanju
             Toast.makeText(context, "Administrator je odbio zahtjev za " + animal.getIme_ljubimca(), Toast.LENGTH_LONG).show();
+            holder.btnReturn.setVisibility(View.GONE);
+            holder.btnCancel.setVisibility(View.GONE);
         }
 
         holder.btnReturn.setOnClickListener(v -> onReturnButtonClicked(animal, position));
@@ -168,7 +166,7 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     notifyDataSetChanged();
-                    Toast.makeText(context, "Lista izbrisana", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Životinje više nije rezervirana!", Toast.LENGTH_SHORT).show();
                     if (callback != null){
                         callback.fetchMyAnimals();
                     }
@@ -188,9 +186,6 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
                 Toast.makeText(context, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
-        String status = animal.isZahtjev_udomljen() ? "rezervirana" : "nije rezervirana";
-        Toast.makeText(context, "Životinja više " + status, Toast.LENGTH_SHORT).show();
     }
 
 

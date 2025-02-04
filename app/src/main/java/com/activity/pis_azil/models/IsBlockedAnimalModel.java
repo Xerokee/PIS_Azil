@@ -15,7 +15,7 @@ public class IsBlockedAnimalModel implements Serializable {
     private String imgUrl;
     List<String> galerijaZivotinja;
     private boolean stanje_zivotinje;
-    private boolean isBlocked;
+    public boolean isBlocked;
     private boolean statusUdomljavanja;
     private boolean zahtjev_udomljen;
     private int dob;

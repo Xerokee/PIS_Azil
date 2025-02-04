@@ -69,6 +69,7 @@ public class HomeFragment extends Fragment {
     private ImageButton filterButton;
     List<Integer> listaOdbijenih = new ArrayList<>();
     private List<SifrTipLjubimca> tipLjubimcaList = new ArrayList<>();
+    private String lastSearchedType = "";
 
     @Override
     public void onResume() {
@@ -192,8 +193,7 @@ public class HomeFragment extends Fragment {
             String selectedColor = colorSpinner.getSelectedItem().toString();
 
             // Find the corresponding integer ID for the selected type
-            Integer typeId = getTypeIdByName(selectedType);
-            applyFilters(typeId, selectedAge, selectedColor);
+            applyFilters(selectedType, selectedAge, selectedColor); // Prosljeđivanje naziva, a ne ID-a
             dialog.dismiss();
         });
 
@@ -235,8 +235,18 @@ public class HomeFragment extends Fragment {
         return null; // Return null if no match found, indicating "All types"
     }
 
+    private String getTypeNameById(int id) {
+        for (SifrTipLjubimca tip : tipLjubimcaList) {
+            if (tip.getId() == id) {
+                return tip.getNaziv(); // Vraća naziv (npr. "Pas" ili "Mačka")
+            }
+        }
+        return "Nepoznato"; // Ako ID ne postoji
+    }
+
+
     // Metoda za primjenu filtera
-    private void applyFilters(Integer typeId, String age, String color) {
+    private void applyFilters(String typeName, String age, String color) {
         Integer minDob = null;
         Integer maxDob = null;
 
@@ -253,22 +263,21 @@ public class HomeFragment extends Fragment {
                     break;
                 case "5+ godina":
                     minDob = 6;
-                    maxDob = 20; // Ili neki maksimalni broj godina
+                    maxDob = 20; // Maksimalna starost
                     break;
             }
         }
 
-        // Provjerite vrijednosti prije poziva API-a
-        Log.d(TAG, "Filtriraj: tip=" + (typeId != null ? typeId : "Sve") + ", dobMin=" + minDob + ", dobMax=" + maxDob + ", boja=" + color);
+        Log.d(TAG, "Filtriraj: tip=" + (typeName != null ? typeName : "Sve") + ", dobMin=" + minDob + ", dobMax=" + maxDob + ", boja=" + color);
 
         progressBar.setVisibility(View.VISIBLE);
 
-        // Jedan API poziv za dohvaćanje životinja s filtrima
+        // API poziv koji koristi naziv tipa umjesto ID-a
         apiService.getFilteredAnimalsByAgeRange(
-                typeId == null ? "Sve" : String.valueOf(typeId),
-                minDob == null ? 0 : minDob,  // Postavljanje minimalne vrijednosti na 0 ako je null
-                maxDob == null ? 100 : maxDob, // Postavljanje maksimalne vrijednosti na 100 ako je null
-                null,  // Nema specifične jedne godine
+                typeName.equals("Sve") ? null : typeName,  // Prosljeđivanje naziva umjesto ID-a
+                minDob == null ? 0 : minDob,
+                maxDob == null ? 100 : maxDob,
+                null,
                 color.equals("Sve") ? null : color
         ).enqueue(new Callback<List<AnimalModel>>() {
             @Override
@@ -281,7 +290,7 @@ public class HomeFragment extends Fragment {
                                     animal.getIdLjubimca(),
                                     animal.getIdUdomitelja(),
                                     animal.getImeLjubimca(),
-                                    animal.getTipLjubimca(),
+                                    getTypeNameById(Integer.parseInt(animal.getTipLjubimca())), // Ovdje će sada biti naziv umjesto ID-a
                                     animal.getOpisLjubimca(),
                                     animal.isUdomljen(),
                                     animal.isZahtjevUdomljavanja(),
@@ -289,7 +298,7 @@ public class HomeFragment extends Fragment {
                                     animal.getVrijeme(),
                                     animal.getImgUrl(),
                                     animal.StanjeZivotinje(),
-                                    false, // Primjer vrijednost za isBlocked
+                                    false,
                                     animal.getDob(),
                                     animal.getBoja()
                             ))
@@ -298,17 +307,18 @@ public class HomeFragment extends Fragment {
                     animalModelList.addAll(mappedAnimals);
                     animalsAdapter.notifyDataSetChanged();
                 } else {
-                    // Toast.makeText(getContext(), "Greška u filtriranju životinja", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "Greška u filtriranju životinja");
                 }
             }
 
             @Override
             public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
-                // Toast.makeText(getContext(), "Greška u filtriranju životinja", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "Greška u filtriranju životinja", t);
             }
         });
     }
+
 
     // Metoda za dohvat tipova ljubimaca
     private void getTipoveLjubimaca() {
@@ -331,8 +341,17 @@ public class HomeFragment extends Fragment {
     }
 
     private void searchAnimalsByType(String type) {
+        if (type == null || type.isEmpty()) {
+            type = lastSearchedType;
+            loadAllAnimals();
+        } else {
+            lastSearchedType = type;
+        }
+
         progressBar.setVisibility(View.VISIBLE);
         Log.d(TAG, "Searching animals by type: " + type);
+        String finalType = type;
+
         apiService.getAnimalsByType(type).enqueue(new Callback<List<AnimalModel>>() {
             @Override
             public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
@@ -344,12 +363,12 @@ public class HomeFragment extends Fragment {
 
                     // Filtriraj životinje koje su udomljene
                     List<IsBlockedAnimalModel> availableAnimals = response.body().stream()
-                            .filter(animal -> !animal.isUdomljen()) // Samo neudomljene životinje
+                            .filter(animal -> !animal.isUdomljen() && !animal.isZahtjevUdomljavanja()) // Samo neudomljene životinje
                             .map(animal -> new IsBlockedAnimalModel(
                                     animal.getIdLjubimca(),
                                     animal.getIdUdomitelja(),
                                     animal.getImeLjubimca(),
-                                    type,
+                                    finalType,
                                     animal.getOpisLjubimca(),
                                     animal.isUdomljen(),
                                     animal.isZahtjevUdomljavanja(),
