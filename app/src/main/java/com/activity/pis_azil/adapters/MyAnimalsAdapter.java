@@ -98,8 +98,8 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
             holder.btnCancel.setVisibility(View.GONE);
         }
 
-        holder.btnReturn.setOnClickListener(v -> onReturnButtonClicked(animal, position));
-        holder.btnCancel.setOnClickListener(v -> onCancelButtonClicked(animal, position, v));
+        holder.btnReturn.setOnClickListener(v -> returnAnimal(animal.getId(), animal, animal.getId_ljubimca()));
+        holder.btnCancel.setOnClickListener(v -> onCancelButtonClicked(animal.getId(), animal, animal.getId_ljubimca()));
 
         holder.animalFrame.setOnClickListener(v -> {
             if (holder.animalFrame.isClickable() && !animal.isStatus_udomljavanja()) {
@@ -121,52 +121,37 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
         return Math.max(animalsList.size(), animalsList2.size());
     }
 
-
-    private void onReturnButtonClicked(UpdateDnevnikModel animal, int position) {
-        animal.setUdomljen(false); // Set Udomljen to false
-        animal.setId_korisnika(0);
-        //animalsList.remove(position); // Remove the animal from the list
-        //notifyItemRemoved(position); // Notify the adapter that the item is removed
-
-        apiService.updateAdoption(1, animal.getId_ljubimca(), animal).enqueue(new Callback<Void>() {
+    private void returnAnimal(int animalId, UpdateDnevnikModel animal, int adoptionId) {
+        apiService.updateAdoptionStatus(animalId, adoptionId).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     notifyDataSetChanged();
-                    Toast.makeText(context, "Životinja je vraćena!", Toast.LENGTH_SHORT).show();
-                    if (callback != null){
+                    Toast.makeText(context, "Životinja je vraćena u azil!", Toast.LENGTH_SHORT).show();
+
+                    if (callback != null) {
                         callback.fetchMyAnimals();
                     }
                 } else {
-                    try {
-                        String errorBody = response.errorBody().string();
-                        Toast.makeText(context, "Greška pri odobravanju: " + errorBody, Toast.LENGTH_LONG).show();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    Toast.makeText(context, "Greška pri vraćanju: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(context, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Greška pri vraćanju: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
-        String status = animal.isUdomljen() ? "nije vraćena" : "vraćena";
-        Toast.makeText(context, "Životinja je : " + status, Toast.LENGTH_SHORT).show();
     }
 
-    private void onCancelButtonClicked(UpdateDnevnikModel animal, int position, View v) {
-        MyAdoptionModel animal2 = new MyAdoptionModel();
-        animal2.setZahtjevUdomljavanja(false);  // Postavljanje zahtjeva za udomljavanje na false
-
-        apiService.deleteAdoption(animal.getId_ljubimca(), animal.getId_ljubimca()).enqueue(new Callback<Void>() {
+    private void onCancelButtonClicked(int animalId, UpdateDnevnikModel animal, int adoptionId) {
+        apiService.updateAdoptionStatus(animalId, adoptionId).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     notifyDataSetChanged();
-                    Toast.makeText(context, "Životinje više nije rezervirana!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Životinja više nije rezervirana!", Toast.LENGTH_SHORT).show();
+
                     if (callback != null){
                         callback.fetchMyAnimals();
                     }
@@ -182,7 +167,6 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                // Ako dođe do greške pri povezivanju sa serverom
                 Toast.makeText(context, "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
