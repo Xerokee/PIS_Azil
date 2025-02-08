@@ -45,6 +45,7 @@ public class AnimalsAdapter extends RecyclerView.Adapter<AnimalsAdapter.AnimalVi
         IsBlockedAnimalModel animal = animalsAdapterList.get(position);
         holder.animalName.setText(" " + animal.getImeLjubimca());
         holder.animalType.setText("  Tip: " + animal.getTipLjubimca());
+        holder.animalStatus.setText("  Status: " + "Raspoloživ");
 
         if (animal.getImgUrl() != null && !animal.getImgUrl().isEmpty()) {
             Glide.with(context)

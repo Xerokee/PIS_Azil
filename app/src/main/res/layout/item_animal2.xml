@@ -64,7 +64,7 @@
             android:id="@+id/animal_status"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="  Status: Raspoloživ"
+            android:text="  Status: "
             android:textStyle="bold"
             android:textSize="14sp"
             android:textColor="@android:color/black"
