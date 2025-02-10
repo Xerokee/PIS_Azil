@@ -251,6 +251,12 @@ public class ProfileFragment extends Fragment {
     }
 
     private void updateUserProfile() {
+        // Provjera da li je slika odabrana
+        if (imageUri == null) {
+            Toast.makeText(getContext(), "Molimo odaberite sliku prije ažuriranja profila", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         String KorisnickoIme = korisnickoIme.getText().toString().trim();
         String Ime = ime.getText().toString().trim();
         String Prezime = prezime.getText().toString().trim();
@@ -287,7 +293,7 @@ public class ProfileFragment extends Fragment {
                 if (response.isSuccessful()) {
                     Toast.makeText(getContext(), "Profil ažuriran", Toast.LENGTH_SHORT).show();
                     LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(ACTION_PROFILE_UPDATED));
-                    // Update local preferences
+                    // Ažuriranje lokalnih podataka
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putString("korisnickoIme", KorisnickoIme);
                     editor.putString("ime", Ime);
@@ -295,7 +301,7 @@ public class ProfileFragment extends Fragment {
                     editor.putString("email", Mail);
                     editor.putString("lozinka", Lozinka);
                     editor.apply();
-                    // Update UI
+                    // Ponovno učitavanje profila
                     loadUserProfile();
                 } else {
                     try {
