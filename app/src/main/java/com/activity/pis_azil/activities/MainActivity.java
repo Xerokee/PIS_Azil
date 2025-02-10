@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
         if (user.getProfileImg() != null && !user.getProfileImg().isEmpty()) {
             Glide.with(this).load(user.getProfileImg()).into(headerImg);
         } else {
-            headerImg.setImageResource(R.drawable.fruits);
+            headerImg.setImageResource(R.drawable.paw);
         }
     }
 
