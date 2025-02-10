@@ -1,5 +1,6 @@
 package com.activity.pis_azil.adapters;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -62,6 +63,7 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
         return new ViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         UpdateDnevnikModel animal = filteredAdoptedAnimalsList.get(position);
@@ -77,9 +79,6 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
             } else {
                 holder.adopterName.setText(" " + adopterName);
             }
-        } else {
-            holder.tvAdoptedStatus.setText("Dostupno za udomljavanje");
-            holder.adopterName.setText("");
         }
 
         // Provjeri da li je korisnik admin i sakrij gumb ako nije

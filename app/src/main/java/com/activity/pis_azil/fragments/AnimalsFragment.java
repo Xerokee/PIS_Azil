@@ -183,7 +183,7 @@ public class AnimalsFragment extends Fragment implements DataRefreshListener {
         typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         typeFilter.setAdapter(typeAdapter);
 
-        builder.setView(dialogView).setTitle("Filter Animals");
+        builder.setView(dialogView).setTitle("Filtriraj životinje");
 
         AlertDialog dialog = builder.create();
 

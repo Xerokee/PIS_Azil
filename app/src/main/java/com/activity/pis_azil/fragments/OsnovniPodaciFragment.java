@@ -3,6 +3,7 @@ package com.activity.pis_azil.fragments;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -57,7 +58,6 @@ public class OsnovniPodaciFragment extends Fragment {
     ApiService apiService;
     IsBlockedAnimalModel animalModel;
     private boolean isRequestInProgress = false;
-
 
     public OsnovniPodaciFragment() {
         // Required empty public constructor
@@ -123,9 +123,6 @@ public class OsnovniPodaciFragment extends Fragment {
                 }
             });
         }
-
-
-
         return view;
     }
 
@@ -185,7 +182,6 @@ public class OsnovniPodaciFragment extends Fragment {
         void onEmailFetched(String email);
     }
 
-
     // Metoda za admina - udomljavanje životinje za odabranog korisnika
     private void adoptAnimalForUser(int userId, String userName) {
         //Log.d(TAG, "Udomljavanje životinje za korisnika: " + userName);
@@ -240,11 +236,19 @@ public class OsnovniPodaciFragment extends Fragment {
         });
     }
 
-
-
-
     // Zajednička metoda za udomljavanje ili zahtjev za udomljavanje
     private void adoptAnimal(int userId, boolean requiresApproval) {
+        /*
+        View view = getView();
+        if (view == null) {
+            return;
+        }
+
+        Button btnAdopt = view.findViewById(R.id.buttonUdomi);
+
+        btnAdopt.setEnabled(false);
+        */
+
         if (animalModel == null) {
             //Log.e(TAG, "AnimalModel je null, prekidam proces.");
             return;
@@ -325,7 +329,6 @@ public class OsnovniPodaciFragment extends Fragment {
                                     Log.i("uspjesno", "uspjesno");
                                     Intent i = new Intent(getContext(), MainActivity.class);
                                     startActivity(i);
-
                                 } else {
                                     //Log.e(TAG, "Greška u procesu udomljavanja: " + response.message());
                                     Toast.makeText(getContext(), "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
@@ -447,6 +450,7 @@ public class OsnovniPodaciFragment extends Fragment {
 
     private void resetRequestState() {
         isRequestInProgress = false;
-        buttonUdomi.setEnabled(true);  // ponovno omogućimo gumb
+        buttonUdomi.setEnabled(false);
+        // buttonUdomi.setBackgroundColor(Color.GRAY);
     }
 }

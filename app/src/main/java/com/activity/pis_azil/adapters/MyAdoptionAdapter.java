@@ -499,7 +499,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                                                 if (response.isSuccessful()) {
                                                     //deleteItem(position);
                                                     MyAdoptionModel cartModel = cartModelList.get(position);
-                                                    apiService.deleteAdoption(1, cartModelList.get(position).getIdLjubimca()).enqueue(new Callback<Void>() {
+                                                    apiService.deleteAdoption(1, am.getIdLjubimca()).enqueue(new Callback<Void>() {
                                                         @Override
                                                         public void onResponse(Call<Void> call, Response<Void> response) {
                                                             if (response.isSuccessful()) {
@@ -507,7 +507,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                                                                 Log.d(TAG, "Animal deleted successfully, position: " + position);
                                                                 cartModelList.remove(position);
                                                                 notifyDataSetChanged();
-                                                                Toast.makeText(context, "Lista izbrisana", Toast.LENGTH_SHORT).show();
+                                                                Toast.makeText(context, "Udomljavanje odbijeno!", Toast.LENGTH_SHORT).show();
                                                             } else {
                                                                 try {
                                                                     String errorBody = response.errorBody().string();
@@ -516,7 +516,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                                                                     e.printStackTrace();
                                                                 }
                                                                 Log.e(TAG, "Error deleting animal: " + response.message());
-                                                                Toast.makeText(context, "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
+                                                                // Toast.makeText(context, "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                                                             }
                                                         }
 
@@ -530,7 +530,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                                                 } else {
                                                     try {
                                                         String errorBody = response.errorBody().string();
-                                                        //deleteItem(position);
+                                                        // deleteItem(position);
                                                         MyAdoptionModel cartModel = cartModelList.get(position);
                                                         apiService.deleteAdoption(1, cartModelList.get(position).getIdLjubimca()).enqueue(new Callback<Void>() {
                                                             @Override
@@ -584,8 +584,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                                     Log.e(TAG, "API poziv nije uspio: ", t);
                                 }
                             });
-
-
                             break;
                         }
                     }
@@ -599,7 +597,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             @Override
             public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
                 Log.e(TAG, "NISMO USPJELI POVEZAT 2", t);
-
             }
         });
     }

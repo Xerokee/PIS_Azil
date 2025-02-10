@@ -44,8 +44,7 @@
         <activity
             android:name=".activities.AnimalDetail2Activity"
             android:exported="false" />
-        <!--
- Strelica za nazad <activity
+        <!-- <activity
             android:name=".activities.AnimalDetailActivity"
             android:exported="false" />
             !

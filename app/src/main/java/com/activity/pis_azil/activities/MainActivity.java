@@ -128,6 +128,15 @@ public class MainActivity extends AppCompatActivity {
         fetchUserData();
     }
 
+    // Osvježavanje podataka pri svakoj promjeni stanja aktivnosti
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Osvježi podatke o korisniku svaki put kad se aktivnost ponovo pojavi
+        fetchUserData();
+    }
+
     private void updateNavigationHeader(UserModel user, TextView headerUserName, TextView headerEmail, CircleImageView headerImg) {
         headerUserName.setText(user.getKorisnickoIme());
         headerEmail.setText(user.getEmail());
