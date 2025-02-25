@@ -85,6 +85,7 @@ dependencies {
     implementation("com.google.api-client:google-api-client:1.31.1")
     implementation("com.google.oauth-client:google-oauth-client-jetty:1.31.1")
     implementation("com.google.apis:google-api-services-gmail:v1-rev110-1.25.0")
+    implementation("androidx.biometric:biometric:1.1.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

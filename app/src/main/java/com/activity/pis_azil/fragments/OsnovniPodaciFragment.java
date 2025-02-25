@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -326,6 +328,13 @@ public class OsnovniPodaciFragment extends Fragment {
                                     //resultIntent.putExtra("udomljena_zivotinja_id", animalModel.getIdLjubimca());
                                     //setResult(RESULT_OK, resultIntent);
                                     //finish();
+                                    /*
+                                    NavController navController = ((NavHostFragment) getActivity()
+                                            .getSupportFragmentManager()
+                                            .findFragmentById(R.id.nav_host_fragment))
+                                            .getNavController();
+                                    navController.navigate(R.id.action_global_homeFragment);
+                                     */
                                     Log.i("uspjesno", "uspjesno");
                                     Intent i = new Intent(getContext(), MainActivity.class);
                                     startActivity(i);

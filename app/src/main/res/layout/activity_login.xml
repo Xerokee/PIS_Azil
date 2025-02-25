@@ -78,6 +78,45 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/login_password" />
 
+        <ProgressBar
+            android:id="@+id/progressbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:scaleY=".5"
+            android:scaleX=".5"
+            app:layout_constraintTop_toBottomOf="@+id/sign_up"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <TextView
+            android:id="@+id/textinput"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ILI"
+            android:textSize="30dp"
+            android:textStyle="bold"
+            android:textColor="@color/green_200"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/login_btn" />
+
+        <Button
+            android:id="@+id/biometric_login_btn"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:padding="14dp"
+            android:text="Prijava biometrijom"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/green_700"
+            android:textSize="18sp"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textinput" />
+
         <TextView
             android:id="@+id/textView"
             android:layout_width="wrap_content"
@@ -86,7 +125,7 @@
             android:textColor="#076308"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@+id/login_btn"
+            app:layout_constraintTop_toBottomOf="@+id/biometric_login_btn"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintVertical_bias="0.09" />
@@ -100,17 +139,6 @@
             android:textStyle="bold"
             android:textColor="@color/green_700"
             app:layout_constraintTop_toBottomOf="@+id/textView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <ProgressBar
-            android:id="@+id/progressbar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:scaleY=".5"
-            android:scaleX=".5"
-            app:layout_constraintTop_toBottomOf="@+id/sign_up"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

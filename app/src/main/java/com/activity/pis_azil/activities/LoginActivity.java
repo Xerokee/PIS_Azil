@@ -11,6 +11,12 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.biometric.BiometricManager;
+import androidx.biometric.BiometricPrompt;
+import androidx.core.content.ContextCompat;
+
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.models.UserByEmailResponseModel;
 import com.activity.pis_azil.models.UserModel;
@@ -18,6 +24,7 @@ import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 
 import java.io.IOException;
+import java.util.concurrent.Executor;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -25,16 +32,19 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LoginActivity extends AppCompatActivity {
-    Button signIn;
+    Button signIn, biometricLogin;
     EditText email, lozinka;
     TextView signUp;
     ApiService apiService;
     ProgressBar progressBar;
+    SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
 
         apiService = ApiClient.getClient().create(ApiService.class);
 
@@ -45,6 +55,7 @@ public class LoginActivity extends AppCompatActivity {
         email = findViewById(R.id.login_email);
         lozinka = findViewById(R.id.login_password);
         signUp = findViewById(R.id.sign_up);
+        biometricLogin = findViewById(R.id.biometric_login_btn);
 
         signUp.setOnClickListener(v -> startActivity(new Intent(LoginActivity.this, RegistrationActivity.class)));
 
@@ -52,6 +63,98 @@ public class LoginActivity extends AppCompatActivity {
             loginUser();
             progressBar.setVisibility(View.VISIBLE);
         });
+
+        // Biometrijska prijava
+        biometricLogin.setOnClickListener(v -> authenticateWithBiometrics());
+
+        // Provjeri podržava li uređaj biometriju
+        checkBiometricSupport();
+    }
+
+    private void checkBiometricSupport() {
+        BiometricManager biometricManager = BiometricManager.from(this);
+        switch (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
+            case BiometricManager.BIOMETRIC_SUCCESS:
+                int userId = preferences.getInt("biometric_user_id", -1);
+                if (userId != 0) {
+                    biometricLogin.setVisibility(View.VISIBLE);
+                } else {
+                    biometricLogin.setVisibility(View.GONE);
+                }
+                break;
+            default:
+                biometricLogin.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    private void authenticateWithBiometrics() {
+        Executor executor = ContextCompat.getMainExecutor(this);
+        BiometricPrompt biometricPrompt = new BiometricPrompt(LoginActivity.this, executor, new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+                runOnUiThread(() -> {
+                    Toast.makeText(LoginActivity.this, "Biometrijska autentifikacija uspješna!", Toast.LENGTH_SHORT).show();
+                    autoLogin();
+                });
+            }
+
+            @Override
+            public void onAuthenticationFailed() {
+                super.onAuthenticationFailed();
+                runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Autentifikacija nije uspjela", Toast.LENGTH_SHORT).show());
+            }
+        });
+
+        BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Biometrijska prijava")
+                .setSubtitle("Prijavite se pomoću otiska prsta")
+                .setNegativeButtonText("Odustani")
+                .build();
+
+        biometricPrompt.authenticate(promptInfo);
+    }
+
+    private void autoLogin() {
+        int userId = preferences.getInt("biometric_user_id", 1); // Dohvati spremljeni ID
+        Log.d("LoginActivity", "Biometric User ID: " + userId);
+
+        if (userId != -1) {
+            apiService.getUserById(userId).enqueue(new Callback<UserByEmailResponseModel>() {
+                @Override
+                public void onResponse(Call<UserByEmailResponseModel> call, Response<UserByEmailResponseModel> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        UserByEmailResponseModel userByEmailResponseModel = response.body();
+                        UserModel user = userByEmailResponseModel.getResult();
+
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putInt("id_korisnika", user.getIdKorisnika());
+                        editor.putString("ime", user.getIme());
+                        editor.putString("email", user.getEmail());
+                        editor.putBoolean("admin", user.isAdmin());
+                        editor.putString("profileImg", user.getProfileImg());
+                        editor.putInt("biometric_user_id", user.getIdKorisnika());
+                        editor.apply();
+
+                        Toast.makeText(LoginActivity.this, "Prijavljen kao " + user.getIme() + " " +  user.getPrezime(), Toast.LENGTH_SHORT).show();
+
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        intent.putExtra("korisnikId", String.valueOf(user.getIdKorisnika()));
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Korisnik nije pronađen", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                @Override
+                public void onFailure(Call<UserByEmailResponseModel> call, Throwable t) {
+                    Toast.makeText(LoginActivity.this, "Greška prilikom prijave", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            Toast.makeText(this, "Nema spremljenog korisnika za prijavu", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void loginUser() {
@@ -97,6 +200,7 @@ public class LoginActivity extends AppCompatActivity {
                                             editor.putString("lozinka", user.getLozinka());
                                             editor.putBoolean("admin", user.isAdmin());
                                             editor.putString("profileImg", user.getProfileImg());
+                                            editor.putInt("biometric_user_id", user.getIdKorisnika());
                                             editor.apply();
 
                                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
