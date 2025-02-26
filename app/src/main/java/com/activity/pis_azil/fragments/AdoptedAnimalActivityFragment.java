@@ -1,37 +1,33 @@
 package com.activity.pis_azil.fragments;
 
-import android.annotation.SuppressLint;
-import android.app.DatePickerDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.os.Handler;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.models.Aktivnost;
-import com.activity.pis_azil.models.AnimalModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.network.HttpRequestResponseList;
-import com.orhanobut.dialogplus.DialogPlus;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -45,6 +41,8 @@ public class AdoptedAnimalActivityFragment extends Fragment {
     TextView tvNemaAktivnosti;
     List<Aktivnost> listaAktivnosti = new ArrayList<>();
     ApiService apiService;
+    private BroadcastReceiver aktivnostReceiver;
+
     public AdoptedAnimalActivityFragment() {
         // Required empty public constructor
     }
@@ -57,6 +55,27 @@ public class AdoptedAnimalActivityFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Inicijalizacija broadcast receivera
+        aktivnostReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                int receivedAnimalId = intent.getIntExtra("animalId", -1);
+
+                // Provjerimo je li obavijest za ovu životinju
+                if (receivedAnimalId == animalId) {
+                    String aktivnost = intent.getStringExtra("aktivnost");
+                    String datum = intent.getStringExtra("datum");
+
+                    // Prikazujemo Toast obavijest
+                    Toast.makeText(getContext(),
+                            "Nova aktivnost za životinju: " + aktivnost + " (" + datum + ")",
+                            Toast.LENGTH_LONG).show();
+
+                    // Osvježavamo popis aktivnosti
+                    refreshPopisAktivnosti();
+                }
+            }
+        };
     }
 
     @Override
@@ -67,11 +86,9 @@ public class AdoptedAnimalActivityFragment extends Fragment {
         linearLayoutAktivnosti = view.findViewById(R.id.linearLayoutAktivnosti);
         tvNemaAktivnosti = view.findViewById(R.id.tvNemaAktivnosti);
 
-
         apiService = ApiClient.getClient().create(ApiService.class);
 
         refreshPopisAktivnosti();
-
 
         return view;
     }
@@ -110,6 +127,16 @@ public class AdoptedAnimalActivityFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        // Registriramo receiver kad je fragment vidljiv
+        LocalBroadcastManager.getInstance(getContext())
+                .registerReceiver(aktivnostReceiver, new IntentFilter("com.activity.pis_azil.NOVA_AKTIVNOST"));
         refreshPopisAktivnosti();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // Odregistriramo receiver kad fragment nije vidljiv
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(aktivnostReceiver);
     }
 }

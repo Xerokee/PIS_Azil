@@ -107,7 +107,15 @@ public class ProfileFragment extends Fragment {
     private void logoutUser() {
         SharedPreferences preferences = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
+
+        int biometricUserId = preferences.getInt("biometric_user_id", -1);
+
         editor.clear();
+
+        if (biometricUserId != -1) {
+            editor.putInt("biometric_user_id", biometricUserId);
+        }
+
         editor.apply();
 
         Intent intent = new Intent(requireContext(), HomeActivity.class);

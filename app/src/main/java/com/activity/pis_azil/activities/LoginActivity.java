@@ -76,11 +76,23 @@ public class LoginActivity extends AppCompatActivity {
         switch (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG)) {
             case BiometricManager.BIOMETRIC_SUCCESS:
                 int userId = preferences.getInt("biometric_user_id", -1);
-                if (userId != 0) {
+                if (userId != -1) {
                     biometricLogin.setVisibility(View.VISIBLE);
                 } else {
                     biometricLogin.setVisibility(View.GONE);
                 }
+                break;
+            case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE:
+                Toast.makeText(this, "Ovaj uređaj ne podržava biometrijsku autentifikaciju", Toast.LENGTH_SHORT).show();
+                biometricLogin.setVisibility(View.GONE);
+                break;
+            case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE:
+                Toast.makeText(this, "Biometrijski senzor trenutno nije dostupan", Toast.LENGTH_SHORT).show();
+                biometricLogin.setVisibility(View.GONE);
+                break;
+            case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED:
+                Toast.makeText(this, "Nema registriranih biometrijskih podataka na uređaju", Toast.LENGTH_SHORT).show();
+                biometricLogin.setVisibility(View.GONE);
                 break;
             default:
                 biometricLogin.setVisibility(View.GONE);
@@ -137,7 +149,7 @@ public class LoginActivity extends AppCompatActivity {
                         editor.putInt("biometric_user_id", user.getIdKorisnika());
                         editor.apply();
 
-                        Toast.makeText(LoginActivity.this, "Prijavljen kao " + user.getIme() + " " +  user.getPrezime(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Prijava korisnika " + user.getIme() + " " +  user.getPrezime(), Toast.LENGTH_SHORT).show();
 
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         intent.putExtra("korisnikId", String.valueOf(user.getIdKorisnika()));
@@ -200,8 +212,12 @@ public class LoginActivity extends AppCompatActivity {
                                             editor.putString("lozinka", user.getLozinka());
                                             editor.putBoolean("admin", user.isAdmin());
                                             editor.putString("profileImg", user.getProfileImg());
+
                                             editor.putInt("biometric_user_id", user.getIdKorisnika());
+
                                             editor.apply();
+
+                                            checkBiometricSupport();
 
                                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                             intent.putExtra("user_data", user); // pass user data to MainActivity

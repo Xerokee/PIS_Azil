@@ -149,5 +149,4 @@ public interface ApiService {
 
     @PUT ("KucniLjubimci/{id}/udomljen")
     Call<Void> adoptAnimalByAdmin (@Path("id") int id);
-
 }

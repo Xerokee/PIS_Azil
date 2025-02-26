@@ -2,6 +2,7 @@ package com.activity.pis_azil.fragments;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -22,12 +23,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.models.Aktivnost;
 import com.activity.pis_azil.models.AnimalModel;
 import com.activity.pis_azil.models.IsBlockedAnimalModel;
-import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
 import com.activity.pis_azil.network.HttpRequestResponseList;
@@ -185,11 +186,18 @@ public class AnimalActivityFragment extends Fragment {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         if (response.isSuccessful()) {
+                            // Slanje broadcasta s informacijama o novoj aktivnosti
+                            Intent intent = new Intent("com.activity.pis_azil.NOVA_AKTIVNOST");
+                            intent.putExtra("animalId", animalId);
+                            intent.putExtra("aktivnost", selectedActivity);
+                            intent.putExtra("datum", inputDateActivity.getText().toString());
+                            LocalBroadcastManager.getInstance(getContext()).sendBroadcast(intent);
+
                             Toast.makeText(getContext(), "Aktivnost uspješno dodana.", Toast.LENGTH_SHORT).show();
                             new Handler().postDelayed(() -> {
                                 dialogPlus.dismiss();
                                 inputDescriptionActivity.setText("");
-                                refreshPopisAktivnosti(); // Refresh the activity list
+                                refreshPopisAktivnosti();
                             }, 3000);
                         }
                     }
