@@ -39,10 +39,8 @@ import static android.app.Activity.RESULT_OK;
 import java.io.IOException;
 
 public class NewUsersFragment extends Fragment {
-
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int REQUEST_USER_ID = 1; // Ovdje definiramo RequestUserId
-
     private EditText etName, etSurname, etUsername, etMail, etPassword;
     private ImageView ivUserImage;
     private Uri imageUri;
@@ -61,7 +59,7 @@ public class NewUsersFragment extends Fragment {
 
         apiService = ApiClient.getClient().create(ApiService.class);
 
-        etUsername = root.findViewById(R.id.editTextName);
+        etName = root.findViewById(R.id.editTextName);
         etSurname = root.findViewById(R.id.editTextSurname);
         etUsername = root.findViewById(R.id.editTextUsername);
         etMail = root.findViewById(R.id.editTextMail);

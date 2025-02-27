@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:padding="32dp">
+    android:padding="32dp"
+    android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,7 +18,10 @@
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:hint="Ime korisnika"
-            android:padding="16dp" />
+            android:padding="16dp"
+            android:textColorHint="@color/black"
+            android:background="@drawable/edit_text_border"
+            android:layout_marginBottom="12dp"/>
 
         <EditText
             android:id="@+id/editTextSurname"
@@ -25,7 +29,10 @@
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:hint="Prezime korisnika"
-            android:padding="16dp" />
+            android:padding="16dp"
+            android:textColorHint="@color/black"
+            android:background="@drawable/edit_text_border"
+            android:layout_marginBottom="12dp"/>
 
         <EditText
             android:id="@+id/editTextUsername"
@@ -33,7 +40,10 @@
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:hint="Korisničko ime korisnika"
-            android:padding="16dp" />
+            android:padding="16dp"
+            android:textColorHint="@color/black"
+            android:background="@drawable/edit_text_border"
+            android:layout_marginBottom="12dp"/>
 
         <EditText
             android:id="@+id/editTextMail"
@@ -41,7 +51,10 @@
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:hint="E-mail korisnika"
-            android:padding="16dp" />
+            android:padding="16dp"
+            android:textColorHint="@color/black"
+            android:background="@drawable/edit_text_border"
+            android:layout_marginBottom="12dp"/>
 
         <EditText
             android:id="@+id/editTextPassword"
@@ -50,7 +63,10 @@
             android:textSize="18sp"
             android:hint="Lozinka korisnika"
             android:inputType="textPassword"
-            android:padding="16dp" />
+            android:padding="16dp"
+            android:textColorHint="@color/black"
+            android:background="@drawable/edit_text_border"
+            android:layout_marginBottom="12dp"/>
 
         <ImageView
             android:id="@+id/imageViewUser"
@@ -66,7 +82,8 @@
             android:layout_height="wrap_content"
             android:text="Dodaj korisnika"
             android:textSize="18sp"
-            android:layout_marginTop="24dp" />
+            android:layout_marginTop="24dp"
+            android:background="@color/green_200"/>
 
     </LinearLayout>
 </ScrollView>

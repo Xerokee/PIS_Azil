@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="6dp"
+    app:cardBackgroundColor="@color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:id="@+id/user_frame">
+
+        <ImageView
+            android:id="@+id/user_image"
+            android:layout_width="110dp"
+            android:layout_height="120dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/menu_person"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/button_layout" />
+
+        <TextView
+            android:id="@+id/user_id"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="ID"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textColor="@android:color/black"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/user_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="start"
+            android:layout_marginStart="12dp" />
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Ime: Ana"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/user_id"
+            app:layout_constraintStart_toEndOf="@id/user_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="start"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="12dp" />
+
+        <TextView
+            android:id="@+id/user_surname"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Prezime: Anić"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/user_name"
+            app:layout_constraintStart_toEndOf="@id/user_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="start"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="12dp" />
+
+        <TextView
+            android:id="@+id/user_nickname"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Korisničko ime: AnaA123"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/user_surname"
+            app:layout_constraintStart_toEndOf="@id/user_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="start"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="12dp" />
+
+        <TextView
+            android:id="@+id/user_email"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Email: ana.anic@mail.com"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/user_nickname"
+            app:layout_constraintStart_toEndOf="@id/user_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="start"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="12dp" />
+
+        <TextView
+            android:id="@+id/user_password"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Lozinka: Ana123"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/user_email"
+            app:layout_constraintStart_toEndOf="@id/user_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="start"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="12dp" />
+
+        <TextView
+            android:id="@+id/user_admin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Admin: Ne"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/user_password"
+            app:layout_constraintStart_toEndOf="@id/user_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:gravity="start"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="12dp" />
+
+        <!-- Buttons for Edit and Delete -->
+        <LinearLayout
+            android:id="@+id/button_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@id/user_admin"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/edit_user"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="Uredi"
+                android:textColor="@android:color/white"
+                android:background="@color/teal_200"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/delete_user"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:text="Obriši"
+                android:textColor="@android:color/white"
+                android:background="@color/red"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:layout_marginStart="8dp" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
