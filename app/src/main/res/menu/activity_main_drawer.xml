@@ -17,6 +17,10 @@
             android:icon="@drawable/ic_admin_menu"
             android:title="Admin postavke" />
         <item
+            android:id="@+id/nav_admin_dashboard"
+            android:icon="@drawable/baseline_stacked_line_chart_24"
+            android:title="Statistički prikaz" />
+        <item
             android:id="@+id/nav_new_products"
             android:icon="@drawable/autorenew"
             android:title="@string/nove_ivotinje" />

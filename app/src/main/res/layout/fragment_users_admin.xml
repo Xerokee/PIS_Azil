@@ -23,6 +23,7 @@
         android:text="Dodavanje korisnika"
         android:textColor="@color/black"
         android:textSize="16sp"
+        android:textStyle="bold"
         android:layout_margin="16dp"
         android:background="@drawable/button_green_border"
         app:layout_constraintBottom_toBottomOf="parent"

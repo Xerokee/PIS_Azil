@@ -75,7 +75,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="E-mail:"
+            android:text="Email:"
             android:textSize="18sp"
             android:layout_marginTop="16dp"
             android:textColor="@color/black"/>
@@ -85,7 +85,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:hint="E-mail korisnika"
+            android:hint="Email korisnika"
             android:textColorHint="@color/black"
             android:padding="16dp"
             android:textColor="@color/black"
@@ -163,7 +163,9 @@
             android:layout_height="wrap_content"
             android:text="Ažuriraj korisnika"
             android:textSize="18sp"
+            android:textStyle="bold"
             android:layout_marginTop="19dp"
-            android:background="@color/green_200"/>
+            android:background="@color/green_200"
+            android:textColor="@color/black"/>
     </LinearLayout>
 </ScrollView>

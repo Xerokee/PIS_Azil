@@ -82,8 +82,9 @@
             android:layout_height="wrap_content"
             android:text="Dodaj korisnika"
             android:textSize="18sp"
+            android:textStyle="bold"
             android:layout_marginTop="24dp"
-            android:background="@color/green_200"/>
-
+            android:background="@color/green_200"
+            android:textColor="@color/black"/>
     </LinearLayout>
 </ScrollView>

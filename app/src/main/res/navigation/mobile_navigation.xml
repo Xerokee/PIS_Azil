@@ -40,6 +40,12 @@
         tools:layout="@layout/user_item_admin" />
 
     <fragment
+        android:id="@+id/nav_admin_dashboard"
+        android:name="com.activity.pis_azil.fragments.DashboardFragment"
+        android:label="Statistički prikaz"
+        tools:layout="@layout/fragment_dashboard" />
+
+    <fragment
         android:id="@+id/nav_new_products"
         android:name="com.activity.pis_azil.fragments.NewAnimalsFragment"
         android:label="Nove Životinje"
