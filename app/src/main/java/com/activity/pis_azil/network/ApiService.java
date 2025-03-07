@@ -5,6 +5,7 @@ import com.activity.pis_azil.models.RejectAdoptionModel;
 import com.activity.pis_azil.models.RejectAdoptionModelRead;
 import com.activity.pis_azil.models.SifrTipLjubimca;
 import com.activity.pis_azil.models.SlikaModel;
+import com.activity.pis_azil.models.StatistikaModel;
 import com.activity.pis_azil.models.UpdateAnimalModel;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserByEmailResponseModel;
@@ -149,4 +150,7 @@ public interface ApiService {
 
     @PUT ("KucniLjubimci/{id}/udomljen")
     Call<Void> adoptAnimalByAdmin (@Path("id") int id);
+
+    @GET("Statistika")
+    Call<HttpRequestResponse<StatistikaModel>> getStatistika();
 }

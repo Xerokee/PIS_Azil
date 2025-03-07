@@ -50,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="18sp"
-            android:hint="E-mail korisnika"
+            android:hint="Email korisnika"
             android:padding="16dp"
             android:textColorHint="@color/black"
             android:background="@drawable/edit_text_border"

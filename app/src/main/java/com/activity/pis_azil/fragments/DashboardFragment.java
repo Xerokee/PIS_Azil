@@ -1,6 +1,8 @@
 package com.activity.pis_azil.fragments;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +13,13 @@ import androidx.fragment.app.Fragment;
 
 import com.activity.pis_azil.R;
 import com.activity.pis_azil.models.AnimalModel;
+import com.activity.pis_azil.models.StatistikaModel;
 import com.activity.pis_azil.models.UpdateDnevnikModel;
+import com.activity.pis_azil.models.UserByEmailResponseModel;
+import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
+import com.activity.pis_azil.network.HttpRequestResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +30,12 @@ import retrofit2.Response;
 
 public class DashboardFragment extends Fragment {
 
-    private TextView tvTotalAnimals, tvAdoptedAnimals, tvAvailableAnimals;
+    private TextView tvTotalAnimals, tvAdoptedAnimals, tvAvailableAnimals, tvRequest, tvDeclineRequest;
     private ApiService apiService;
 
     public DashboardFragment() {}
 
+    @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -36,6 +43,8 @@ public class DashboardFragment extends Fragment {
         tvTotalAnimals = root.findViewById(R.id.tvTotalAnimals);
         tvAdoptedAnimals = root.findViewById(R.id.tvAdoptedAnimals);
         tvAvailableAnimals = root.findViewById(R.id.tvAvailableAnimals);
+        tvRequest = root.findViewById(R.id.tvRequest);
+        tvDeclineRequest = root.findViewById(R.id.tvDeclineRequest);
 
         apiService = ApiClient.getClient().create(ApiService.class);
 
@@ -45,38 +54,26 @@ public class DashboardFragment extends Fragment {
     }
 
     private void fetchAnimalStatistics() {
-        // Pozivamo API za dobijanje svih životinja
-        apiService.getAllAnimals().enqueue(new Callback<List<AnimalModel>>() {
+        apiService.getStatistika().enqueue(new Callback<HttpRequestResponse<StatistikaModel>>() {
             @Override
-            public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
+            public void onResponse(Call<HttpRequestResponse<StatistikaModel>> call, Response<HttpRequestResponse<StatistikaModel>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<AnimalModel> animals = response.body();
+                    StatistikaModel statistika = response.body().getResult();
+                    Log.i("statistika",String.valueOf(statistika));
+                    tvTotalAnimals.setText(String.valueOf(statistika.getBroj_zivotinja()));
+                    tvAdoptedAnimals.setText(String.valueOf(statistika.getUdomljene_zivotinje()));
+                    tvAvailableAnimals.setText(String.valueOf(statistika.getRaspolozive_zivotinje()));
+                    tvRequest.setText(String.valueOf(statistika.getBroj_zahtjeva()));
+                    tvDeclineRequest.setText(String.valueOf(statistika.getBroj_odbijenih_zahtjeva()));
 
-                    int totalAnimals = animals.size();
-                    int adoptedAnimals = 1;
-                    int availableAnimals = -1;
-
-                    // Provodimo filtriranje na osnovu udomljavanja u dnevničkom zapisu
-                    for (AnimalModel animal : animals) {
-                        if (animal.isUdomljen()) {
-                            adoptedAnimals++;
-                        } else {
-                            availableAnimals++;
-                        }
-                    }
-
-                    // Prikazujemo statistiku
-                    tvTotalAnimals.setText("Ukupan broj životinja: " + totalAnimals);
-                    tvAdoptedAnimals.setText("Broj udomljenih životinja: " + adoptedAnimals);
-                    tvAvailableAnimals.setText("Broj raspoloživih životinja: " + availableAnimals);
                 } else {
-                    Toast.makeText(getContext(), "Greška pri učitavanju statistike", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Greška pri učitavanju statistike.", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
-                Toast.makeText(getContext(), "Greška pri povezivanju s serverom", Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<HttpRequestResponse<StatistikaModel>> call, Throwable t) {
+                Toast.makeText(getContext(), "Greška pri učitavanju statistike.", Toast.LENGTH_SHORT).show();
             }
         });
     }
