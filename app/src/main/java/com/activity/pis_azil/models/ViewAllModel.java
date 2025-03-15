@@ -27,9 +27,9 @@ public class ViewAllModel {
     @SerializedName("Dob")
     private int dob;
     @SerializedName("Boja")
-    private String boja;
+    private int boja;
 
-    public ViewAllModel(String imeLjubimca, String opisLjubimca, String imgUrl, int tipLjubimca, int dob, String boja) {
+    public ViewAllModel(String imeLjubimca, String opisLjubimca, String imgUrl, int tipLjubimca, int dob, int boja) {
         this.imeLjubimca = imeLjubimca;
         this.opisLjubimca = opisLjubimca;
         this.imgUrl = imgUrl;
@@ -98,6 +98,6 @@ public class ViewAllModel {
     public int getDob() { return dob; }
     public void setDob(int dob) { this.dob = dob; }
 
-    public String getBoja() { return boja; }
-    public void setBoja(String boja) { this.boja = boja; }
+    public int getBoja() { return boja; }
+    public void setBoja(int boja) { this.boja = boja; }
 }

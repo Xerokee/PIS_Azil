@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "11441286255",
+    "project_id": "pis-azil",
+    "storage_bucket": "pis-azil.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:11441286255:android:fc83408f0bf0d0ffc4719a",
+        "android_client_info": {
+          "package_name": "com.activity.pis_azil"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATpnBXhx4efae7A_P5x-8x9DSfudMlQow"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

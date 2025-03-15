@@ -50,6 +50,13 @@
             <item>Smeđa</item>
         </string-array>
 
+        <string-array name="animal_colors2">
+            <item>Boja životinje</item>
+            <item>Crna</item>
+            <item>Bijela</item>
+            <item>Smeđa</item>
+        </string-array>
+
         <string-array name="animal_types2">
             <item>Svi</item>
             <item>Pas</item>

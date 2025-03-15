@@ -41,6 +41,7 @@ import com.activity.pis_azil.models.UpdateDnevnikModel;
 import com.activity.pis_azil.models.UserModel;
 import com.activity.pis_azil.network.ApiClient;
 import com.activity.pis_azil.network.ApiService;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
@@ -104,6 +105,7 @@ public class HomeFragment extends Fragment {
         getTipoveLjubimaca();
         //loadAllAnimals();
         // loadAllAdoptedAnimals();
+        getToken();
 
         // Add listener for search box
         searchBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -707,5 +709,17 @@ public class HomeFragment extends Fragment {
                 Log.e(TAG, "Failed to fetch blocked animals", t);
             }
         });
+    }
+
+    private void getToken(){
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("FCM", "Fetching FCM registration token failed", task.getException());
+                        return;
+                    }
+                    String token = task.getResult();
+                    Log.i("FCM", "Token: " + token);
+                });
     }
 }
