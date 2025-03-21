@@ -228,16 +228,6 @@ public class HomeFragment extends Fragment {
         progressBar.setVisibility(View.GONE);
     }
 
-    // Method to get the integer ID of the pet type based on the name
-    private Integer getTypeIdByName(String name) {
-        for (SifrTipLjubimca tip : tipLjubimcaList) {
-            if (tip.getNaziv().equalsIgnoreCase(name)) {
-                return tip.getId(); // Assuming 'getSifra()' returns the integer ID for the type
-            }
-        }
-        return null; // Return null if no match found, indicating "All types"
-    }
-
     private String getTypeNameById(int id) {
         for (SifrTipLjubimca tip : tipLjubimcaList) {
             if (tip.getId() == id) {

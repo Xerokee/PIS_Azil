@@ -11,7 +11,9 @@
         android:layout_weight="1"
         android:text="ID korisnika"
         android:textSize="16sp"
-        android:padding="8dp"/>
+        android:textStyle="bold"
+        android:padding="8dp"
+        android:textColor="@color/black"/>
 
     <TextView
         android:id="@+id/content"
@@ -20,12 +22,15 @@
         android:layout_weight="2"
         android:text="Ime ljubimca"
         android:textSize="16sp"
-        android:padding="8dp"/>
+        android:textStyle="bold"
+        android:padding="8dp"
+        android:textColor="@color/black"/>
 
     <Button
         android:id="@+id/actionButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Odblokiraj" />
+        android:text="Odblokiraj"
+        android:textStyle="bold"/>
 </LinearLayout>
 
