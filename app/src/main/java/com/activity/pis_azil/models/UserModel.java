@@ -12,8 +12,9 @@ public class UserModel implements Serializable {
     public boolean admin;
     public String profileImg;
     private UserRoleModel userRole;
+    private String token;
 
-    public UserModel(int id_korisnika, String korisnickoIme, String ime, String prezime, String email, String lozinka, boolean admin, String profileImg) {
+    public UserModel(int id_korisnika, String korisnickoIme, String ime, String prezime, String email, String lozinka, boolean admin, String profileImg, String token) {
         this.id_korisnika = id_korisnika;
         this.korisnickoIme = korisnickoIme;
         this.ime = ime;
@@ -22,6 +23,7 @@ public class UserModel implements Serializable {
         this.lozinka = lozinka;
         this.admin = admin;
         this.profileImg = profileImg;
+        this.token = token;
     }
 
     public UserModel() {
@@ -99,5 +101,13 @@ public class UserModel implements Serializable {
     public void setUserRole(UserRoleModel userRole) {
         this.userRole = userRole;
         this.admin = userRole.isAdmin();
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

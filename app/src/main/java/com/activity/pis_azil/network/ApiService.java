@@ -157,4 +157,7 @@ public interface ApiService {
 
     @GET("Statistika")
     Call<HttpRequestResponse<StatistikaModel>> getStatistika();
+
+    @GET("Token/{email}")
+    Call<String> getToken(@Path("email") String email);
 }

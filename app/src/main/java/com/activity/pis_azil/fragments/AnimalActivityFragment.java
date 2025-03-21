@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,8 +30,13 @@ import com.activity.pis_azil.R;
 import com.activity.pis_azil.models.Aktivnost;
 import com.activity.pis_azil.models.AnimalModel;
 import com.activity.pis_azil.models.IsBlockedAnimalModel;
+import com.activity.pis_azil.models.MessageModel;
+import com.activity.pis_azil.models.NotificationBodyModel;
+import com.activity.pis_azil.models.NotificationModel;
 import com.activity.pis_azil.network.ApiClient;
+import com.activity.pis_azil.network.ApiClientToken;
 import com.activity.pis_azil.network.ApiService;
+import com.activity.pis_azil.network.ApiServiceToken;
 import com.activity.pis_azil.network.HttpRequestResponseList;
 import com.orhanobut.dialogplus.DialogPlus;
 
@@ -50,8 +56,10 @@ public class AnimalActivityFragment extends Fragment {
     ImageButton addAktivnost;
     AnimalModel detailedActivity;
     ApiService apiService;
+    ApiServiceToken apiServiceToken;
     IsBlockedAnimalModel animalModel;
     int animalId;
+    String token;
 
     public AnimalActivityFragment() {
         // Required empty public constructor
@@ -82,6 +90,7 @@ public class AnimalActivityFragment extends Fragment {
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         apiService = ApiClient.getClient().create(ApiService.class);
+        apiServiceToken = ApiClientToken.getClient().create(ApiServiceToken.class);
 
         loadActivityLog();
         refreshPopisAktivnosti();
@@ -204,6 +213,35 @@ public class AnimalActivityFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<Void> call, Throwable t) {
+                        Toast.makeText(getContext(), "Greška u API pozivu.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                apiService.getToken("matija.margeta@vuv.hr").enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        if (response.isSuccessful()) {
+                            token = response.body();
+                            Log.i("token", response.body());
+                            NotificationBodyModel notification = new NotificationBodyModel("Test notification", "test body notification");
+                            MessageModel messageModel = new MessageModel(token, notification);
+                            NotificationModel notificationModel = new NotificationModel(messageModel);
+                            apiServiceToken.sendNotification(notificationModel).enqueue(new Callback<Void>() {
+                                @Override
+                                public void onResponse(Call<Void> call, Response<Void> response) {
+                                    Log.i("uspješno", response.message());
+                                }
+
+                                @Override
+                                public void onFailure(Call<Void> call, Throwable t) {
+                                    Log.i("neuspješno", t.getMessage());
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
                         Toast.makeText(getContext(), "Greška u API pozivu.", Toast.LENGTH_SHORT).show();
                     }
                 });
