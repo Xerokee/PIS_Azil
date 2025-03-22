@@ -110,7 +110,7 @@ public class AdoptedAnimalActivityFragment extends Fragment {
                             tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
                             tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                             tv.setTextSize(18);
-                            tv.setTextColor(Color.parseColor("#FFFFFF"));
+                            tv.setTextColor(Color.parseColor("#FF000000"));
                             linearLayoutAktivnosti.addView(tv);
                         }
                     }

@@ -9,8 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="32dp"
-        android:gravity="center">
+        android:padding="32dp">
 
         <!-- Ime korisnika -->
         <TextView
@@ -129,7 +128,8 @@
             android:orientation="horizontal"
             android:padding="16dp"
             android:gravity="center"
-            android:layout_marginRight="15dp">
+            android:layout_marginRight="15dp"
+            android:background="@drawable/edit_text_border">
 
             <RadioButton
                 android:id="@+id/radioAdminYes"

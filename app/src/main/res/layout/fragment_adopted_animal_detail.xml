@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/green_700">
+    android:background="@color/white">
 
     <LinearLayout
         android:id="@+id/detailCard"
@@ -25,7 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Ime životinje: "
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="20dp" />
             <TextView
                 android:id="@+id/animalName"
@@ -47,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tip životinje: "
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="20dp" />
             <TextView
                 android:id="@+id/animalType"
@@ -69,7 +69,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Datum dodavanja: "
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="20dp" />
             <TextView
                 android:id="@+id/dateAdd"
@@ -91,7 +91,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Vrijeme dodavanja: "
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="20dp" />
             <TextView
                 android:id="@+id/timeAdd"
@@ -112,7 +112,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Zatražio posvajanje: "
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 android:textSize="20dp" />
             <TextView
                 android:id="@+id/adoptionUser"
