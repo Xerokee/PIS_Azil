@@ -345,18 +345,27 @@ public class HomeFragment extends Fragment {
     }
 
     private void searchAnimalsByType(String type) {
+        Integer typeId = null;
+
         if (type == null || type.isEmpty()) {
             type = lastSearchedType;
             loadAllAnimals();
+            return; // Izađi jer će loadAllAnimals() već pozvati API bez type-a
         } else {
             lastSearchedType = type;
+            if (type.equalsIgnoreCase("pas")) {
+                typeId = 1;
+            } else if (type.equalsIgnoreCase("macka") || type.equalsIgnoreCase("mačka")) {
+                typeId = 2;
+            } else {
+                Toast.makeText(getContext(), "Nepoznat tip životinje", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
 
         progressBar.setVisibility(View.VISIBLE);
-        Log.d(TAG, "Searching animals by type: " + type);
-        String finalType = type;
+        Log.d(TAG, "Searching animals by type ID: " + typeId);
 
-        // **Sačuvaj ID-eve blokiranih životinja prije pretrage**
         Set<Integer> blockedAnimalIds = new HashSet<>();
         for (IsBlockedAnimalModel animal : animalModelList) {
             if (animal.isBlocked()) {
@@ -364,7 +373,8 @@ public class HomeFragment extends Fragment {
             }
         }
 
-        apiService.getAnimalsByType(type).enqueue(new Callback<List<AnimalModel>>() {
+        String finalType = type;
+        apiService.getAnimalsByType(typeId).enqueue(new Callback<List<AnimalModel>>() {
             @Override
             public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
                 progressBar.setVisibility(View.GONE);
@@ -372,13 +382,10 @@ public class HomeFragment extends Fragment {
                 Log.d(TAG, "Response code: " + response.code());
 
                 if (response.isSuccessful() && response.body() != null) {
-                    Log.d(TAG, "Response body size: " + response.body().size());
-
-                    // Filtriraj životinje koje su udomljene
                     List<IsBlockedAnimalModel> availableAnimals = response.body().stream()
-                            .filter(animal -> !animal.isUdomljen() && !animal.isZahtjevUdomljavanja()) // Samo neudomljene životinje
+                            .filter(animal -> !animal.isUdomljen() && !animal.isZahtjevUdomljavanja())
                             .map(animal -> {
-                                boolean wasBlocked = blockedAnimalIds.contains(animal.getIdLjubimca()); // **Provjeri da li je bila blokirana**
+                                boolean wasBlocked = blockedAnimalIds.contains(animal.getIdLjubimca());
                                 return new IsBlockedAnimalModel(
                                         animal.getIdLjubimca(),
                                         animal.getIdUdomitelja(),
@@ -391,7 +398,7 @@ public class HomeFragment extends Fragment {
                                         animal.getVrijeme(),
                                         animal.getImgUrl(),
                                         animal.StanjeZivotinje(),
-                                        wasBlocked, // **Zadržavamo informaciju o blokiranju**
+                                        wasBlocked,
                                         animal.getDob(),
                                         animal.getBoja()
                                 );
@@ -402,7 +409,7 @@ public class HomeFragment extends Fragment {
                     animalModelList.addAll(availableAnimals);
                     animalsAdapter.notifyDataSetChanged();
                 } else {
-                    Log.e(TAG, "Error searching animals by type. Response code: " + response.code() + ", Message: " + response.message());
+                    Log.e(TAG, "Error searching animals by type. Code: " + response.code());
                 }
             }
 
@@ -414,6 +421,7 @@ public class HomeFragment extends Fragment {
             }
         });
     }
+
 
     List<MyAdoptionModel> cartModelList = new ArrayList<>();
 

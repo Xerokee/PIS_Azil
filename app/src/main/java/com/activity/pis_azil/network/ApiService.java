@@ -67,6 +67,9 @@ public interface ApiService {
     @GET("KucniLjubimci")
     Call<List<AnimalModel>> getAllAnimals();
 
+    @GET("animals")
+    Call<List<AnimalModel>> getAnimalsByType(@Query("type") Integer type);
+
     @GET("KucniLjubimci/{type}")
     Call<List<AnimalModel>> getAnimalsByType(@Path("type") String type);
 
