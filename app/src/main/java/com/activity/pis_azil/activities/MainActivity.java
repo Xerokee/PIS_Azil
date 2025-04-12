@@ -122,12 +122,14 @@ public class MainActivity extends AppCompatActivity {
             menu.findItem(R.id.rejectedAnimalsFragment).setVisible(false);
             menu.findItem(R.id.nav_my_orders).setVisible(false);
             menu.findItem(R.id.nav_admin_dashboard).setVisible(false);
+            menu.findItem(R.id.meetingsFragment).setVisible(true);
         } else {
             // Prikazi sve za admina
             menu.findItem(R.id.nav_new_products).setVisible(true);
             menu.findItem(R.id.nav_admin_menu).setVisible(true);
             menu.findItem(R.id.nav_my_orders).setVisible(true);
             menu.findItem(R.id.nav_my_animals).setVisible(false);
+            menu.findItem(R.id.meetingsFragment).setVisible(true);
         }
 
         // Get user data from intent

@@ -41,5 +41,10 @@
             android:id="@+id/rejectedAnimalsFragment"
             android:icon="@android:drawable/btn_dialog"
             android:title="Blokirane životinje" />
+
+        <item
+            android:id="@+id/meetingsFragment"
+            android:icon="@drawable/calendar"
+            android:title="Termini posjeta" />
     </group>
 </menu>

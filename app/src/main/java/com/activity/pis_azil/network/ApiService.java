@@ -1,6 +1,7 @@
 package com.activity.pis_azil.network;
 
 import com.activity.pis_azil.models.Aktivnost;
+import com.activity.pis_azil.models.Meeting;
 import com.activity.pis_azil.models.RejectAdoptionModel;
 import com.activity.pis_azil.models.RejectAdoptionModelRead;
 import com.activity.pis_azil.models.SifrBojaLjubimca;
@@ -163,4 +164,7 @@ public interface ApiService {
 
     @GET("Token/{email}")
     Call<String> getToken(@Path("email") String email);
+
+    @GET("Meetings")
+    Call<HttpRequestResponseList<Meeting>> getMeetings();
 }
