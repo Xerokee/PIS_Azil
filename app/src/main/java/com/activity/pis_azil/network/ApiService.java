@@ -2,6 +2,7 @@ package com.activity.pis_azil.network;
 
 import com.activity.pis_azil.models.Aktivnost;
 import com.activity.pis_azil.models.Meeting;
+import com.activity.pis_azil.models.NewMeeting;
 import com.activity.pis_azil.models.RejectAdoptionModel;
 import com.activity.pis_azil.models.RejectAdoptionModelRead;
 import com.activity.pis_azil.models.SifrBojaLjubimca;
@@ -167,4 +168,13 @@ public interface ApiService {
 
     @GET("Meetings")
     Call<HttpRequestResponseList<Meeting>> getMeetings();
+
+    @POST("Meetings/add")
+    Call<Void> addMeeting(@Body NewMeeting newMeeting);
+
+    @DELETE("Meetings/delete/idMeeting/{idMeeting}")
+    Call<Void> deleteMeeting (@Path("idMeeting") int idMeeting);
+
+    @POST("Meetings/edit/{idMeeting}/{idKorisnik}/{type}")
+    Call<Void> editMeeting(@Path("idMeeting") int idMeeting, @Path("idKorisnik") int idKorisnik, @Path("type") int type);
 }

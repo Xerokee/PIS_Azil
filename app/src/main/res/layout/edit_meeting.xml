@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:id="@+id/tvDatum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="20.04.2025."
+        android:layout_marginTop="15dp"
+        android:textColor="@color/black"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvVrijeme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10:00"
+        android:layout_marginTop="15dp"
+        android:textColor="@color/black"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btnObrisi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Obriši"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:background="@color/red" />
+
+    <Button
+        android:id="@+id/btnRezerviraj"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Rezerviraj"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:background="@color/teal_200"/>
+
+    <Button
+        android:id="@+id/btnOtkazi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Otkaži"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:background="@color/orange"/>
+
+</LinearLayout>
