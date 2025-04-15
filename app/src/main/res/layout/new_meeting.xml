@@ -28,6 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:text="Dodaj"
+        android:textColor="@color/black"
         android:textStyle="bold"
         android:background="@color/green_200"/>
 

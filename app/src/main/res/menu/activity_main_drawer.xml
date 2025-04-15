@@ -33,6 +33,10 @@
             android:icon="@drawable/baseline_view_list_24"
             android:title="Dnevnik udomljavanja" />
         <item
+            android:id="@+id/meetingsFragment"
+            android:icon="@drawable/calendar"
+            android:title="Termini posjeta" />
+        <item
             android:id="@+id/nav_my_animals"
             android:icon="@drawable/ic_my_animals"
             android:title="Moje životinje" />
@@ -41,10 +45,5 @@
             android:id="@+id/rejectedAnimalsFragment"
             android:icon="@android:drawable/btn_dialog"
             android:title="Blokirane životinje" />
-
-        <item
-            android:id="@+id/meetingsFragment"
-            android:icon="@drawable/calendar"
-            android:title="Termini posjeta" />
     </group>
 </menu>
