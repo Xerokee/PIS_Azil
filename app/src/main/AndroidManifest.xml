@@ -56,6 +56,10 @@
             android:exported="false"
             android:theme="@style/Theme.PIS_Azil.NoActionBar" />
         <activity
+            android:name=".activities.ImageDetailActivity"
+            android:exported="false"
+            android:theme="@style/Base.Theme.PIS_Azil" />
+        <activity
             android:name=".activities.ViewAllActivity"
             android:exported="false"
             android:theme="@style/Theme.PIS_Azil.NoActionBar" />

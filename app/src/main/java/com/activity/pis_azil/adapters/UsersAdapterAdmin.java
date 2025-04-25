@@ -23,9 +23,9 @@ public class UsersAdapterAdmin extends RecyclerView.Adapter<UsersAdapterAdmin.Us
 
     @NonNull
     @Override
-    public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public UsersAdapterAdmin.UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_item_admin2, parent, false);
-        return new UserViewHolder(view);
+        return new UsersAdapterAdmin.UserViewHolder(view);
     }
 
     @Override

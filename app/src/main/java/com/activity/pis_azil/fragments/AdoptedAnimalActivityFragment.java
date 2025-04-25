@@ -6,16 +6,16 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,7 +33,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
 public class AdoptedAnimalActivityFragment extends Fragment {
 
     int animalId;
@@ -47,8 +46,8 @@ public class AdoptedAnimalActivityFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public AdoptedAnimalActivityFragment(int aid){
-        animalId=aid;
+    public AdoptedAnimalActivityFragment(int aid) {
+        animalId = aid;
     }
 
     @Override
@@ -81,7 +80,7 @@ public class AdoptedAnimalActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view =inflater.inflate(R.layout.fragment_adopted_animal_activity, container, false);
+        View view = inflater.inflate(R.layout.fragment_adopted_animal_activity, container, false);
 
         linearLayoutAktivnosti = view.findViewById(R.id.linearLayoutAktivnosti);
         tvNemaAktivnosti = view.findViewById(R.id.tvNemaAktivnosti);
@@ -99,19 +98,66 @@ public class AdoptedAnimalActivityFragment extends Fragment {
             public void onResponse(Call<HttpRequestResponseList<Aktivnost>> call, Response<HttpRequestResponseList<Aktivnost>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     listaAktivnosti = response.body().getResult();
-                    if (listaAktivnosti.size() == 0) {
+                    linearLayoutAktivnosti.removeAllViews();
+
+                    if (listaAktivnosti.isEmpty()) {
                         tvNemaAktivnosti.setVisibility(View.VISIBLE);
                     } else {
-                        linearLayoutAktivnosti.removeAllViews();
+                        tvNemaAktivnosti.setVisibility(View.GONE);
                         for (Aktivnost a : listaAktivnosti) {
-                            TextView tv = new TextView(getContext());
-                            String text = a.getDatum() + " " + a.getAktivnost() + "\n" + a.getOpis();
-                            tv.setText(text);
-                            tv.setTypeface(tv.getTypeface(), Typeface.BOLD);
-                            tv.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                            tv.setTextSize(18);
-                            tv.setTextColor(Color.parseColor("#FF000000"));
-                            linearLayoutAktivnosti.addView(tv);
+                            // CardView setup
+                            CardView cardView = new CardView(getContext());
+                            LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
+                                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                            cardParams.setMargins(0, 0, 0, 30); // razmak između kartica
+                            cardView.setLayoutParams(cardParams);
+                            cardView.setRadius(20); // više zaobljenja
+                            cardView.setCardElevation(8f);
+                            cardView.setCardBackgroundColor(Color.WHITE);
+
+                            // Glavni layout unutar CardView
+                            LinearLayout verticalLayout = new LinearLayout(getContext());
+                            verticalLayout.setOrientation(LinearLayout.VERTICAL);
+                            verticalLayout.setPadding(40, 30, 40, 30); // unutarnji padding
+
+                            // Horizontalni red za naslov i tip aktivnosti
+                            LinearLayout topRow = new LinearLayout(getContext());
+                            topRow.setOrientation(LinearLayout.HORIZONTAL);
+                            topRow.setLayoutParams(new LinearLayout.LayoutParams(
+                                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+
+                            // Naslov (opis aktivnosti)
+                            TextView tvOpis = new TextView(getContext());
+                            tvOpis.setText(a.getOpis());
+                            tvOpis.setTextSize(16);
+                            tvOpis.setTypeface(null, Typeface.BOLD);
+                            tvOpis.setTextColor(Color.parseColor("#000000"));
+                            tvOpis.setLayoutParams(new LinearLayout.LayoutParams(
+                                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)); // zauzima 1f prostora
+
+                            // Tip aktivnosti (desno)
+                            TextView tvAktivnost = new TextView(getContext());
+                            tvAktivnost.setText(a.getAktivnost());
+                            tvAktivnost.setTextSize(14);
+                            tvAktivnost.setTypeface(null, Typeface.NORMAL);
+                            tvAktivnost.setTextColor(Color.parseColor("#000000"));
+
+                            topRow.addView(tvOpis);
+                            topRow.addView(tvAktivnost);
+
+                            // Datum ispod
+                            TextView tvDatum = new TextView(getContext());
+                            tvDatum.setText(a.getDatum());
+                            tvDatum.setTextSize(14);
+                            tvDatum.setTextColor(Color.parseColor("#000000"));
+                            tvDatum.setPadding(0, 20, 0, 0);
+
+                            // Sve zajedno
+                            verticalLayout.addView(topRow);
+                            verticalLayout.addView(tvDatum);
+
+                            cardView.addView(verticalLayout);
+                            linearLayoutAktivnosti.addView(cardView);
                         }
                     }
                 }
@@ -140,3 +186,4 @@ public class AdoptedAnimalActivityFragment extends Fragment {
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(aktivnostReceiver);
     }
 }
+

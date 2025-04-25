@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -12,8 +13,9 @@
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:contentScrim="@color/green_200">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -48,62 +50,72 @@
                     android:orientation="vertical"
                     android:padding="16dp"
                     android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="1.0">
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
 
+                    <!-- Ime -->
                     <EditText
                         android:id="@+id/editTextName"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
+                        android:layout_height="wrap_content"
                         android:hint="Ime životinje"
                         android:inputType="textPersonName"
-                        android:textColor="@color/green_700"
-                        android:textColorHint="@color/green_700" />
+                        android:textColor="@color/white"
+                        android:textColorHint="@color/white"
+                        android:background="@drawable/spinner_background"
+                        android:layout_marginTop="8dp"
+                        android:padding="10dp" />
 
+                    <!-- Opis -->
                     <EditText
                         android:id="@+id/editTextDescription"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
+                        android:layout_height="wrap_content"
                         android:hint="Opis životinje"
                         android:inputType="textMultiLine"
-                        android:textColor="@color/green_700"
-                        android:textColorHint="@color/green_700" />
+                        android:textColor="@color/white"
+                        android:textColorHint="@color/white"
+                        android:background="@drawable/spinner_background"
+                        android:layout_marginTop="8dp"
+                        android:minLines="3"
+                        android:padding="10dp" />
 
-                    <!-- Dropdown za izbor tipa životinje -->
+                    <!-- Tip -->
                     <Spinner
                         android:id="@+id/spinnerAnimalType"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
+                        android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:spinnerMode="dropdown"
                         android:entries="@array/animal_types2"
                         android:background="@drawable/spinner_background"
                         android:padding="8dp" />
 
+                    <!-- Dob -->
                     <EditText
                         android:id="@+id/editTextDob"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Dob ljubimca"
+                        android:hint="Dob životinje"
                         android:inputType="number"
-                        android:textColor="@color/green_700"
-                        android:textColorHint="@color/green_700" />
+                        android:textColor="@color/white"
+                        android:textColorHint="@color/white"
+                        android:background="@drawable/spinner_background"
+                        android:layout_marginTop="8dp"
+                        android:padding="10dp" />
 
-                    <!-- Dropdown za izbor boje životinje -->
+                    <!-- Boja -->
                     <Spinner
                         android:id="@+id/spinnerAnimalColor"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:spinnerMode="dropdown"
                         android:entries="@array/animal_colors2"
                         android:background="@drawable/spinner_background"
                         android:padding="8dp" />
 
+                    <!-- Slika -->
                     <ImageView
                         android:id="@+id/imageViewAnimal"
                         android:layout_width="match_parent"
@@ -112,18 +124,22 @@
                         android:background="@color/green_200"
                         android:scaleType="centerCrop" />
 
+                    <!-- Gumb -->
                     <Button
                         android:id="@+id/buttonSubmitAnimal"
-                        android:layout_width="200dp"
-                        android:layout_height="52dp"
-                        android:layout_marginTop="16dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="Potvrdi dodavanje"
-                        android:textSize="19dp"
+                        android:textSize="18sp"
                         android:textColor="@color/black"
                         android:textStyle="bold"
-                        android:background="@color/green_200" />
-
+                        android:background="@color/green_200"
+                        android:layout_marginTop="16dp"
+                        android:paddingLeft="32dp"
+                        android:paddingRight="32dp"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp" />
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
@@ -140,5 +156,4 @@
         app:backgroundTint="@color/green_200"
         app:layout_anchor="@id/scrollView2"
         app:layout_anchorGravity="bottom|end" />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
