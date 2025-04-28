@@ -134,85 +134,19 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewHo
                         btnObrisi.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                apiService.deleteMeeting(meeting.getIdMeeting()).enqueue(new Callback<Void>() {
-                                    @Override
-                                    public void onResponse(Call<Void> call, Response<Void> response) {
-                                        if (response.isSuccessful()) {
-                                            Toast.makeText(v.getContext(), "Sastanak uspješno obrisan.", Toast.LENGTH_SHORT).show();
-                                            new Handler().postDelayed(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    fragment.updateMeetings();
-                                                    dialogMeeting.dismiss();
-                                                }
-                                            }, 3000);
-                                        } else {
-                                            Toast.makeText(v.getContext(), "Sastanak nije uspješno obrisan.", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onFailure(Call<Void> call, Throwable t) {
-                                        Toast.makeText(v.getContext(), "Greška u API pozivu.", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-
+                                fragment.deleteMeeting(meeting.getIdMeeting(), dialogMeeting);
                             }
                         });
                         btnRezerviraj.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                apiService.editMeeting(meeting.getIdMeeting(), idKorisnika, 1).enqueue(new Callback<Void>() {
-                                    @Override
-                                    public void onResponse(Call<Void> call, Response<Void> response) {
-                                        if (response.isSuccessful()) {
-                                            Toast.makeText(v.getContext(), "Sastanak uspješno rezerviran.", Toast.LENGTH_SHORT).show();
-                                            new Handler().postDelayed(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    fragment.updateMeetings();
-                                                    dialogMeeting.dismiss();
-                                                }
-                                            }, 3000);
-                                        } else {
-                                            Toast.makeText(v.getContext(), "Sastanak nije uspješno rezerviran.", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onFailure(Call<Void> call, Throwable t) {
-                                        Toast.makeText(v.getContext(), "Greška u API pozivu.", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-
+                                fragment.editMeeting(meeting.getIdMeeting(), idKorisnika, 1, dialogMeeting);
                             }
                         });
                         btnOtkazi.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                apiService.editMeeting(meeting.getIdMeeting(), idKorisnika, 0).enqueue(new Callback<Void>() {
-                                    @Override
-                                    public void onResponse(Call<Void> call, Response<Void> response) {
-                                        if (response.isSuccessful()) {
-                                            Toast.makeText(v.getContext(), "Sastanak uspješno otkazan.", Toast.LENGTH_SHORT).show();
-                                            new Handler().postDelayed(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    fragment.updateMeetings();
-                                                    dialogMeeting.dismiss();
-                                                }
-                                            }, 3000);
-                                        } else {
-                                            Toast.makeText(v.getContext(), "Sastanak nije uspješno otkazan.", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onFailure(Call<Void> call, Throwable t) {
-                                        Toast.makeText(v.getContext(), "Greška u API pozivu.", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-
+                                fragment.editMeeting(meeting.getIdMeeting(), idKorisnika, 0, dialogMeeting);
                             }
                         });
                         if (Objects.equals(idKorisnika,1)){
@@ -265,25 +199,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewHo
                     public void onClick(View v) {
                         String vrijeme = spinnerVrijeme.getSelectedItem().toString();
                         NewMeeting noviSastanak = new NewMeeting(newDateFormat.format(date), vrijeme);
-                        apiService.addMeeting(noviSastanak).enqueue(new Callback<Void>() {
-                            @Override
-                            public void onResponse(Call<Void> call, Response<Void> response) {
-                                if (response.isSuccessful()) {
-                                    Toast.makeText(v.getContext(), "Novi sastanak uspješno dodan.", Toast.LENGTH_SHORT).show();
-                                    new Handler().postDelayed(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            fragment.updateMeetings();
-                                            dialogAdd.dismiss();
-                                        }
-                                    }, 3000);
-                                }
-                            }
-                            @Override
-                            public void onFailure(Call<Void> call, Throwable t) {
-                                Toast.makeText(v.getContext(), "Greška u API pozivu.", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                        fragment.addMeeting(noviSastanak, dialogAdd);
                     }
                 });
                 dialogAdd.show();
