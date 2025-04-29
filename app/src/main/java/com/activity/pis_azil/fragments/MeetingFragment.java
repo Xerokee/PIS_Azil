@@ -3,6 +3,8 @@ package com.activity.pis_azil.fragments;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,8 +18,13 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CalendarView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,10 +40,14 @@ import com.activity.pis_azil.network.HttpRequestResponseList;
 import com.google.gson.Gson;
 import com.orhanobut.dialogplus.DialogPlus;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,6 +62,8 @@ public class MeetingFragment extends Fragment {
     List<Meeting> meetingsList = new ArrayList<>();
     ApiService apiService;
     CalendarAdapter calendarAdapter;
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM", Locale.getDefault());
+    private final SimpleDateFormat newDateFormat = new SimpleDateFormat("dd-MM-YYYY", Locale.getDefault());
 
     public MeetingFragment() {
 
@@ -73,12 +86,30 @@ public class MeetingFragment extends Fragment {
         UserModel currentUser = new Gson().fromJson(userJson, UserModel.class);
         idKorisnika=currentUser.getIdKorisnika();
 
-        meetingsCalendar = view.findViewById(R.id.meetingsCalendar);
-        meetingsCalendar.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        //meetingsCalendar = view.findViewById(R.id.meetingsCalendar);
+        //meetingsCalendar.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         CalendarView calendarView = view.findViewById(R.id.calendarView);
 
         calendarView.setWeekDayTextAppearance(R.style.CalendarTextAppearance);
         calendarView.setDateTextAppearance(R.style.CalendarTextAppearance);
+
+        new Handler().postDelayed(() -> {
+            try {
+                ViewGroup vg = (ViewGroup) calendarView.getChildAt(0);
+                if (vg != null) {
+                    TextView monthTitle = (TextView) vg.getChildAt(0);
+                    if (monthTitle instanceof TextView) {
+                        monthTitle.setTextColor(Color.BLACK); // mjesec/godina
+                    }
+                    ImageButton leftArrow = (ImageButton) vg.getChildAt(1);
+                    ImageButton rightArrow = (ImageButton) vg.getChildAt(2);
+                    if (leftArrow != null) leftArrow.setColorFilter(Color.BLACK); // lijeva strelica
+                    if (rightArrow != null) rightArrow.setColorFilter(Color.BLACK); // desna strelica
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }, 100);
 
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -102,12 +133,12 @@ public class MeetingFragment extends Fragment {
                     meetingsList = response.body().getResult();
                     datesList = getDatesList();
                     calendarAdapter = new CalendarAdapter(getContext(), datesList, meetingsList, idKorisnika, MeetingFragment.this);
-                    meetingsCalendar.setAdapter(calendarAdapter);
+                    //meetingsCalendar.setAdapter(calendarAdapter);
                 }
                 else {
                     datesList = getDatesList();
                     calendarAdapter = new CalendarAdapter(getContext(), datesList, meetingsList, idKorisnika, MeetingFragment.this);
-                    meetingsCalendar.setAdapter(calendarAdapter);
+                    //meetingsCalendar.setAdapter(calendarAdapter);
                 }
             }
             @Override
@@ -140,7 +171,7 @@ public class MeetingFragment extends Fragment {
         });
     }
 
-    public void deleteMeeting(int idMeeting, DialogPlus dialogPlus) {
+    public void deleteMeeting(int idMeeting, DialogPlus dialogPlus, Date date) {
         ApiService apiService = ApiClient.getClient().create(ApiService.class);
         apiService.deleteMeeting(idMeeting).enqueue(new Callback<Void>() {
             @Override
@@ -193,6 +224,7 @@ public class MeetingFragment extends Fragment {
     }
 
     private void showAdminOptions(Meeting meeting) {
+        Log.i("pozvano", "pozvano");
     }
 
     private void showUserOptions(Meeting meeting) {
@@ -201,6 +233,7 @@ public class MeetingFragment extends Fragment {
         } else {
             Toast.makeText(getContext(), "Termin nije slobodan!", Toast.LENGTH_SHORT).show();
         }
+        Log.i("pozvano", "pozvano");
     }
 
     private boolean equalDate(Date date1, Date date2) {
@@ -229,11 +262,60 @@ public class MeetingFragment extends Fragment {
 
         View dialogView = dialog.getHolderView();
         LinearLayout listMeetings = dialogView.findViewById(R.id.listMeetings);
+        Button btnDodaj = dialogView.findViewById(R.id.btnDodaj);
+
+        if (!Objects.equals(idKorisnika, 1)){
+            btnDodaj.setVisibility(View.GONE);
+        }
 
         listMeetings.removeAllViews();
 
-        if (meetingsForDay.isEmpty()) {
-            Toast.makeText(getContext(), "Nema navedenih termina.", Toast.LENGTH_SHORT).show();
+        btnDodaj.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //dialog.dismiss();
+                View popUpView = LayoutInflater.from(v.getContext()).inflate(R.layout.new_meeting, null, false);
+                PopupWindow popupWindow = new PopupWindow(popUpView,700,700,true);
+
+                popupWindow.setBackgroundDrawable(new ColorDrawable(Color.GRAY));
+                TextView tvDatum = popUpView.findViewById(R.id.tvDatum);
+                Spinner spinnerVrijeme = popUpView.findViewById(R.id.spinnerVrijeme);
+                Button btnDodaj = popUpView.findViewById(R.id.btnDodaj);
+                ImageButton btnClose = popUpView.findViewById(R.id.btnClose);
+                tvDatum.setText(dateFormat.format(date));
+                String[] slobodnoVrijemeLista = {"8:00","8:30","9:00","9:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00", "14:30", "15:00", "15:30","16:00","16:30"};
+                List<String> slobodno = new ArrayList<>(Arrays.asList(slobodnoVrijemeLista));
+                for (Meeting m: meetingsList){
+                    if (equalDate(date, m.getDatum())){
+                        slobodno.remove(m.getVrijeme());
+                    }
+                }
+                ArrayAdapter adapter = new ArrayAdapter(v.getContext(), android.R.layout.simple_spinner_item, slobodno);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerVrijeme.setAdapter(adapter);
+                btnDodaj.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String vrijeme = spinnerVrijeme.getSelectedItem().toString();
+                        NewMeeting noviSastanak = new NewMeeting(newDateFormat.format(date), vrijeme);
+                        addMeeting(noviSastanak, dialog);
+                        popupWindow.dismiss();
+                    }
+                });
+                btnClose.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        popupWindow.dismiss();
+                    }
+                });
+                popupWindow.showAtLocation(v,Gravity.CENTER,0,0);
+
+
+            }
+        });
+
+        if (meetingsForDay.isEmpty() && !Objects.equals(idKorisnika, 1)) {
+            Toast.makeText(getContext(), "Nema dodanih termina.", Toast.LENGTH_SHORT).show();
             dialog.dismiss();
             return;
         }
@@ -242,17 +324,60 @@ public class MeetingFragment extends Fragment {
             View itemView = LayoutInflater.from(getContext()).inflate(R.layout.item_meeting, listMeetings, false);
             TextView tvTime = itemView.findViewById(R.id.tvTime);
             TextView tvName = itemView.findViewById(R.id.tvName);
+            Button btnObrisi = itemView.findViewById(R.id.btnObrisi);
+            @SuppressLint({"MissingInflatedId", "LocalSuppress"}) Button btnRezerviraj = itemView.findViewById(R.id.btnRezerviraj);
+            @SuppressLint({"MissingInflatedId", "LocalSuppress"}) Button btnOtkazi = itemView.findViewById(R.id.btnOtkazi);
             tvTime.setText(meeting.getVrijeme());
-            tvName.setText(meeting.getImeKorisnik() != null ? meeting.getImeKorisnik() : "Slobodno");
+            if (meeting.getImeKorisnik() != null) {
+                tvName.setText(meeting.getImeKorisnik());
+                tvName.setTextColor(Color.parseColor("#FF0000"));
+            } else {
+                tvName.setText("Slobodno");
+                tvName.setTextColor(Color.parseColor("#2fbd22"));
+            }
 
-            itemView.setOnClickListener(v -> {
-                if (isAdmin()) {
-                    showAdminOptions(meeting);
-                } else {
-                    showUserOptions(meeting);
+            if (!Objects.equals(idKorisnika,1)){  //nisi admin
+                btnObrisi.setVisibility(View.GONE);
+            }
+            else{
+                btnRezerviraj.setVisibility(View.GONE); //jesi admin
+                btnOtkazi.setVisibility(View.GONE);
+            }
+            btnObrisi.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    deleteMeeting(meeting.getIdMeeting(), dialog, date);
                 }
-                dialog.dismiss();
             });
+            btnRezerviraj.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    editMeeting(meeting.getIdMeeting(), idKorisnika, 1, dialog);
+                }
+            });
+            btnOtkazi.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    editMeeting(meeting.getIdMeeting(), idKorisnika, 0, dialog);
+                }
+            });
+
+            if (Objects.equals(idKorisnika,1)){
+            }
+            else {
+                if (!Objects.equals(idKorisnika,meeting.getIdKorisnik()) && !Objects.equals(0,meeting.getIdKorisnik())){
+
+                }
+                else{
+                    if (!Objects.equals(idKorisnika,meeting.getIdKorisnik()) && Objects.equals(0,meeting.getIdKorisnik())){
+                        btnOtkazi.setVisibility(View.GONE);
+                    }
+                    else{
+                        btnRezerviraj.setVisibility(View.GONE);
+                    }
+
+                }
+            }
 
             listMeetings.addView(itemView);
         }

@@ -134,7 +134,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewHo
                         btnObrisi.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                fragment.deleteMeeting(meeting.getIdMeeting(), dialogMeeting);
+                                //fragment.deleteMeeting(meeting.getIdMeeting(), dialogMeeting);
                             }
                         });
                         btnRezerviraj.setOnClickListener(new View.OnClickListener() {

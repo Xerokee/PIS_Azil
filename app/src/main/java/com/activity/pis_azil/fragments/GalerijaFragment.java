@@ -67,12 +67,12 @@ public class GalerijaFragment extends Fragment {
 
                     // Razmak između slika u horizontalnom pravcu
                     if (position % 3 != 2) {
-                        outRect.right = 2;  // Razmak između slika u horizontalnom pravcu
+                        outRect.right = 4;  // Razmak između slika u horizontalnom pravcu
                     }
 
                     // Razmak između slika u vertikalnom pravcu
                     if (position < 3) {
-                        outRect.top = 2;
+                        outRect.top = 4;
                     }
                     outRect.bottom = 2;  // Razmak između redova
                 }

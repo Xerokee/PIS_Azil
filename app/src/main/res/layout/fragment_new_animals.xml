@@ -89,6 +89,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:entries="@array/animal_types2"
+                        android:textColor="@color/white"
                         android:background="@drawable/spinner_background"
                         android:padding="8dp" />
 
@@ -112,6 +113,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:entries="@array/animal_colors2"
+                        android:textColor="@color/white"
                         android:background="@drawable/spinner_background"
                         android:padding="8dp" />
 

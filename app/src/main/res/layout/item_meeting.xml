@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
 
     <LinearLayout
         android:id="@+id/linearLayoutMeeting"
@@ -29,5 +30,29 @@
         </TextView>
 
     </LinearLayout>
+    <Button
+        android:id="@+id/btnObrisi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:text="Obriši"
+        android:background="@color/red"
+        android:textStyle="bold"/>
+    <Button
+        android:id="@+id/btnRezerviraj"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:text="Rezerviraj"
+        android:background="@color/teal_200"
+        android:textStyle="bold"/>
+    <Button
+        android:id="@+id/btnOtkazi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:text="Otkaži"
+        android:background="@color/orange"
+        android:textStyle="bold"/>
 
 </LinearLayout>
