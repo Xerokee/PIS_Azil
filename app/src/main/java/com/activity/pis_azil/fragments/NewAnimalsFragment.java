@@ -190,6 +190,8 @@ public class NewAnimalsFragment extends Fragment {
         if (animalFormContainer.getVisibility() == View.GONE) {
             Log.d("NewAnimalsFragment", "Prikazivanje obrasca");
             animalFormContainer.setVisibility(View.VISIBLE);
+            ivAnimalImage.setImageResource(R.drawable.paw);
+            imageUri = null;
         } else {
             Log.d("NewAnimalsFragment", "Skrivanje obrasca");
             animalFormContainer.setVisibility(View.GONE);

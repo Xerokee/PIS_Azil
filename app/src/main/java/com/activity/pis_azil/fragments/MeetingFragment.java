@@ -89,6 +89,11 @@ public class MeetingFragment extends Fragment {
         //meetingsCalendar = view.findViewById(R.id.meetingsCalendar);
         //meetingsCalendar.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         CalendarView calendarView = view.findViewById(R.id.calendarView);
+        calendarView.setMinDate(System.currentTimeMillis() - 1000);
+
+        Calendar maxDate = Calendar.getInstance();
+        maxDate.add(Calendar.DAY_OF_MONTH, 13);
+        calendarView.setMaxDate(maxDate.getTimeInMillis());
 
         calendarView.setWeekDayTextAppearance(R.style.CalendarTextAppearance);
         calendarView.setDateTextAppearance(R.style.CalendarTextAppearance);
@@ -327,7 +332,25 @@ public class MeetingFragment extends Fragment {
             Button btnObrisi = itemView.findViewById(R.id.btnObrisi);
             @SuppressLint({"MissingInflatedId", "LocalSuppress"}) Button btnRezerviraj = itemView.findViewById(R.id.btnRezerviraj);
             @SuppressLint({"MissingInflatedId", "LocalSuppress"}) Button btnOtkazi = itemView.findViewById(R.id.btnOtkazi);
-            tvTime.setText(meeting.getVrijeme());
+            try {
+                SimpleDateFormat inputFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+                Date startTime = inputFormat.parse(meeting.getVrijeme());
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(startTime);
+                calendar.add(Calendar.MINUTE, 30);
+
+                int startHour = Integer.parseInt(meeting.getVrijeme().split(":")[0]);
+                String startMinutes = meeting.getVrijeme().split(":")[1];
+                int endHour = calendar.get(Calendar.HOUR_OF_DAY);
+                int endMinute = calendar.get(Calendar.MINUTE);
+
+                String startTimeStr = startHour + ":" + startMinutes;
+                String endTimeStr = endHour + ":" + (endMinute < 10 ? "0" + endMinute : endMinute);
+                String timeRange = startTimeStr + " - " + endTimeStr;
+                tvTime.setText(timeRange);
+            } catch (Exception e) {
+                tvTime.setText(meeting.getVrijeme()); // fallback
+            }
             if (meeting.getImeKorisnik() != null) {
                 tvName.setText(meeting.getImeKorisnik());
                 tvName.setTextColor(Color.parseColor("#FF0000"));
@@ -365,17 +388,16 @@ public class MeetingFragment extends Fragment {
             if (Objects.equals(idKorisnika,1)){
             }
             else {
-                if (!Objects.equals(idKorisnika,meeting.getIdKorisnik()) && !Objects.equals(0,meeting.getIdKorisnik())){
-
-                }
-                else{
-                    if (!Objects.equals(idKorisnika,meeting.getIdKorisnik()) && Objects.equals(0,meeting.getIdKorisnik())){
-                        btnOtkazi.setVisibility(View.GONE);
-                    }
-                    else{
-                        btnRezerviraj.setVisibility(View.GONE);
-                    }
-
+                if (meeting.getIdKorisnik() == 0) {
+                    // Termin je slobodan, svi korisnici mogu rezervirati
+                    btnOtkazi.setVisibility(View.GONE);
+                } else if (meeting.getIdKorisnik() == idKorisnika) {
+                    // Termin je rezervirao trenutni korisnik
+                    btnRezerviraj.setVisibility(View.GONE);
+                } else {
+                    // Termin je rezerviran od drugog korisnika
+                    btnRezerviraj.setVisibility(View.GONE);
+                    btnOtkazi.setVisibility(View.GONE);
                 }
             }
 
