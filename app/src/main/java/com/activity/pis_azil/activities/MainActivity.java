@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private AppBarConfiguration mAppBarConfiguration;
     private ApiService apiService;
     private String userEmail;
-    private UserModel currentUser;
+    public UserModel currentUser;
     private static final String TAG = "FCM_MainActivity";
 
     @Override
@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+        /*
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(task -> {
                     if (!task.isSuccessful()) {
@@ -73,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
                     String token = task.getResult();
                     Log.d(TAG, "FCM Token: " + token);
                 });
+
+        */
         
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);

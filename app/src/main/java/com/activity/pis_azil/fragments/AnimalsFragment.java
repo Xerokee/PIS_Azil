@@ -1,5 +1,6 @@
 package com.activity.pis_azil.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -44,16 +45,19 @@ public class AnimalsFragment extends Fragment implements DataRefreshListener {
     private static final String TAG = "AnimalsFragment";
 
     ApiService apiService;
-    TextView emptyStateTextView;
     RecyclerView recyclerView;
     private MyAdoptionAdapter cartAdapter;
-    List<MyAdoptionModel> cartModelList, filteredAnimalsList;
+    List<MyAdoptionModel> cartModelList;
     private EditText searchAnimalBox;
+    private String currentSearchQuery = "";
+    private String currentTypeFilter = "Svi";
+    List<MyAdoptionModel> allAnimalsList = new ArrayList<>();
 
     public AnimalsFragment() {
         // Required empty public constructor
     }
 
+    @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_my_adoptions, container, false);
@@ -65,10 +69,8 @@ public class AnimalsFragment extends Fragment implements DataRefreshListener {
 
         searchAnimalBox = root.findViewById(R.id.search_animal_box);
         ImageButton filterButton = root.findViewById(R.id.filter_button);
-        emptyStateTextView = root.findViewById(R.id.empty_state_text_view);
 
         cartModelList = new ArrayList<>();
-        filteredAnimalsList = new ArrayList<>();
 
         cartAdapter = new MyAdoptionAdapter(requireContext(), cartModelList, this); // Pass full list initially
         recyclerView.setAdapter(cartAdapter);
@@ -80,8 +82,8 @@ public class AnimalsFragment extends Fragment implements DataRefreshListener {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                String query = charSequence.toString().toLowerCase();
-                filterAnimalsByName(query);
+                currentSearchQuery = charSequence.toString().toLowerCase();
+                applyFilters(currentTypeFilter);
             }
 
             @Override
@@ -115,7 +117,7 @@ public class AnimalsFragment extends Fragment implements DataRefreshListener {
             public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     cartModelList.clear();
-                    filteredAnimalsList.clear();
+                    allAnimalsList.clear();
 
                     List<UpdateDnevnikModel> allAdoptions = response.body();
                     for (UpdateDnevnikModel animal : allAdoptions) {
@@ -135,11 +137,11 @@ public class AnimalsFragment extends Fragment implements DataRefreshListener {
                             adoption.setStanjeZivotinje(animal.isStanje_zivotinje());
                             adoption.setIdKorisnika(animal.getId_korisnika());
                             cartModelList.add(adoption);
-                            filteredAnimalsList.add(adoption);
+                            allAnimalsList.add(adoption);
                         }
                     }
 
-                    updateUI();
+                    applyFilters(currentTypeFilter);
                 } else {
                     Log.e(TAG, "Failed to fetch adopted animals: " + response.message());
                 }
@@ -151,22 +153,6 @@ public class AnimalsFragment extends Fragment implements DataRefreshListener {
                 Toast.makeText(getActivity(), "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    private void filterAnimalsByName(String query) {
-        filteredAnimalsList.clear();
-
-        if (query.isEmpty()) {
-            filteredAnimalsList.addAll(cartModelList);
-        } else {
-            for (MyAdoptionModel animal : cartModelList) {
-                if (animal.getImeLjubimca() != null && animal.getImeLjubimca().toLowerCase().contains(query)) {
-                    filteredAnimalsList.add(animal);
-                }
-            }
-        }
-
-        cartAdapter.updateData(filteredAnimalsList);
     }
 
     private void showFilterDialog() {
@@ -203,25 +189,32 @@ public class AnimalsFragment extends Fragment implements DataRefreshListener {
     }
 
     private void applyFilters(String type) {
-        filteredAnimalsList.clear();
+        currentTypeFilter = type;
 
-        for (MyAdoptionModel animal : cartModelList) {
-            boolean matchesType = type.equals("Svi") || animal.getTipLjubimca().equalsIgnoreCase(type);
-            if (matchesType) {
-                filteredAnimalsList.add(animal);
+        if (cartModelList == null || cartModelList.isEmpty() || cartAdapter == null) {
+            return;
+        }
+
+        List<MyAdoptionModel> filteredList = new ArrayList<>();
+
+        for (MyAdoptionModel animal : allAnimalsList) {
+            boolean matchesType = type.equals("Svi") ||
+                    (animal.getTipLjubimca() != null && animal.getTipLjubimca().equalsIgnoreCase(type));
+
+            boolean matchesName = currentSearchQuery.isEmpty() ||
+                    (animal.getImeLjubimca() != null && animal.getImeLjubimca().toLowerCase().contains(currentSearchQuery));
+
+            if (matchesType && matchesName) {
+                filteredList.add(animal);
             }
         }
 
-        updateUI();
+        cartAdapter.updateData(filteredList);  // Direktno u adapter
     }
 
-    private void updateUI() {
-        if (filteredAnimalsList.isEmpty()) {
-            recyclerView.setVisibility(View.GONE);
-        } else {
-            recyclerView.setVisibility(View.VISIBLE);
-        }
-
-        cartAdapter.updateData(filteredAnimalsList);
+    @Override
+    public void onResume() {
+        super.onResume();
+        fetchAdoptedAnimals();  // Osigurava pravo osvježavanje kad se vratiš na fragment
     }
 }
