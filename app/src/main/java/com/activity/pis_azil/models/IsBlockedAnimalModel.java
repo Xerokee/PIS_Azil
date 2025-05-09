@@ -21,7 +21,6 @@ public class IsBlockedAnimalModel implements Serializable {
     private int dob;
     private String boja;
 
-    // Constructors, getters, and setters
     public IsBlockedAnimalModel() {}
 
     public IsBlockedAnimalModel(int id_ljubimca, int id_udomitelja, String ime_ljubimca, String tip_ljubimca, String opis_ljubimca, boolean udomljen, boolean zahtjev_udomljen, String datum, String vrijeme, String imgUrl, boolean stanje_zivotinje, boolean isBlocked, int dob, String boja) {
@@ -41,7 +40,6 @@ public class IsBlockedAnimalModel implements Serializable {
         this.boja = boja;
     }
 
-    // Getters and Setters for all fields
     public int getIdLjubimca() {
         return id_ljubimca;
     }

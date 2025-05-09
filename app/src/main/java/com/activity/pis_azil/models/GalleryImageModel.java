@@ -6,7 +6,6 @@ public class GalleryImageModel implements Serializable {
     private int id;
     private String imgUrl;
 
-    // Constructors
     public GalleryImageModel() {}
 
     public GalleryImageModel(int id, String imgUrl) {
@@ -14,7 +13,6 @@ public class GalleryImageModel implements Serializable {
         this.imgUrl = imgUrl;
     }
 
-    // Getters and setters
     public int getId() {
         return id;
     }

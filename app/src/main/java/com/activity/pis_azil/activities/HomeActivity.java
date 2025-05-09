@@ -21,7 +21,6 @@ public class HomeActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressbar);
         progressBar.setVisibility(View.GONE);
 
-        // Provjera statusa prijave korisnika
         SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         /*
         boolean isLoggedIn = preferences.getBoolean("is_logged_in", true);

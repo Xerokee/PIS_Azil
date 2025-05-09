@@ -38,7 +38,6 @@ public class ViewAllModel {
         this.boja = boja;
     }
 
-    // Getters and setters
     public String getImeLjubimca() {
         return imeLjubimca;
     }

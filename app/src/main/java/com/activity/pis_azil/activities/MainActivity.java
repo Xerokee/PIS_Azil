@@ -74,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
                     String token = task.getResult();
                     Log.d(TAG, "FCM Token: " + token);
                 });
-
         */
         
         super.onCreate(savedInstanceState);
@@ -109,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
         TextView headerEmail = headerView.findViewById(R.id.profileEml);
         CircleImageView headerImg = headerView.findViewById(R.id.profileImg);
 
-        // Dohvati SharedPreferences i provjeri je li korisnik admin
         SharedPreferences prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         boolean isAdmin = prefs.getBoolean("admin", false);
         String userJson = prefs.getString("current_user", null);
@@ -127,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
             menu.findItem(R.id.nav_admin_dashboard).setVisible(false);
             menu.findItem(R.id.meetingsFragment).setVisible(true);
         } else {
-            // Prikazi sve za admina
             menu.findItem(R.id.nav_new_products).setVisible(true);
             menu.findItem(R.id.nav_admin_menu).setVisible(true);
             menu.findItem(R.id.nav_my_orders).setVisible(true);
@@ -135,14 +132,12 @@ public class MainActivity extends AppCompatActivity {
             menu.findItem(R.id.meetingsFragment).setVisible(true);
         }
 
-        // Get user data from intent
         UserModel user = (UserModel) getIntent().getSerializableExtra("user_data");
         if (user != null) {
             updateNavigationHeader(user, headerUserName, headerEmail, headerImg);
         } else {
-            // If user data is not available in the intent, fetch from SharedPreferences
             SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-            userEmail = preferences.getString("email", "email@example.com"); // Fetch from saved preferences
+            userEmail = preferences.getString("email", "email@example.com");
             String userName = preferences.getString("korisnickoIme", "");
             String userImg = preferences.getString("profileImg", "");
             UserModel sharedPrefsUser = new UserModel();
@@ -152,11 +147,9 @@ public class MainActivity extends AppCompatActivity {
             updateNavigationHeader(sharedPrefsUser, headerUserName, headerEmail, headerImg);
         }
 
-        // Listen for profile updates
         LocalBroadcastManager.getInstance(this).registerReceiver(profileUpdatedReceiver,
                 new IntentFilter(ProfileFragment.ACTION_PROFILE_UPDATED));
 
-        // Fetch latest user data
         fetchUserData();
     }
 
@@ -173,12 +166,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Osvježavanje podataka pri svakoj promjeni stanja aktivnosti
     @Override
     protected void onResume() {
         super.onResume();
 
-        // Osvježi podatke o korisniku svaki put kad se aktivnost ponovo pojavi
         fetchUserData();
     }
 
@@ -218,16 +209,13 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     UserModel user = response.body().getResult();
                     if (user != null) {
-                        // Postavi admin status na temelju uloge
                         if (user.getUserRole() != null) {
                             user.setAdmin(user.getUserRole().isAdmin());
                         }
 
                         currentUser = user;
-                        // Spremi korisnika u SharedPreferences
                         saveUserToSharedPreferences(user);
 
-                        // Update navigation header
                         View headerView = ((NavigationView) findViewById(R.id.nav_view)).getHeaderView(0);
                         updateNavigationHeader(user,
                                 headerView.findViewById(R.id.profileUserNam),

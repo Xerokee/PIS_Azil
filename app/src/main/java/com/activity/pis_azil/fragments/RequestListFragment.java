@@ -40,7 +40,6 @@ public class RequestListFragment extends Fragment {
     private TextView emptyStateTextView;
 
     public RequestListFragment() {
-        // Required empty public constructor
     }
 
     @Nullable
@@ -65,13 +64,11 @@ public class RequestListFragment extends Fragment {
     }
 
     private void setupFilterSpinner() {
-        // Postavi adapter za Spinner za filtriranje prema tipu životinje
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.animal_types2, android.R.layout.simple_spinner_item);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterRequestSpinner.setAdapter(spinnerAdapter);
 
-        // Postavi listener za promjenu odabira filtera
         filterRequestSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -80,7 +77,6 @@ public class RequestListFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // Ne radi ništa kada ništa nije odabrano
             }
         });
     }
@@ -88,7 +84,6 @@ public class RequestListFragment extends Fragment {
     private void fetchRequestList() {
         apiService = ApiClient.getClient().create(ApiService.class);
 
-        // API poziv za dohvaćanje liste zahtjeva za životinje
         apiService.getDnevnikUdomljavanja().enqueue(new Callback<List<UpdateDnevnikModel>>() {
             @Override
             public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
@@ -96,14 +91,12 @@ public class RequestListFragment extends Fragment {
                     List<UpdateDnevnikModel> allAnimals = response.body();
                     requestList.clear();
 
-                    // Filtriraj samo životinje s otvorenim zahtjevom (u tijeku)
                     for (UpdateDnevnikModel animal : allAnimals) {
                         if (animal.isStatus_udomljavanja() && animal.isUdomljen() == false) {
                             requestList.add(animal);
                         }
                     }
 
-                    // Primijeni filter na trenutno dohvaćene zahtjeve
                     applyFilter();
 
                 } else {
@@ -123,11 +116,9 @@ public class RequestListFragment extends Fragment {
 
         filteredRequestList.clear();
 
-        // Ako je odabrano "Svi", prikazujemo sve zahtjeve
         if (selectedType.equals("Svi")) {
             filteredRequestList.addAll(requestList);
         } else {
-            // Inače filtriramo po tipu životinje
             for (UpdateDnevnikModel animal : requestList) {
                 if (animal.getTip_ljubimca().equalsIgnoreCase(selectedType)) {
                     filteredRequestList.add(animal);
@@ -135,7 +126,6 @@ public class RequestListFragment extends Fragment {
             }
         }
 
-        // Prikaz praznog stanja ako nema zahtjeva za prikaz
         if (filteredRequestList.isEmpty()) {
             recyclerView.setVisibility(View.GONE);
             emptyStateTextView.setVisibility(View.VISIBLE);
@@ -144,7 +134,6 @@ public class RequestListFragment extends Fragment {
             emptyStateTextView.setVisibility(View.GONE);
         }
 
-        // Ažuriraj prikaz pomoću adaptera
         adapter.notifyDataSetChanged();
     }
 }

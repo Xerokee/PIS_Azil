@@ -8,7 +8,6 @@ public class UpdateAnimalModel {
     private String opis_ljubimca;
     private int dob;
 
-    // Constructors, getters, and setters
     public UpdateAnimalModel() {}
 
     public UpdateAnimalModel(String ime_ljubimca,  String opis_ljubimca, int dob) {
@@ -37,6 +36,4 @@ public class UpdateAnimalModel {
 
     public int getDob(){return dob;}
     public void setDob(int dob) {this.dob=dob;}
-
-
 }

@@ -23,7 +23,7 @@ public class NewUserActivity extends AppCompatActivity {
 
     private EditText etName, etSurname, etUsername, etMail, etPassword;
     private ImageView ivUserImage;
-    private Uri selectedImageUri;  // Store URI of the selected image
+    private Uri selectedImageUri;
     private static final int PICK_IMAGE_REQUEST = 1;
     private ApiService apiService;
 
@@ -44,7 +44,6 @@ public class NewUserActivity extends AppCompatActivity {
 
         ivUserImage.setOnClickListener(v -> openImageChooser());
 
-        // Initialize the API service
         apiService = ApiClient.getClient().create(ApiService.class);
     }
 
@@ -66,7 +65,6 @@ public class NewUserActivity extends AppCompatActivity {
             return;
         }
 
-        // Check if an image is selected
         String profileImgUri = selectedImageUri != null ? selectedImageUri.toString() : null;
 
         UserModel newUser = new UserModel();
@@ -75,10 +73,9 @@ public class NewUserActivity extends AppCompatActivity {
         newUser.setKorisnickoIme(korisnicko_ime_korisnika);
         newUser.setEmail(mail_korisnika);
         newUser.setLozinka(lozinka_korisnika);
-        newUser.setProfileImg(profileImgUri);  // Set the profile image URI
+        newUser.setProfileImg(profileImgUri);
 
-        // Make the API call to add the user
-        apiService.addUser(1, newUser)  // Assuming '1' is the ID of the admin making the request
+        apiService.addUser(1, newUser)
                 .enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
@@ -102,8 +99,8 @@ public class NewUserActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
-            selectedImageUri = data.getData();  // Get the URI of the selected image
-            ivUserImage.setImageURI(selectedImageUri);  // Display the selected image in ImageView
+            selectedImageUri = data.getData();
+            ivUserImage.setImageURI(selectedImageUri);
         }
     }
 }

@@ -7,7 +7,6 @@
     tools:context=".activities.AnimalDetailActivity"
     android:background="@color/white">
 
-    <!-- ScrollView za karticu -->
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -18,7 +17,6 @@
         android:layout_marginTop="32dp"
         android:padding="16dp">
 
-        <!-- Kartica sa informacijama -->
         <LinearLayout
             android:id="@+id/detailCard"
             android:layout_width="match_parent"
@@ -27,7 +25,6 @@
             android:background="@drawable/rounded_button_logoblue"
             android:padding="20dp">
 
-            <!-- Slika životinje -->
             <ImageView
                 android:id="@+id/animalImage"
                 android:layout_width="100dp"
@@ -38,7 +35,6 @@
                 android:background="@drawable/rounded"
                 android:src="@drawable/paw" />
 
-            <!-- Ime životinje -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -60,7 +56,6 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Tip životinje -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -82,7 +77,6 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Dob životinje -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -104,7 +98,6 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Boja životinje -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -126,7 +119,6 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Opis životinje -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -144,7 +136,6 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="20dp" />
 
-            <!-- Dugme "Uredi" unutar kartice, na dnu -->
             <Button
                 android:id="@+id/animalEdit"
                 android:layout_width="150dp"

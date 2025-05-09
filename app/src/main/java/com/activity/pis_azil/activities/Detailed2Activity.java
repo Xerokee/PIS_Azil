@@ -40,14 +40,12 @@ public class Detailed2Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailed2);
 
-        // Inicijalizacija UI komponenti
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
 
         animalModel = (IsBlockedAnimalModel) getIntent().getSerializableExtra("animal");
         apiService = ApiClient.getClient().create(ApiService.class);
 
-        // Dohvaćanje trenutnog korisnika iz SharedPreferences
         SharedPreferences prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         String userJson = prefs.getString("current_user", null);
 
@@ -75,7 +73,6 @@ public class Detailed2Activity extends AppCompatActivity {
                     viewPagerAdapter = new ViewPagerAdapter(Detailed2Activity.this, detailedAnimal, currentUser, animalModel);
                     viewPager.setAdapter(viewPagerAdapter);
 
-                    // Sinhronizacija TabLayout i ViewPager2 pomoću TabLayoutMediator
                     new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
                         switch (position) {
                             case 0:

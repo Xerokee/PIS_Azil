@@ -4,7 +4,6 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- Spinner za odabir tipa životinje -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,7 +16,6 @@
         android:layout_height="wrap_content"
         android:spinnerMode="dropdown" />
 
-    <!-- LinearLayout for Confirm and Cancel buttons -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,7 +23,6 @@
         android:gravity="center_horizontal"
         android:layout_marginTop="16dp">
 
-        <!-- Gumb za odustajanje -->
         <Button
             android:id="@+id/cancel_button"
             android:layout_width="wrap_content"
@@ -33,7 +30,6 @@
             android:text="Odustani"
             android:layout_marginEnd="8dp" />
 
-        <!-- Gumb za potvrdu -->
         <Button
             android:id="@+id/confirm_button"
             android:layout_width="wrap_content"

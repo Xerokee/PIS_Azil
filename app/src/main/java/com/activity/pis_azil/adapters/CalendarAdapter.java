@@ -124,11 +124,11 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.ViewHo
                         tvDatum.setText(dateFormat.format(meeting.getDatum()));
                         tvVrijeme.setText(meeting.getVrijeme());
 
-                        if (!Objects.equals(idKorisnika,1)){  //nisi admin
+                        if (!Objects.equals(idKorisnika,1)){
                             btnObrisi.setVisibility(View.GONE);
                         }
                         else{
-                            btnRezerviraj.setVisibility(View.GONE); //jesi admin
+                            btnRezerviraj.setVisibility(View.GONE);
                             btnOtkazi.setVisibility(View.GONE);
                         }
                         btnObrisi.setOnClickListener(new View.OnClickListener() {

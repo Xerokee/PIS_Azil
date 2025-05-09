@@ -36,12 +36,10 @@ public class ImagePagerAdapter extends RecyclerView.Adapter<ImagePagerAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String imageUrl = imageUrls.get(position);
 
-        // Postavljanje slike u ImageView
         Glide.with(context)
                 .load(imageUrl)
                 .into(holder.imageView);
 
-        // Klik na sliku vodi do novog ekrana sa zumiranjem
         holder.imageView.setOnClickListener(v -> {
             Intent intent = new Intent(context, ImageDetailActivity.class);
             intent.putExtra("imageUrl", imageUrl);  // Prosljeđivanje URL-a slike
@@ -60,8 +58,6 @@ public class ImagePagerAdapter extends RecyclerView.Adapter<ImagePagerAdapter.Vi
         public ViewHolder(View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.imageView);
-
-            // Postavljanje dimenzija slike da budu kvadratne
             ViewGroup.LayoutParams params = imageView.getLayoutParams();
             params.width = 400;
             params.height = 400;

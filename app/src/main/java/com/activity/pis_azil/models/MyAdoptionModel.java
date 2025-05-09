@@ -17,7 +17,6 @@ public class MyAdoptionModel implements Serializable {
     private boolean status_udomljavanja;
 
 
-    // Getteri i setteri
     public int getId() {
         return id;
     }

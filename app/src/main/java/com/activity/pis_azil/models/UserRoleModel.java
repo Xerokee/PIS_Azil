@@ -4,7 +4,6 @@ public class UserRoleModel {
     public int idUloge;
     public String nazivUloge;
 
-    // Getters and setters
     public int getIdUloge() {
         return idUloge;
     }

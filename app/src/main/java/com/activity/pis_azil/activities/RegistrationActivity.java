@@ -78,7 +78,6 @@ public class RegistrationActivity extends AppCompatActivity {
             progressBar.setVisibility(View.VISIBLE);
         });
 
-        // Inicijalizacija ActivityResultLauncher-a
         galleryLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -175,7 +174,6 @@ public class RegistrationActivity extends AppCompatActivity {
         String userEmail = email.getText().toString();
         String userPassword = lozinka.getText().toString();
 
-        // Provjera praznih polja
         if (TextUtils.isEmpty(userNickName) || TextUtils.isEmpty(userName) || TextUtils.isEmpty(userSurName) || TextUtils.isEmpty(userEmail) || TextUtils.isEmpty(userPassword)) {
             Toast.makeText(this, "Sva polja su obavezna", Toast.LENGTH_SHORT).show();
             return;
@@ -194,7 +192,7 @@ public class RegistrationActivity extends AppCompatActivity {
 
         Log.d("RegistrationActivity", "Slanje podataka: " + new Gson().toJson(userModel));
 
-        int requestUserId = 1; // Ovdje stavite odgovarajući ID korisnika koji pravi zahtjev
+        int requestUserId = 1;
 
         apiService.addUser(requestUserId, userModel).enqueue(new Callback<Void>() {
             @Override

@@ -49,12 +49,12 @@ import java.util.List;
 public class NewAnimalsFragment extends Fragment {
 
     private static final int PICK_IMAGE_REQUEST = 1;
-    private static final int REQUEST_ANIMAL_ID = 1; // Ovdje definiramo RequestAnimalId
+    private static final int REQUEST_ANIMAL_ID = 1;
 
     private EditText etName, etDescription, etDob, etColor;
-    private List<SifrTipLjubimca> animalTypesList = new ArrayList<>(); // Lista za tipove ljubimaca
-    private List<SifrBojaLjubimca> animalColorsList = new ArrayList<>(); // Lista za tipove ljubimaca
-    private ArrayAdapter<String> spinnerAdapter; // Adapter za spinner
+    private List<SifrTipLjubimca> animalTypesList = new ArrayList<>();
+    private List<SifrBojaLjubimca> animalColorsList = new ArrayList<>();
+    private ArrayAdapter<String> spinnerAdapter;
     private ImageView ivAnimalImage;
     private Uri imageUri;
     private LinearLayout animalFormContainer;
@@ -78,16 +78,13 @@ public class NewAnimalsFragment extends Fragment {
         ivAnimalImage = root.findViewById(R.id.imageViewAnimal);
         animalFormContainer = root.findViewById(R.id.animalFormContainer);
 
-        // Pronalazak spinnera za tip životinje
         Spinner spinnerAnimalType = root.findViewById(R.id.spinnerAnimalType);
-        // Pronalazak spinnera za boju životinje
         Spinner spinnerAnimalColor = root.findViewById(R.id.spinnerAnimalColor);
 
         spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerAnimalType.setAdapter(spinnerAdapter);
 
-        // Postavljanje adaptera za tipove životinja
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 getContext(),
                 R.array.animal_types3,
@@ -96,7 +93,6 @@ public class NewAnimalsFragment extends Fragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerAnimalType.setAdapter(adapter);
 
-        // Postavljanje adaptera za boje
         ArrayAdapter<CharSequence> colorAdapter = ArrayAdapter.createFromResource(
                 getContext(),
                 R.array.animal_colors2,
@@ -105,16 +101,13 @@ public class NewAnimalsFragment extends Fragment {
         colorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerAnimalColor.setAdapter(colorAdapter);
 
-        // Pozivanje metode za učitavanje tipova iz API-ja
         fetchAnimalTypes();
         fetchAnimalColors();
 
-        // Dobivanje odabranog tipa
         spinnerAnimalType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // Odabir psa ili mačke sa int vrednostima
-                int selectedType = position; // 0: Tip životinje, 1: Pas, 2: Mačka
+                int selectedType = position;
                 if (selectedType == 1) {
                     Log.d("SpinnerSelection", "Odabrali ste psa (int: 1)");
                 } else if (selectedType == 2) {
@@ -134,8 +127,7 @@ public class NewAnimalsFragment extends Fragment {
         spinnerAnimalColor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // Odabir psa ili mačke sa int vrednostima
-                int selectedColor = position; // 0: Boja životinje, 1: Crna, 2: Bijela, 3. Smeđa
+                int selectedColor = position;
                 if (selectedColor == 1) {
                     Log.d("SpinnerSelection", "Odabrali ste crnu boju (int: 1)");
                 } else if (selectedColor == 2) {
@@ -213,7 +205,6 @@ public class NewAnimalsFragment extends Fragment {
                     animalTypesList.clear();
                     animalTypesList.addAll(response.body());
 
-                    // Dodavanje naziva tipova u spinner adapter
                     List<String> typeNames = new ArrayList<>();
                     for (SifrTipLjubimca type : animalTypesList) {
                         typeNames.add(type.getNaziv());
@@ -241,7 +232,6 @@ public class NewAnimalsFragment extends Fragment {
                     animalColorsList.clear();
                     animalColorsList.addAll(response.body());
 
-                    // Dodavanje naziva boja u spinner adapter
                     List<String> colorNames = new ArrayList<>();
                     for (SifrBojaLjubimca color : animalColorsList) {
                         colorNames.add(color.getNaziv());
@@ -266,21 +256,18 @@ public class NewAnimalsFragment extends Fragment {
         String opis_ljubimca = etDescription.getText().toString().trim();
         String dob_ljubimca_str = etDob.getText().toString().trim();
 
-        // Dohvati odabrani tip životinje iz spinnera
         Spinner spinnerAnimalType = getView().findViewById(R.id.spinnerAnimalType);
         String selectedAnimalType = spinnerAnimalType.getSelectedItem().toString();
-        // Dohvati odabranu boju iz spinnera
         Spinner spinnerAnimalColor = getView().findViewById(R.id.spinnerAnimalColor);
         String selectedAnimalColor = spinnerAnimalColor.getSelectedItem().toString();
 
-        // Mapiranje naziva tipova na numeričke vrijednosti
         int tip_ljubimca = 3;
         if (selectedAnimalType.equals("Pas")) {
             tip_ljubimca = 1;
         } else if (selectedAnimalType.equals("Mačka")) {
             tip_ljubimca = 2;
         } else {
-            tip_ljubimca = 3; // Ako nije odabran valjani tip
+            tip_ljubimca = 3;
         }
 
         Log.d("MappedValue", "Mapped tip_ljubimca: " + tip_ljubimca);
@@ -291,13 +278,11 @@ public class NewAnimalsFragment extends Fragment {
             return;
         }
 
-        // Provjera da li je validan tip
         if (selectedAnimalType.equals("Tip životinje")) {
             Toast.makeText(getContext(), "Molimo odaberite tip životinje", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Mapiranje naziva tipova na numeričke vrijednosti
         int boja_ljubimca = 4;
         if (selectedAnimalColor.equals("Crna")) {
             boja_ljubimca = 1;
@@ -306,7 +291,7 @@ public class NewAnimalsFragment extends Fragment {
         } else if (selectedAnimalColor.equals("Smeđa")) {
             boja_ljubimca = 3;
         } else {
-            boja_ljubimca = 4; // Ako nije odabran valjani tip
+            boja_ljubimca = 4;
         }
 
         Log.d("MappedValue", "Mapped boja_ljubimca: " + boja_ljubimca);
@@ -326,7 +311,6 @@ public class NewAnimalsFragment extends Fragment {
             return;
         }
 
-        // Pretvaranje URI slike u URL
         String imgUrl = imageUri.toString();
         Log.d("NewAnimalsFragment", "Image URL: " + imgUrl);
 

@@ -62,7 +62,6 @@ public class RejectAdoptionModelRead {
         this.stanje_zivotinje = stanje_zivotinje;
     }
 
-    // Postojeći getteri i setteri
     public Integer getId_korisnika() {
         return id_korisnika;
     }

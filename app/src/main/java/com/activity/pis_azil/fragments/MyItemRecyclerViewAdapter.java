@@ -31,22 +31,21 @@ import retrofit2.Response;
 public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder> {
     private List<RejectAdoptionModelRead> mValues;
     private Context context;
-    private boolean isAdmin;  // Čuva informaciju o tome je li korisnik admin
+    private boolean isAdmin;
     private DataRefreshListener dataRefreshListener;
     ApiService apiService = ApiClient.getClient().create(ApiService.class);
 
-    // Ažurirani konstruktor koji uključuje DataRefreshListener listener
     public MyItemRecyclerViewAdapter(List<RejectAdoptionModelRead> items, Context context, DataRefreshListener listener) {
         mValues = items;
         this.context = context;
-        this.isAdmin = checkIfUserIsAdmin(); // Provjeri je li korisnik admin prilikom kreiranja adaptera
-        this.dataRefreshListener = listener; // Postavi listener za osvježavanje podataka
+        this.isAdmin = checkIfUserIsAdmin();
+        this.dataRefreshListener = listener;
     }
 
     // Metoda za ažuriranje podataka
     public void updateData(List<RejectAdoptionModelRead> newItems) {
         mValues = newItems;
-        notifyDataSetChanged(); // Obavijesti adapter da se podaci promijenili
+        notifyDataSetChanged();
     }
 
     @Override
@@ -62,11 +61,10 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         holder.mIdView.setText(currentItem.getId_korisnika().toString());
         holder.mContentView.setText(currentItem.getIme_ljubimca());
 
-        // Postavi vidljivost gumba na temelju toga je li korisnik admin
         if (isAdmin) {
-            holder.mActionButton.setVisibility(View.VISIBLE); // Pokaži gumb ako je admin
+            holder.mActionButton.setVisibility(View.VISIBLE);
         } else {
-            holder.mActionButton.setVisibility(View.GONE); // Sakrij gumb ako nije admin
+            holder.mActionButton.setVisibility(View.GONE);
         }
 
         holder.mActionButton.setOnClickListener(v -> {
@@ -77,7 +75,6 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
                     if (response.isSuccessful()) {
-                        // Makni životinju iz liste
                         removeItem(currentPosition);
                         Toast.makeText(v.getContext(), "Životinja uspješno uklonjena", Toast.LENGTH_SHORT).show();
                     } else {
@@ -94,13 +91,11 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
     }
 
     private void unblockAnimalAndReturnToAdoptionList(RejectAdoptionModelRead rejectedAnimal) {
-        // Provjera null vrijednosti prije upotrebe
         if (rejectedAnimal.getId_ljubimca() == null || rejectedAnimal.getId_korisnika() == null) {
             Toast.makeText(context, "Podaci o životinji nisu dostupni.", Toast.LENGTH_SHORT).show();
-            return; // Izađite iz metode ako su vrijednosti null
+            return;
         }
 
-        // Ažuriraj status životinje
         UpdateDnevnikModel updateModel = new UpdateDnevnikModel();
         // updateModel.setId_ljubimca(rejectedAnimal.getId_ljubimca());
         updateModel.setId_korisnika(rejectedAnimal.getId_korisnika());
@@ -113,18 +108,15 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
 
         updateModel.setUdomljen(false); // Postavi udomljen na false
         updateModel.setStanje_zivotinje(rejectedAnimal.isStanje_zivotinje());
-        updateModel.setStatus_udomljavanja(true); // Postavi status udomljavanja na true
+        updateModel.setStatus_udomljavanja(true);
 
-        // Pozovi API za ažuriranje podataka o životinji
         apiService.updateAdoption(1, rejectedAnimal.getId_ljubimca(), updateModel).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
-                    // Ukloni životinju iz liste odbijenih
                     removeItem(mValues.indexOf(rejectedAnimal));
                     Toast.makeText(context, "Životinja je vraćena u listu za udomitelje", Toast.LENGTH_SHORT).show();
 
-                    // Obavijesti glavnu listu za osvježavanje podataka
                     if (dataRefreshListener != null) {
                         dataRefreshListener.refreshData();
                     }
@@ -160,11 +152,10 @@ public class MyItemRecyclerViewAdapter extends RecyclerView.Adapter<MyItemRecycl
         }
     }
 
-    // Metoda za uklanjanje stavke iz liste i obavještavanje adaptera
     private void removeItem(int position) {
-        mValues.remove(position); // Ukloni životinju iz liste
-        notifyItemRemoved(position); // Obavijesti adapter da je stavka uklonjena
-        notifyItemRangeChanged(position, mValues.size()); // Ažuriraj ostatak liste
+        mValues.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, mValues.size());
     }
 
     private boolean checkIfUserIsAdmin() {

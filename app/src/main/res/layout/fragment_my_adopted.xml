@@ -7,7 +7,6 @@
     android:background="@color/white"
     tools:context=".fragments.MyAdoptedFragment">
 
-    <!-- Dodano polje za pretraživanje -->
     <EditText
         android:id="@+id/search_adopter_box"
         android:layout_width="0dp"
@@ -24,10 +23,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.8"
-        android:layout_marginTop="16dp"/> <!-- Added margin to move it down a bit -->
-
-    <!-- Filtriraj dugme -->
-    <!-- Added margin to move it down a bit -->
+        android:layout_marginTop="16dp"/>
 
     <ImageButton
         android:id="@+id/filter_button"
@@ -57,7 +53,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_adopter_box" />
 
-    <!-- Prikaz kada nema udomljenih životinja -->
     <ImageView
         android:id="@+id/new_animals_img"
         android:layout_width="200dp"

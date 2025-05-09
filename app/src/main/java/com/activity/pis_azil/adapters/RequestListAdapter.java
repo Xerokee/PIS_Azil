@@ -40,11 +40,10 @@ public class RequestListAdapter extends RecyclerView.Adapter<RequestListAdapter.
         holder.animalType.setText("Tip: " + animal.getTip_ljubimca());
         holder.animalStatus.setText("Zahtjev na čekanju");
 
-        // Use Glide to load the animal image
         if (animal.getImgUrl() != null && !animal.getImgUrl().isEmpty()) {
             Glide.with(context).load(animal.getImgUrl()).into(holder.animalImage);
         } else {
-            holder.animalImage.setImageResource(R.drawable.profile); // Default image if none available
+            holder.animalImage.setImageResource(R.drawable.profile);
         }
     }
 

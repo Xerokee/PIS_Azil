@@ -19,20 +19,16 @@ public class ImageDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_detail);
 
-        // Inicijalizacija SubsamplingScaleImageView
         SubsamplingScaleImageView imageView = findViewById(R.id.imageView);
 
-        // Dobavljanje URL-a slike iz Intenta
         String imageUrl = getIntent().getStringExtra("imageUrl");
 
-        // Učitavanje slike pomoću Glide-a (asBitmap za preuzimanje slike kao Bitmap)
         Glide.with(this)
-                .asBitmap()  // Preuzimanje slike kao Bitmap
+                .asBitmap()
                 .load(imageUrl)
                 .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, Transition<? super Bitmap> transition) {
-                        // Postavljanje slike u SubsamplingScaleImageView koristeći ImageSource
                         imageView.setImage(ImageSource.bitmap(resource));
                     }
                 });

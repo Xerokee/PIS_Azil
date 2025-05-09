@@ -42,16 +42,13 @@ public class UserViewModel extends ViewModel {
                     if (user != null) {
                         userLiveData.setValue(user);
                     } else {
-                        // Handle case where user is not found in the result
                     }
                 } else {
-                    // Handle unsuccessful response
                 }
             }
 
             @Override
             public void onFailure(Call<UserByEmailResponseModel> call, Throwable t) {
-                // Handle error
             }
         });
     }
@@ -68,7 +65,6 @@ public class UserViewModel extends ViewModel {
 
             @Override
             public void onFailure(Call<List<UserModel>> call, Throwable t) {
-                // Handle error
             }
         });
     }

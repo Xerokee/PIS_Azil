@@ -44,19 +44,16 @@ public class AnimalDetail2Activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_animal_detail2);
 
-        // Inicijalizacija UI komponenti
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
 
-        // Preuzimamo objekt UpdateDnevnikModel
-        //animalModel = (UpdateDnevnikModel) getIntent().getSerializableExtra("animal"); // Promjena
+        //animalModel = (UpdateDnevnikModel) getIntent().getSerializableExtra("animal");
 
         final Bundle oExtras= getIntent().getExtras();
         sAnimalId= oExtras.getString("id");
         animalId= Integer.parseInt(sAnimalId);
         apiService = ApiClient.getClient().create(ApiService.class);
 
-        // Dohvaćanje trenutnog korisnika iz SharedPreferences
         SharedPreferences prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         String userJson = prefs.getString("current_user", null);
 
@@ -84,7 +81,6 @@ public class AnimalDetail2Activity extends AppCompatActivity {
                     } else {
                         viewPagerAdapter = new ViewPagerAdapter2(AnimalDetail2Activity.this, detailedAnimal, currentUser, animalId);
                         viewPager.setAdapter(viewPagerAdapter);
-                        // Postavke za tabove
                         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
                             switch (position) {
                                 case 0:

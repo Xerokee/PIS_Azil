@@ -64,10 +64,8 @@ public class LoginActivity extends AppCompatActivity {
             progressBar.setVisibility(View.VISIBLE);
         });
 
-        // Biometrijska prijava
         biometricLogin.setOnClickListener(v -> authenticateWithBiometrics());
 
-        // Provjeri podržava li uređaj biometriju
         checkBiometricSupport();
     }
 
@@ -203,7 +201,6 @@ public class LoginActivity extends AppCompatActivity {
                                         if (user != null) {
                                             Log.d("LoginActivity", "Dohvaćeni podaci korisnika - ID: " + user.getIdKorisnika() + ", Ime: " + user.getIme() + ", Mail: " + user.getEmail() + ", Slika profila: " + user.getProfileImg());
 
-                                            // Save user data in SharedPreferences
                                             SharedPreferences preferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
                                             SharedPreferences.Editor editor = preferences.edit();
                                             editor.putInt("id_korisnika", user.getIdKorisnika());

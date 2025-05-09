@@ -40,7 +40,7 @@ import java.io.IOException;
 
 public class NewUsersFragment extends Fragment {
     private static final int PICK_IMAGE_REQUEST = 1;
-    private static final int REQUEST_USER_ID = 1; // Ovdje definiramo RequestUserId
+    private static final int REQUEST_USER_ID = 1;
     private EditText etName, etSurname, etUsername, etMail, etPassword;
     private ImageView ivUserImage;
     private Uri imageUri;
@@ -136,7 +136,6 @@ public class NewUsersFragment extends Fragment {
             return;
         }
 
-        // Pretvaranje URI slike u URL (u stvarnom scenariju biste trebali uploadati sliku na server i dobiti URL)
         String imgUrl = imageUri.toString();
         Log.d("NewUsersFragment", "Image URL: " + imgUrl);
 

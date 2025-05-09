@@ -84,7 +84,6 @@ public class AdoptedAnimalDetailActivity extends AppCompatActivity {
                         }).attach();
                     }
                 } else {
-                    Toast.makeText(AdoptedAnimalDetailActivity.this, "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
 

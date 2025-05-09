@@ -16,7 +16,6 @@
         android:padding="12dp"
         android:id="@+id/animal_frame">
 
-        <!-- Animal Image aligned to the start (left) of the layout -->
         <ImageView
             android:id="@+id/img_url"
             android:layout_width="100dp"
@@ -44,7 +43,6 @@
             android:gravity="start"
             android:layout_marginTop="0dp" />
 
-        <!-- Animal Type TextView aligned just below the name -->
         <TextView
             android:id="@+id/product_type"
             android:layout_width="0dp"
@@ -59,7 +57,6 @@
             android:gravity="start"
             android:layout_marginTop="5dp" />
 
-        <!-- Animal Status TextView aligned just below the type -->
         <TextView
             android:id="@+id/animal_status"
             android:layout_width="0dp"
@@ -89,7 +86,6 @@
             android:textStyle="bold"
             android:visibility="invisible"/>
 
-        <!-- LinearLayout to hold buttons horizontally -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"

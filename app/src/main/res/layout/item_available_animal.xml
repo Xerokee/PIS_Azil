@@ -12,9 +12,6 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- Animal Image aligned to the start (left) of the layout -->
-
-        <!-- Container for the text and button centered in the remaining space -->
         <ImageView
             android:id="@+id/animal_image"
             android:layout_width="100dp"

@@ -33,9 +33,9 @@ public class UsersAdapterAdmin extends RecyclerView.Adapter<UsersAdapterAdmin.Us
         UserModel user = users.get(position);
         if (user.getProfileImg() != null && !user.getProfileImg().isEmpty()) {
             Glide.with(holder.itemView.getContext())
-                    .load(user.getProfileImg()) // URL slike
-                    .placeholder(R.drawable.menu_person) // Placeholder ako slika nije dostupna
-                    .error(R.drawable.menu_person) // Ako se slika ne može učitati
+                    .load(user.getProfileImg())
+                    .placeholder(R.drawable.menu_person)
+                    .error(R.drawable.menu_person)
                     .into(holder.ivUserImage);
         } else {
             holder.ivUserImage.setImageResource(R.drawable.menu_person);
@@ -55,21 +55,18 @@ public class UsersAdapterAdmin extends RecyclerView.Adapter<UsersAdapterAdmin.Us
         }
 
         holder.editUser.setOnClickListener(v -> {
-            // Otvaranje fragmenta za ažuriranje korisnika
             if (onEditClickListener != null) {
                 onEditClickListener.onEditClick(user);
             }
         });
 
         holder.deleteUser.setOnClickListener(v -> {
-            // Otvaranje dijaloga za potvrdu brisanja
             if (onDeleteClickListener != null) {
                 onDeleteClickListener.onDeleteClick(user);
             }
         });
     }
 
-    // Dodajte interfejse za edit i delete
     private OnEditClickListener onEditClickListener;
     private OnDeleteClickListener onDeleteClickListener;
 

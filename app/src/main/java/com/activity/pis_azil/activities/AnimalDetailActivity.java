@@ -289,7 +289,6 @@ public class AnimalDetailActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Ponovno učitavanje podataka kada se aktivnost pojavi na ekranu
         refreshAnimalDetails();
         refreshPopisAktivnosti();
         getSlike();

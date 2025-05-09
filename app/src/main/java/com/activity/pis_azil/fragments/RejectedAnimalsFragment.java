@@ -57,24 +57,19 @@ public class RejectedAnimalsFragment extends Fragment implements DataRefreshList
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflata layout za ovaj fragment
         View view = inflater.inflate(R.layout.fragment_rejected_animals_list, container, false);
 
-        // Pronađi RecyclerView unutar layouta
-        RecyclerView recyclerView = view.findViewById(R.id.recyclerView); // Provjeri da u XML-u imaš točan ID
+        RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
 
-        // Postavi LayoutManager ovisno o broju stupaca
         if (mColumnCount <= 1) {
             recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         } else {
             recyclerView.setLayoutManager(new GridLayoutManager(view.getContext(), mColumnCount));
         }
 
-        // Postavi prazan adapter dok čekamo podatke
-        adapter = new MyItemRecyclerViewAdapter(new ArrayList<>(), view.getContext(), this); // Koristite this ako je fragment implementirao DataRefreshListener
+        adapter = new MyItemRecyclerViewAdapter(new ArrayList<>(), view.getContext(), this);
         recyclerView.setAdapter(adapter);
 
-        // Dohvati podatke putem API-ja
         Call<List<RejectAdoptionModelRead>> call = apiService.getOdbijeneZivotinje();
         call.enqueue(new Callback<List<RejectAdoptionModelRead>>() {
             @Override
@@ -108,6 +103,5 @@ public class RejectedAnimalsFragment extends Fragment implements DataRefreshList
 
     @Override
     public void refreshData() {
-        // Implementacija metode za osvježavanje podataka ako je potrebna
     }
 }

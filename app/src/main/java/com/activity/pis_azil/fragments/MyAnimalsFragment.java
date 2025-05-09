@@ -50,8 +50,8 @@ public class MyAnimalsFragment extends Fragment implements MyAnimalsAdapter.OnFe
     private List<IsBlockedAnimalModel> animalsList2;
     private ApiService apiService;
     private TextView emptyStateTextView;
-    private EditText searchAnimalBox;  // Search box for filtering animals by name
-    private Button filterButton;  // Button to open the filter dialog
+    private EditText searchAnimalBox;
+    private Button filterButton;
 
     public MyAnimalsFragment() {
         // Required empty public constructor
@@ -64,8 +64,8 @@ public class MyAnimalsFragment extends Fragment implements MyAnimalsAdapter.OnFe
         recyclerView = root.findViewById(R.id.recyclerview_my_animals);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         emptyStateTextView = root.findViewById(R.id.empty_state_text_view);
-        searchAnimalBox = root.findViewById(R.id.search_adopter_box);  // Search box
-        ImageButton filterButton = root.findViewById(R.id.filter_button);  // Filter button
+        searchAnimalBox = root.findViewById(R.id.search_adopter_box);
+        ImageButton filterButton = root.findViewById(R.id.filter_button);
 
         animalsList = new ArrayList<>();
         filteredAnimalsList = new ArrayList<>();
@@ -88,10 +88,9 @@ public class MyAnimalsFragment extends Fragment implements MyAnimalsAdapter.OnFe
             public void afterTextChanged(android.text.Editable editable) {}
         });
 
-        // Filter button click to show filter dialog
         filterButton.setOnClickListener(v -> showFilterDialog());
 
-        fetchMyAnimals();  // Fetch user's animals
+        fetchMyAnimals();
 
         return root;
     }
@@ -136,36 +135,32 @@ public class MyAnimalsFragment extends Fragment implements MyAnimalsAdapter.OnFe
         });
     }
 
-    // Function for filtering animals based on animal name (search query)
     private void filterAnimalsByName(String query) {
-        filteredAnimalsList.clear();  // Clear previous results
+        filteredAnimalsList.clear();
 
         if (query.isEmpty()) {
-            filteredAnimalsList.addAll(animalsList);  // Show all animals if query is empty
+            filteredAnimalsList.addAll(animalsList);
         } else {
             for (UpdateDnevnikModel animal : animalsList) {
                 if (animal.getIme_ljubimca() != null && animal.getIme_ljubimca().toLowerCase().contains(query.toLowerCase())) {
-                    filteredAnimalsList.add(animal);  // Add animal to filtered list
+                    filteredAnimalsList.add(animal);
                 }
             }
         }
 
-        adapter.notifyDataSetChanged();  // Notify the adapter that data has changed
+        adapter.notifyDataSetChanged();
     }
 
-    // Show filter dialog
     private void showFilterDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_filters3, null);
 
-        // Filter options
         android.widget.Spinner typeFilter = dialogView.findViewById(R.id.spinner_type);
         android.widget.Spinner statusFilter = dialogView.findViewById(R.id.spinner_status);
         Button cancelButton = dialogView.findViewById(R.id.cancel_button);
         Button confirmButton = dialogView.findViewById(R.id.confirm_button);
         Button resetButton = dialogView.findViewById(R.id.reset_button);
 
-        // Populate spinner with available types and statuses
         ArrayAdapter<CharSequence> typeAdapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.animal_types2, android.R.layout.simple_spinner_item);
         typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -190,7 +185,6 @@ public class MyAnimalsFragment extends Fragment implements MyAnimalsAdapter.OnFe
         });
 
         resetButton.setOnClickListener(v -> {
-            // Reset the filters and show all animals
             applyFilters("Svi", "Svi");
             dialog.dismiss();
         });
@@ -213,11 +207,10 @@ public class MyAnimalsFragment extends Fragment implements MyAnimalsAdapter.OnFe
             boolean matchesStatus = status.equals("Svi") || (status.equals("Udomljen") && animal.isUdomljen() || (status.equals("Rezerviran") && animal.isStatus_udomljavanja()));
 
             if (matchesType && matchesStatus) {
-                filteredAnimalsList.add(animal);  // Add animal to the filtered list
+                filteredAnimalsList.add(animal);
             }
         }
 
-        // Update UI for empty state
         if (filteredAnimalsList.isEmpty()) {
             recyclerView.setVisibility(View.GONE);
             emptyStateTextView.setVisibility(View.VISIBLE);
@@ -232,7 +225,6 @@ public class MyAnimalsFragment extends Fragment implements MyAnimalsAdapter.OnFe
     private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                // fetchMyAnimals();
             }
     );
 }

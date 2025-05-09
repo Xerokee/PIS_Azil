@@ -52,14 +52,12 @@ public class UsersFragmentAdmin extends Fragment {
         userViewModelAdmin = new ViewModelProvider(this).get(UserViewModelAdmin.class);
         userViewModelAdmin.getAllUsers().observe(getViewLifecycleOwner(), usersAdapterAdmin::setUsers);
 
-        // Edit user
         usersAdapterAdmin.setOnEditClickListener(user -> {
             Intent intent = new Intent(getActivity(), UpdateUserActivity.class);
             intent.putExtra("user", user);
             startActivityForResult(intent, 100);
         });
 
-        // Delete user
         usersAdapterAdmin.setOnDeleteClickListener(user -> {
             new AlertDialog.Builder(requireContext())
                     .setTitle("Brisanje Korisnika")
@@ -69,7 +67,6 @@ public class UsersFragmentAdmin extends Fragment {
                     .show();
         });
 
-        // Add user
         Button btnAddUser = view.findViewById(R.id.btnAddUser);
         btnAddUser.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), NewUserActivity.class);

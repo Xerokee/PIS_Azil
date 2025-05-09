@@ -81,7 +81,6 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
             }
         }
 
-        // Provjeri da li je korisnik admin i sakrij gumb ako nije
         if (!checkIfUserIsAdmin()) {
             holder.returnButton.setVisibility(View.GONE);
         } else {
@@ -160,13 +159,13 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
                     adopterNameTextView.setText(imeUdomitelja);
                     adopterSurnameTextView.setText(prezimeUdomitelja);
                     animal.setImeUdomitelja(imeUdomitelja);
-                    notifyDataSetChanged(); // Osvježi adapter nakon ažuriranja modela
+                    notifyDataSetChanged();
                 } else {
                     adopterNameTextView.setText("Udomitelj: Nepoznato");
                     adopterSurnameTextView.setText("Udomitelj: Nepoznato");
                     animal.setImeUdomitelja("Nepoznato");
                     animal.setPrezimeUdomitelja("Nepoznato");
-                    notifyDataSetChanged(); // Osvježi adapter nakon ažuriranja modela
+                    notifyDataSetChanged();
                 }
             }
 
@@ -176,7 +175,7 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
                 adopterSurnameTextView.setText("Udomitelj: Greška u dohvatu podataka");
                 animal.setImeUdomitelja("Greška u dohvatu podataka");
                 animal.setPrezimeUdomitelja("Greška u dohvatu podataka");
-                notifyDataSetChanged(); // Osvježi adapter nakon ažuriranja modela
+                notifyDataSetChanged();
             }
         });
     }

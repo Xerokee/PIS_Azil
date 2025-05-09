@@ -58,7 +58,6 @@ public class MyAdoptedFragment extends Fragment {
     private Map<Integer, String> userMap = new HashMap<>();
 
     public MyAdoptedFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -110,7 +109,6 @@ public class MyAdoptedFragment extends Fragment {
         Button confirmButton = dialogView.findViewById(R.id.confirm_button);
         Button resetButton = dialogView.findViewById(R.id.reset_button);
 
-        // Popuni Spinner sa podacima iz resursa strings.xml
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
                 R.array.animal_types2, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -118,25 +116,22 @@ public class MyAdoptedFragment extends Fragment {
 
         builder.setView(dialogView)
                 .setTitle("Filtriraj životinje")
-                .setCancelable(false);  // Disable outside dialog dismiss
+                .setCancelable(false);
 
         AlertDialog dialog = builder.create();
 
-        // Odustani button (dismiss the dialog without doing anything)
         cancelButton.setOnClickListener(v -> dialog.dismiss());
 
-        // Filtriraj button (apply selected filter)
         confirmButton.setOnClickListener(v -> {
             String type = typeFilter.getSelectedItem().toString();
             applyFilters(type);
-            dialog.dismiss();  // Dismiss the dialog after applying the filter
+            dialog.dismiss();
         });
 
-        // Resetiraj button (reset filter to "Svi" and show all animals)
         resetButton.setOnClickListener(v -> {
-            typeFilter.setSelection(0);  // Set the spinner to "Svi" (first item)
-            applyFilters("Svi");         // Apply "Svi" filter to show all animals
-            dialog.dismiss();            // Dismiss the dialog after resetting
+            typeFilter.setSelection(0);
+            applyFilters("Svi");
+            dialog.dismiss();
         });
 
         dialog.show();
@@ -145,13 +140,12 @@ public class MyAdoptedFragment extends Fragment {
     private void applyFilters(String type) {
         filteredAdoptedAnimalsList.clear();
 
-        // Filtriraj životinje prema odabranom tipu
         if (type.equals("Svi")) {
-            filteredAdoptedAnimalsList.addAll(adoptedAnimalsList); // Show all animals
+            filteredAdoptedAnimalsList.addAll(adoptedAnimalsList);
         } else {
             for (UpdateDnevnikModel animal : adoptedAnimalsList) {
                 if (animal.getTip_ljubimca().equalsIgnoreCase(type)) {
-                    filteredAdoptedAnimalsList.add(animal); // Filter by selected type
+                    filteredAdoptedAnimalsList.add(animal);
                 }
             }
         }
@@ -165,11 +159,10 @@ public class MyAdoptedFragment extends Fragment {
             public void onResponse(Call<List<UserModel>> call, Response<List<UserModel>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     for (UserModel user : response.body()) {
-                        // Spremi ID korisnika, ime i prezime u mapu kao jedan formatirani string
                         String fullName = user.getIme() + " " + user.getPrezime();
-                        userMap.put(user.getIdKorisnika(), fullName); // Dodaj ime i prezime u mapu
+                        userMap.put(user.getIdKorisnika(), fullName);
                     }
-                    fetchAdoptedAnimals(); // Zatim dohvati udomljene životinje
+                    fetchAdoptedAnimals();
                 } else {
                     Toast.makeText(getActivity(), "Greška u dohvaćanju korisnika: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
@@ -183,10 +176,8 @@ public class MyAdoptedFragment extends Fragment {
         });
     }
 
-
-    // Metoda za filtriranje udomljenih životinja prema imenu udomitelja
     private void filterAdoptedAnimals(String query) {
-        filteredAdoptedAnimalsList.clear();  // Clear the previous filter results
+        filteredAdoptedAnimalsList.clear();
         if (query.isEmpty()) {
             filteredAdoptedAnimalsList.addAll(adoptedAnimalsList);
         } else {
@@ -205,8 +196,6 @@ public class MyAdoptedFragment extends Fragment {
                 }
             }
         }
-
-        // Notify adapter that the data has changed
         adapter.notifyDataSetChanged();
     }
 
@@ -220,7 +209,6 @@ public class MyAdoptedFragment extends Fragment {
 
                     List<UpdateDnevnikModel> list = response.body();
 
-                    // Dohvati podatke o trenutnom korisniku iz SharedPreferences
                     SharedPreferences prefs = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
                     String userJson = prefs.getString("current_user", null);
                     UserModel currentUser;
@@ -233,20 +221,17 @@ public class MyAdoptedFragment extends Fragment {
 
                     if (currentUser != null) {
                         if (!currentUser.isAdmin()) {
-                            // Filtriraj samo životinje koje je udomio trenutni korisnik
                             list = list.stream()
                                     .filter(animal -> animal.isUdomljen() && animal.getId_korisnika() == currentUser.getIdKorisnika())
                                     .collect(Collectors.toList());
                         } else {
-                            // Admin vidi sve udomljene životinje
                             list = list.stream().filter(UpdateDnevnikModel::isUdomljen).collect(Collectors.toList());
                         }
                     }
 
-                    // Dodajte životinje u listu
                     for (UpdateDnevnikModel animal : list) {
                         String fullName = userMap.getOrDefault(animal.getId_korisnika(), "Nepoznato");
-                        animal.setImeUdomitelja(fullName); // Postavljamo cijelo ime (ime + prezime)
+                        animal.setImeUdomitelja(fullName);
                         adoptedAnimalsList.add(animal);
                     }
 
@@ -279,7 +264,6 @@ public class MyAdoptedFragment extends Fragment {
     private ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
-                // Handle activity result if necessary
             }
     );
 
@@ -293,7 +277,6 @@ public class MyAdoptedFragment extends Fragment {
 
                     List<UpdateDnevnikModel> list = response.body();
 
-                    // Dohvati podatke o trenutnom korisniku iz SharedPreferences
                     SharedPreferences prefs = getActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
                     String userJson = prefs.getString("current_user", null);
                     UserModel currentUser;
@@ -306,20 +289,17 @@ public class MyAdoptedFragment extends Fragment {
 
                     if (currentUser != null) {
                         if (!currentUser.isAdmin()) {
-                            // Filtriraj samo životinje koje je udomio trenutni korisnik
                             list = list.stream()
                                     .filter(animal -> animal.isUdomljen() && animal.getId_korisnika() == currentUser.getIdKorisnika())
                                     .collect(Collectors.toList());
                         } else {
-                            // Admin vidi sve udomljene životinje
                             list = list.stream().filter(UpdateDnevnikModel::isUdomljen).collect(Collectors.toList());
                         }
                     }
 
-                    // Dodajte životinje u listu
                     for (UpdateDnevnikModel animal : list) {
                         String fullName = userMap.getOrDefault(animal.getId_korisnika(), "Nepoznato");
-                        animal.setImeUdomitelja(fullName); // Postavljamo cijelo ime (ime + prezime)
+                        animal.setImeUdomitelja(fullName);
                         adoptedAnimalsList.add(animal);
                     }
 
@@ -338,6 +318,5 @@ public class MyAdoptedFragment extends Fragment {
                 Toast.makeText(getActivity(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 }

@@ -29,7 +29,6 @@ public class UserModel implements Serializable {
     public UserModel() {
     }
 
-    // Getters and setters
     public int getIdKorisnika() {
         return id_korisnika;
     }

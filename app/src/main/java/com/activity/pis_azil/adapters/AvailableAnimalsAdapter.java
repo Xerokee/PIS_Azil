@@ -42,16 +42,14 @@ public class AvailableAnimalsAdapter extends RecyclerView.Adapter<AvailableAnima
         holder.animalName.setText(animal.getImeLjubimca());
         holder.animalType.setText("Tip: " + animal.getTipLjubimca());
 
-        // Set image using Glide
         Glide.with(context).load(animal.getImgUrl()).into(holder.animalImage);
 
-        // Set status text and background color
         if (animal.isZahtjevUdomljavanja()) {
             holder.animalStatus.setText("Status: Nedostupno");
-            holder.itemView.setBackgroundColor(Color.GRAY); // Grey for adopted animals
+            holder.itemView.setBackgroundColor(Color.GRAY); /
         } else {
             holder.animalStatus.setText("Status: Dostupno");
-            holder.itemView.setBackgroundColor(Color.WHITE); // White for available animals
+            holder.itemView.setBackgroundColor(Color.WHITE);
         }
     }
 

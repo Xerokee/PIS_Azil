@@ -64,7 +64,6 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         UpdateDnevnikModel animal = animalsList.get(position);
         IsBlockedAnimalModel animal2 = new IsBlockedAnimalModel();
-        // Nađi status blokiranja na osnovu ID-a
         boolean isBlocked = false;
         for (IsBlockedAnimalModel blockedAnimal : animalsList2) {
             if (blockedAnimal.getIdLjubimca() == animal.getId_ljubimca() && blockedAnimal.isBlocked()) {
@@ -76,10 +75,8 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
         holder.animalName.setText(" " + animal.getIme_ljubimca());
         holder.animalType.setText("  Tip: " + animal.getTip_ljubimca());
 
-        // Set image
         Glide.with(context).load(animal.getImgUrl()).into(holder.animalImage);
 
-        // Set status text and color
         if (animal.isUdomljen()) {
             holder.animalStatus.setText("  Status: Udomljen");
             holder.itemView.setBackgroundColor(Color.GREEN);
@@ -92,7 +89,6 @@ public class MyAnimalsAdapter extends RecyclerView.Adapter<MyAnimalsAdapter.View
             holder.btnCancel.setVisibility(View.VISIBLE);
             holder.btnReturn.setVisibility(View.GONE);
         } else if (animal2.isBlocked()) {
-            // Obavijest o odbijanju
             Toast.makeText(context, "Administrator je odbio zahtjev za " + animal.getIme_ljubimca(), Toast.LENGTH_LONG).show();
             holder.btnReturn.setVisibility(View.GONE);
             holder.btnCancel.setVisibility(View.GONE);

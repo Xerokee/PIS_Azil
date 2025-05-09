@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true" />
 
-    <!-- Omotaj search_box i filter_button unutar LinearLayout i dodijeli mu ID -->
     <LinearLayout
         android:id="@+id/search_container"
         android:layout_width="match_parent"

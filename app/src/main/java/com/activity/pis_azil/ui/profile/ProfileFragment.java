@@ -212,17 +212,13 @@ public class ProfileFragment extends Fragment {
 
                     // Provjera je li slika profila null
                     if (userModel.getResult().getProfileImg() != null) {
-                        // Ako slika postoji, učitaj je pomoću Glide
                         Glide.with(getContext()).load(userModel.getResult().getProfileImg()).into(profileImage);
                     } else {
-                        // Ako je slika null, postavi zadanu sliku
-                        profileImage.setImageResource(R.drawable.paw); // Zamijenite "default_profile_image" s vašom stvarnom slikom
+                        profileImage.setImageResource(R.drawable.paw);
                     }
 
-                    // Fetch and display user role
                     fetchUserRole(userId);
 
-                    // Save current admin status
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putBoolean("admin", userModel.getResult().isAdmin());
                     editor.apply();
@@ -301,7 +297,6 @@ public class ProfileFragment extends Fragment {
                 if (response.isSuccessful()) {
                     Toast.makeText(getContext(), "Profil ažuriran", Toast.LENGTH_SHORT).show();
                     LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(ACTION_PROFILE_UPDATED));
-                    // Ažuriranje lokalnih podataka
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putString("korisnickoIme", KorisnickoIme);
                     editor.putString("ime", Ime);
@@ -309,7 +304,6 @@ public class ProfileFragment extends Fragment {
                     editor.putString("email", Mail);
                     editor.putString("lozinka", Lozinka);
                     editor.apply();
-                    // Ponovno učitavanje profila
                     loadUserProfile();
                 } else {
                     try {

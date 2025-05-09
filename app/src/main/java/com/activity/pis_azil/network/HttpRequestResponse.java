@@ -6,7 +6,6 @@ public class HttpRequestResponse<T> {
     private T result;
     private List<ErrorMessage> errorMessages;
 
-    // Getters and setters
     public T getResult() {
         return result;
     }

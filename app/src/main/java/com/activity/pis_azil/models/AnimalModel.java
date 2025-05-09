@@ -21,7 +21,6 @@ public class AnimalModel implements Serializable {
     private int dob;
     private String boja;
 
-    // Constructors, getters, and setters
     public AnimalModel() {}
 
     public AnimalModel(int id_ljubimca, int id_udomitelja, String ime_ljubimca, String tip_ljubimca, String opis_ljubimca, boolean udomljen, boolean zahtjev_udomljen, String datum, String vrijeme, String imgUrl, List<GalleryImageModel> galerijaZivotinja, boolean stanje_zivotinje) {

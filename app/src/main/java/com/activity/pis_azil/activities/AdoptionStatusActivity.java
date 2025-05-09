@@ -34,44 +34,35 @@ public class AdoptionStatusActivity extends AppCompatActivity {
 
         apiService = ApiClient.getClient().create(ApiService.class);
 
-        // Preuzimanje ID-a ljubimca iz Intent-a, ovo treba biti idLjubimca, ne idKorisnika
-        idLjubimca = getIntent().getIntExtra("idLjubimca", 0); // 0 je defaultna vrijednost ako nije postavljeno
+        idLjubimca = getIntent().getIntExtra("idLjubimca", 0);
 
         Log.d("AdoptionStatusActivity", "Preuzeti idLjubimca: " + idLjubimca);
 
-        // Provjeri je li idLjubimca ispravan
         if (idLjubimca == 0) {
             Toast.makeText(this, "Greška: ID ljubimca nije ispravan!", Toast.LENGTH_SHORT).show();
             finish();
         }
 
-        // Poziv metode za dohvaćanje statusa udomljavanja
         fetchAdoptionStatus();
 
         Button confirmButton = findViewById(R.id.confirm_but);
         Button rejectButton = findViewById(R.id.reject_but);
 
-        // Kada se pritisne na prihvati/odbij gumb
         confirmButton.setOnClickListener(v -> updateAdoptionStatus(true));
-        // Odbijanje udomljavanja
         rejectButton.setOnClickListener(v -> {
-            // Ažuriraj status udomljavanja na false
             updateAdoptionStatus(false);
 
-            // Slanje podataka o odbijenoj životinji
             sendRejectedAnimal(idLjubimca);
         });
 
     }
 
-    // Metoda za dohvaćanje statusa udomljavanja
     private void fetchAdoptionStatus() {
         apiService.getAdoptionStatus(idLjubimca).enqueue(new Callback<Boolean>() {
             @Override
             public void onResponse(Call<Boolean> call, Response<Boolean> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     boolean status = response.body();
-                    // Ažuriraj UI ili pohrani status
                     Log.d("AdoptionStatus", "Trenutni status udomljavanja: " + status);
                 } else {
                     Log.e("AdoptionStatus", "Greška pri dohvaćanju statusa: " + response.message());
@@ -86,15 +77,12 @@ public class AdoptionStatusActivity extends AppCompatActivity {
     }
 
     private void updateAdoptionStatus(boolean status) {
-        // Kreiramo mapu sa statusom udomljavanja
         Map<String, Boolean> statusUpdate = new HashMap<>();
         statusUpdate.put("status_udomljavanja", status);
 
-        // Logiranje prije slanja zahtjeva
         Log.d("API_CALL", "Request Body: " + statusUpdate.toString());
         Log.d("API_CALL", "Updating adoption status for ID_ljubimca: " + idLjubimca);
 
-        // PUT zahtjev za ažuriranje statusa udomljavanja
         apiService.updateAdoptionStatus(idLjubimca, statusUpdate).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -132,9 +120,7 @@ public class AdoptionStatusActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // Ovdje možeš obraditi podatke koje si dobio
                     List<UpdateDnevnikModel> adoptedAnimals = response.body();
-                    // Npr. osvježi prikaz liste ili ažuriraj UI
                     Log.d("AdoptionStatusActivity", "Popis životinja uspješno dohvaćen.");
                 } else {
                     Log.e("AdoptionStatusActivity", "Greška prilikom dohvaćanja podataka: " + response.message());
@@ -148,13 +134,10 @@ public class AdoptionStatusActivity extends AppCompatActivity {
         });
     }
 
-    // Slanje podataka o odbijenoj životinji
     private void sendRejectedAnimal(int idLjubimca) {
-        // Kreiramo model za odbijenu životinju
         RejectAdoptionModel rejectAdoptionModel = new RejectAdoptionModel();
         rejectAdoptionModel.setIdLjubimca(idLjubimca);
 
-        // Pozivamo API za spremanje odbijenih životinja
         apiService.createOdbijenaZivotinja(rejectAdoptionModel).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

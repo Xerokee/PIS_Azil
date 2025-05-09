@@ -26,7 +26,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class UpdateUserFragment extends Fragment {
     private static final int PICK_IMAGE_REQUEST = 1;
-    private static final int REQUEST_USER_ID = 1; // Ovdje definiramo RequestUserId
+    private static final int REQUEST_USER_ID = 1;
     private static final String ARG_USER = "user";
     private EditText etName, etSurname, etUsername, etMail, etPassword;
     private ImageView ivUserImage;
@@ -49,7 +49,6 @@ public class UpdateUserFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Registering the gallery launcher to handle image selection
         galleryLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -88,7 +87,6 @@ public class UpdateUserFragment extends Fragment {
         etMail.setText(user.getEmail());
         etPassword.setText(user.getLozinka());
 
-        // Display existing image or placeholder
         if (user.getProfileImg() != null && !user.getProfileImg().isEmpty()) {
             Glide.with(this)
                     .load(user.getProfileImg())
@@ -98,7 +96,6 @@ public class UpdateUserFragment extends Fragment {
             ivUserImage.setImageResource(R.drawable.ic_baseline_person_24);
         }
 
-        // Set an onClickListener to open the image chooser
         ivUserImage.setOnClickListener(v -> openImageChooser());
 
         Button btnUpdate = view.findViewById(R.id.buttonUpdateUser);
@@ -110,12 +107,10 @@ public class UpdateUserFragment extends Fragment {
             user.setLozinka(etPassword.getText().toString());
 
             if (imageUri != null) {
-                user.setProfileImg(imageUri.toString()); // Save the image URI to the model
+                user.setProfileImg(imageUri.toString());
                 Log.d("UpdateUserFragment", "Updated image URI: " + imageUri.toString());
             }
 
-            // Call API to update the user
-            // userViewModel.updateUser(user);
             requireActivity().getSupportFragmentManager().popBackStack();
         });
 

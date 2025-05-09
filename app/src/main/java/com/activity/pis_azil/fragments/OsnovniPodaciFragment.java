@@ -105,22 +105,19 @@ public class OsnovniPodaciFragment extends Fragment {
                 .error(R.drawable.milk2)
                 .into(animalImage);
 
-        // Prikaži gumb "Udomi" za sve korisnike, ali s različitim funkcionalnostima
         if (currentUser != null && currentUser.isAdmin()) {
-            // Admin bira udomitelja
             buttonUdomi.setOnClickListener(v -> {
                 if (!isRequestInProgress) {
                     isRequestInProgress = true;
-                    buttonUdomi.setEnabled(false);  // privremeno onemogućimo gumb
+                    buttonUdomi.setEnabled(false);
                     showAdoptionDialogWithAllUsers();
                 }
             });
         } else {
-            // Obični korisnici mogu samo poslati zahtjev za udomljavanje
             buttonUdomi.setOnClickListener(v -> {
                 if (!isRequestInProgress) {
                     isRequestInProgress = true;
-                    buttonUdomi.setEnabled(false);  // privremeno onemogućimo gumb
+                    buttonUdomi.setEnabled(false);
                     requestAdoptionForUser(currentUser);
                 }
             });
@@ -128,7 +125,6 @@ public class OsnovniPodaciFragment extends Fragment {
         return view;
     }
 
-    // Metoda za admina - prikaz dijaloga s popisom korisnika
     private void showAdoptionDialogWithAllUsers() {
         apiService.getAllUsers().enqueue(new Callback<List<UserModel>>() {
             @Override
@@ -171,33 +167,27 @@ public class OsnovniPodaciFragment extends Fragment {
         });
     }
 
-    // Metoda za korisnike - zahtjev za udomljavanje životinje za sebe (dodaje se u listu za odobrenje)
     private void requestAdoptionForUser(UserModel currentUser) {
         if (currentUser != null) {
             Log.i("korisnik", "Korisnik šalje zahtjev za udomljavanje: " + currentUser.getIme());
-            adoptAnimal(currentUser.getIdKorisnika(), true); // Korisnik šalje zahtjev koji čeka odobrenje
+            adoptAnimal(currentUser.getIdKorisnika(), true);
         }
     }
 
-    // Definicija interfejsa unutar DetailedActivity
     public interface OnEmailFetchedListener {
         void onEmailFetched(String email);
     }
 
-    // Metoda za admina - udomljavanje životinje za odabranog korisnika
     private void adoptAnimalForUser(int userId, String userName) {
         //Log.d(TAG, "Udomljavanje životinje za korisnika: " + userName);
 
-        // Pozovemo adoptAnimal i nakon toga pošaljemo email
-        adoptAnimal(userId, false); // Admin odmah odobrava udomljavanje
+        adoptAnimal(userId, false);
 
-        // Nakon odabira udomitelja, dohvatite email korisnika i pošaljite email
         /*getEmailById(userId, email -> {
             if (email != null && !email.isEmpty()) {
                 String subject = "Životinja je uspješno udomljena!";
                 String body = "Poštovani, " + userName + " je uspješno udomio/udomila životinju " + animalModel.getImeLjubimca() + ".";
 
-                // Pokretanje nove niti za slanje emaila kako ne bi blokiralo glavni thread
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -238,7 +228,6 @@ public class OsnovniPodaciFragment extends Fragment {
         });
     }
 
-    // Zajednička metoda za udomljavanje ili zahtjev za udomljavanje
     private void adoptAnimal(int userId, boolean requiresApproval) {
         /*
         View view = getView();
@@ -294,12 +283,11 @@ public class OsnovniPodaciFragment extends Fragment {
         adoptionModel.setDatum(currentDate);
         adoptionModel.setVrijeme(currentTime);
         adoptionModel.setImgUrl(animalModel.getImgUrl());
-        adoptionModel.setIdKorisnika(userId);  // Postavljanje korisnika
+        adoptionModel.setIdKorisnika(userId);
 
         if (requiresApproval) {
-            // Ako zahtjeva odobrenje, označava se kao neudomljena životinja
             adoptionModel.setUdomljen(false);
-            adoptionModel.setStatusUdomljavanja(true); // Čeka odobrenje
+            adoptionModel.setStatusUdomljavanja(true);
             adoptionModel.setZahtjevUdomljavanja(true);
             adoptionModel.setZahtjevUdomljavanja(true);
             //Log.d(TAG, "Print");
@@ -323,7 +311,6 @@ public class OsnovniPodaciFragment extends Fragment {
                                         Toast.makeText(getContext(), "Životinja je uspješno udomljena!", Toast.LENGTH_SHORT).show();
                                     }
 
-                                    // Postavi rezultat kao uspješan i vrati ID udomljene životinje
                                     //Intent resultIntent = new Intent();
                                     //resultIntent.putExtra("udomljena_zivotinja_id", animalModel.getIdLjubimca());
                                     //setResult(RESULT_OK, resultIntent);
@@ -336,6 +323,7 @@ public class OsnovniPodaciFragment extends Fragment {
                                     navController.navigate(R.id.action_global_homeFragment);
                                      */
                                     Log.i("uspjesno", "uspjesno");
+
                                     Intent i = new Intent(getContext(), MainActivity.class);
                                     startActivity(i);
                                 } else {
@@ -343,7 +331,6 @@ public class OsnovniPodaciFragment extends Fragment {
                                     Toast.makeText(getContext(), "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                                 }
                             }
-
                             @Override
                             public void onFailure(Call<Void> call, Throwable t) {
                                 //Log.e(TAG, "Greška prilikom udomljavanja: ", t);
@@ -362,7 +349,6 @@ public class OsnovniPodaciFragment extends Fragment {
                 }
             });
         } else {
-            // Ako admin odobrava odmah, označava se kao udomljena
             adoptionModel.setUdomljen(true);
             adoptionModel.setStatusUdomljavanja(false);
             apiService.adoptAnimalByAdmin(animalModel.getIdLjubimca()).enqueue(new Callback<Void>() {
@@ -381,8 +367,6 @@ public class OsnovniPodaciFragment extends Fragment {
                                     } else {
                                         Toast.makeText(getContext(), "Životinja je uspješno udomljena!", Toast.LENGTH_SHORT).show();
                                     }
-
-                                    // Postavi rezultat kao uspješan i vrati ID udomljene životinje
                                     //Intent resultIntent = new Intent();
                                     //resultIntent.putExtra("udomljena_zivotinja_id", animalModel.getIdLjubimca());
                                     //setResult(RESULT_OK, resultIntent);
@@ -390,13 +374,11 @@ public class OsnovniPodaciFragment extends Fragment {
                                     Log.i("uspjesno", "uspjesno");
                                     Intent i = new Intent(getContext(), MainActivity.class);
                                     startActivity(i);
-
                                 } else {
                                     //Log.e(TAG, "Greška u procesu udomljavanja: " + response.message());
                                     Toast.makeText(getContext(), "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                                 }
                             }
-
                             @Override
                             public void onFailure(Call<Void> call, Throwable t) {
                                 //Log.e(TAG, "Greška prilikom udomljavanja: ", t);
@@ -433,7 +415,6 @@ public class OsnovniPodaciFragment extends Fragment {
                         Toast.makeText(getContext(), "Životinja je uspješno udomljena!", Toast.LENGTH_SHORT).show();
                     }
 
-                    // Postavi rezultat kao uspješan i vrati ID udomljene životinje
                     //Intent resultIntent = new Intent();
                     //resultIntent.putExtra("udomljena_zivotinja_id", animalModel.getIdLjubimca());
                     //setResult(RESULT_OK, resultIntent);
@@ -447,7 +428,6 @@ public class OsnovniPodaciFragment extends Fragment {
                     Toast.makeText(getContext(), "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 //Log.e(TAG, "Greška prilikom udomljavanja: ", t);

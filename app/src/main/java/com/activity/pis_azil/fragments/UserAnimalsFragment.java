@@ -40,7 +40,6 @@ public class UserAnimalsFragment extends Fragment {
     private Spinner filterTypeSpinner, filterAgeSpinner, filterColorSpinner;
 
     public UserAnimalsFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -52,7 +51,7 @@ public class UserAnimalsFragment extends Fragment {
         emptyStateTextView = root.findViewById(R.id.empty_state_text_view);
         filterTypeSpinner = root.findViewById(R.id.filter_type_spinner);
         filterAgeSpinner = root.findViewById(R.id.filter_age_spinner);
-        filterColorSpinner = root.findViewById(R.id.filter_color_spinner); // Dodan filter za boju
+        filterColorSpinner = root.findViewById(R.id.filter_color_spinner);
 
         availableAnimals = new ArrayList<>();
         filteredAnimals = new ArrayList<>();
@@ -66,25 +65,21 @@ public class UserAnimalsFragment extends Fragment {
     }
 
     private void setupFilterSpinners() {
-        // Set up the type filter spinner
         ArrayAdapter<CharSequence> typeSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.animal_types, android.R.layout.simple_spinner_item);
         typeSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterTypeSpinner.setAdapter(typeSpinnerAdapter);
 
-        // Set up the age filter spinner
         ArrayAdapter<CharSequence> ageSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.animal_ages, android.R.layout.simple_spinner_item);
         ageSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterAgeSpinner.setAdapter(ageSpinnerAdapter);
 
-        // Set up the color filter spinner
         ArrayAdapter<CharSequence> colorSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.animal_colors, android.R.layout.simple_spinner_item);
         colorSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterColorSpinner.setAdapter(colorSpinnerAdapter);
 
-        // Set listeners for spinners
         filterTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -117,7 +112,6 @@ public class UserAnimalsFragment extends Fragment {
     }
 
     private void fetchAvailableAnimalsForUser() {
-        // Get the current user
         SharedPreferences prefs = requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         String userJson = prefs.getString("current_user", null);
         UserModel currentUser = new Gson().fromJson(userJson, UserModel.class);
@@ -126,7 +120,6 @@ public class UserAnimalsFragment extends Fragment {
             return;
         }
 
-        // API call to get all available animals
         apiService = ApiClient.getClient().create(ApiService.class);
         apiService.getAllAnimals().enqueue(new Callback<List<AnimalModel>>() {
             @Override
@@ -164,7 +157,6 @@ public class UserAnimalsFragment extends Fragment {
             }
         }
 
-        // Update UI for empty state
         if (filteredAnimals.isEmpty()) {
             recyclerView.setVisibility(View.GONE);
             emptyStateTextView.setVisibility(View.VISIBLE);

@@ -27,7 +27,6 @@ public class AdoptedAnimalGalleryFragment extends Fragment {
     AnimalModel detailedAnimal;
 
     public AdoptedAnimalGalleryFragment() {
-        // Required empty public constructor
     }
 
     public AdoptedAnimalGalleryFragment(AnimalModel da) {
@@ -49,20 +48,17 @@ public class AdoptedAnimalGalleryFragment extends Fragment {
             Log.i("broj slika", String.valueOf(galleryUrls.size()));
             RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
 
-            // Postavljanje GridLayoutManager-a sa 3 kolone
             GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 3);
 
-            // SpanSizeLookup za kontrolisanje razmaka između slika
             layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
                 @Override
                 public int getSpanSize(int position) {
-                    return (position >= 6) ? 2 : 1;  // Postavljanje 2 slike u poslednjem redu
+                    return (position >= 6) ? 2 : 1;
                 }
             });
 
             recyclerView.setLayoutManager(layoutManager);
 
-            // Dodavanje custom itemDecoration za razmak
             recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
                 @Override
                 public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
@@ -70,20 +66,17 @@ public class AdoptedAnimalGalleryFragment extends Fragment {
 
                     int position = parent.getChildAdapterPosition(view);
 
-                    // Razmak između slika u horizontalnom pravcu
                     if (position % 3 != 2) {
-                        outRect.right = 4;  // Razmak između slika u horizontalnom pravcu
+                        outRect.right = 4;
                     }
 
-                    // Razmak između slika u vertikalnom pravcu
                     if (position < 3) {
                         outRect.top = 4;
                     }
-                    outRect.bottom = 2;  // Razmak između redova
+                    outRect.bottom = 2;
                 }
             });
 
-            // Postavljanje adaptera
             ImagePagerAdapter adapter = new ImagePagerAdapter(getContext(), galleryUrls);
             recyclerView.setAdapter(adapter);
         }

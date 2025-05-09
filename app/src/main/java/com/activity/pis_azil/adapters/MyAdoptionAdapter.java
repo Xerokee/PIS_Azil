@@ -113,24 +113,22 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             }
         });
 
-        // Ako postoji zahtjev za udomljavanje (IdKorisnika nije 0), sakrij gumb "Udomi"
         if (cartModel.getIdKorisnika() != 0) {
-            holder.adoptButton.setVisibility(View.GONE); // Sakrij gumb
+            holder.adoptButton.setVisibility(View.GONE);
         } else {
-            holder.adoptButton.setVisibility(View.VISIBLE); // Prikaži gumb ako nema zahtjeva
+            holder.adoptButton.setVisibility(View.VISIBLE);
             holder.adoptButton.setEnabled(true);
             holder.adoptButton.setText("Udomi");
-            holder.adoptButton.setBackgroundColor(Color.GREEN); // Omogućen gumb postaje zeleni
+            holder.adoptButton.setBackgroundColor(Color.GREEN);
         }
         */
 
-        // Onemogući gumb "Odobri" ako nema korisnika koji je podnio zahtjev
         if (cartModel.getIdKorisnika() == 0) {
             holder.approveButton.setEnabled(false);
-            holder.approveButton.setBackgroundColor(Color.GRAY); // Sivi gumb
+            holder.approveButton.setBackgroundColor(Color.GRAY);
 
             holder.rejectButton.setEnabled(false);
-            holder.rejectButton.setBackgroundColor(Color.GRAY); // Sivi gumb
+            holder.rejectButton.setBackgroundColor(Color.GRAY);
         } else {
             holder.approveButton.setEnabled(true);
             holder.approveButton.setBackgroundColor(Color.parseColor("#03DAC5"));
@@ -147,7 +145,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             rejectAdoption(position);
         });
 
-        // Postavi sliku ljubimca ako je dostupna
         if (cartModel.getImgUrl() != null && !cartModel.getImgUrl().isEmpty()) {
             Glide.with(context).load(cartModel.getImgUrl()).into(holder.imgUrl);
         } else {
@@ -204,14 +201,12 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         Log.d(TAG, "Binding view holder for position: " + position + ", model: " + cartModel.toString());
 
         if (!isAdmin) {
-            // Sakrijte gumbe za normalne korisnike
             // holder.deleteItem.setVisibility(View.GONE);
             // holder.updateItem.setVisibility(View.GONE);
             // holder.adoptButton.setVisibility(View.GONE);
             holder.approveButton.setVisibility(View.GONE);
             holder.rejectButton.setVisibility(View.GONE);
         } else {
-            // Postavite gumbe za administratore
             // holder.deleteItem.setOnClickListener(v -> showDeleteConfirmationDialog(position));
             // holder.updateItem.setOnClickListener(v -> showUpdateDialog(position));
             holder.approveButton.setVisibility(View.VISIBLE);

@@ -26,7 +26,7 @@ public class ApiClientToken {
                 OkHttpClient okHttpClient = UnsafeOkHttpClient.getUnsafeOkHttpClient();
 
                 Gson gson = new GsonBuilder()
-                        .setLenient() // Dodano setLenient()
+                        .setLenient()
                         .create();
 
                 HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
@@ -44,9 +44,9 @@ public class ApiClientToken {
 
                 retrofit = new Retrofit.Builder()
                         .baseUrl(BASE_URL)
-                        .client(client) // Koristi OkHttp klijent s listenerom
-                        .addConverterFactory(ScalarsConverterFactory.create()) // Dodano ScalarsConverterFactory
-                        .addConverterFactory(GsonConverterFactory.create(gson)) // Koristi GSON s lenient postavkom
+                        .client(client)
+                        .addConverterFactory(ScalarsConverterFactory.create())
+                        .addConverterFactory(GsonConverterFactory.create(gson))
                         .build();
             } catch (Exception e) {
                 e.printStackTrace();

@@ -44,11 +44,10 @@ public class UserAnimalsAdapter extends RecyclerView.Adapter<UserAnimalsAdapter.
         holder.ageTextView.setText("Dob: " + animal.getDob() + " godina");
         holder.colorTextView.setText("Boja: " + animal.getBoja());
 
-        // Postavljanje slike pomoću Glide-a
         if (animal.getImgUrl() != null && !animal.getImgUrl().isEmpty()) {
             Glide.with(context).load(animal.getImgUrl()).into(holder.animalImageView);
         } else {
-            holder.animalImageView.setImageResource(R.drawable.profile); // Zadana slika
+            holder.animalImageView.setImageResource(R.drawable.profile);
         }
     }
 

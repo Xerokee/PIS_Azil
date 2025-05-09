@@ -73,6 +73,7 @@ public class HomeFragment extends Fragment {
     List<Integer> listaOdbijenih = new ArrayList<>();
     private List<SifrTipLjubimca> tipLjubimcaList = new ArrayList<>();
     private String lastSearchedType = "";
+    private boolean isLoadingData = false;
 
     @Override
     public void onResume() {
@@ -80,8 +81,8 @@ public class HomeFragment extends Fragment {
 
         if (animalModelList != null && animalsAdapter != null) {
             Log.d(TAG, "Test");
-            loadAllAnimals();
-            animalsAdapter.notifyDataSetChanged();
+            Log.d(TAG, "onResume: Fragment resumed. Refreshing data.");
+            refreshAllData();
         }
     }
 
@@ -97,17 +98,18 @@ public class HomeFragment extends Fragment {
         filterButton = root.findViewById(R.id.filter_button);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        animalModelList = new ArrayList<>();
         animalsAdapter = new AnimalsAdapter(animalModelList, getContext());
         recyclerView.setAdapter(animalsAdapter);
 
         apiService = ApiClient.getClient().create(ApiService.class);
         Log.d(TAG,"fsdfsdd");
         getTipoveLjubimaca();
-        //loadAllAnimals();
+        refreshAllData();
+        // loadAllAnimals();
         // loadAllAdoptedAnimals();
-        getToken();
+        // getToken();
 
-        // Add listener for search box
         searchBox.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -122,13 +124,11 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        // Listener za otvaranje filter dijaloga
         filterButton.setOnClickListener(v -> openFilterDialog());
 
         return root;
     }
 
-    // Osluškivanje rezultata u HomeFragmentu
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -139,20 +139,13 @@ public class HomeFragment extends Fragment {
             int rejectedAnimalId = data.getIntExtra("odbijena_zivotinja_id", -1);
 
             if (adoptedAnimalId != -1) {
-                // Ukloni udomljenu životinju iz liste i osveži adapter
                 animalModelList.removeIf(animal -> animal.getIdLjubimca() == adoptedAnimalId);
                 Log.d(TAG, "Broj preostalih životinja nakon uklanjanja: " + animalModelList.size());
                 animalsAdapter.notifyDataSetChanged();
                 Toast.makeText(getContext(), "Životinja je uspješno udomljena!", Toast.LENGTH_SHORT).show();
-            }
-
-            if (rejectedAnimalId != -1) {
-                // Odbijeni zahtjev - postavi status udomljavanja na false
-                animalModelList.stream()
-                        .filter(animal -> animal.getIdLjubimca() == rejectedAnimalId)
-                        .forEach(animal -> animal.setStatusUdomljavanja(false));
-                loadAllAnimals();
-                animalsAdapter.notifyDataSetChanged();
+            } else if (rejectedAnimalId != -1) {
+                Log.d(TAG, "onActivityResult: Adoption rejected for animal ID: " + rejectedAnimalId + ". Refreshing all data.");
+                refreshAllData();
                 Toast.makeText(getContext(), "Zahtjev za udomljavanje je odbijen!", Toast.LENGTH_SHORT).show();
             }
         }
@@ -195,7 +188,6 @@ public class HomeFragment extends Fragment {
             String selectedAge = ageSpinner.getSelectedItem().toString();
             String selectedColor = colorSpinner.getSelectedItem().toString();
 
-            // Find the corresponding integer ID for the selected type
             applyFilters(selectedType, selectedAge, selectedColor); // Prosljeđivanje naziva, a ne ID-a
             dialog.dismiss();
         });
@@ -207,12 +199,10 @@ public class HomeFragment extends Fragment {
         // Resetiranje filtera
         Button resetButton = filterView.findViewById(R.id.reset_button);
         resetButton.setOnClickListener(v -> {
-            // Resetiraj spinner-e na prvu opciju (koja predstavlja "Sve" ili default)
             typeSpinner.setSelection(0);
             ageSpinner.setSelection(0);
             colorSpinner.setSelection(0);
 
-            // Resetiraj filtrirane podatke i ponovno učitaj sve životinje
             resetFilter();
             dialog.dismiss();
         });
@@ -222,10 +212,10 @@ public class HomeFragment extends Fragment {
 
     // Metoda za resetiranje filtera
     private void resetFilter() {
-        progressBar.setVisibility(View.VISIBLE);
         Log.d(TAG, "Resetting filters and reloading all animals");
-        loadAllAnimals(); // Ponovno učitaj sve životinje
-        progressBar.setVisibility(View.GONE);
+        if(searchBox != null) searchBox.setText(""); // Očisti i polje za pretragu
+        lastSearchedType = "";
+        refreshAllData();
     }
 
     private String getTypeNameById(int id) {
@@ -265,7 +255,6 @@ public class HomeFragment extends Fragment {
 
         progressBar.setVisibility(View.VISIBLE);
 
-        // **Sačuvaj ID-eve životinja koje su trenutno blokirane**
         Set<Integer> blockedAnimalIds = new HashSet<>();
         for (IsBlockedAnimalModel animal : animalModelList) {
             if (animal.isBlocked()) {
@@ -275,7 +264,7 @@ public class HomeFragment extends Fragment {
 
         // API poziv koji koristi naziv tipa umjesto ID-a
         apiService.getFilteredAnimalsByAgeRange(
-                typeName.equals("Sve") ? null : typeName,  // Prosljeđivanje naziva umjesto ID-a
+                typeName.equals("Sve") ? null : typeName,
                 minDob == null ? 0 : minDob,
                 maxDob == null ? 100 : maxDob,
                 null,
@@ -301,7 +290,7 @@ public class HomeFragment extends Fragment {
                                         animal.getVrijeme(),
                                         animal.getImgUrl(),
                                         animal.StanjeZivotinje(),
-                                        wasBlocked, // **Zadržavamo informaciju o blokiranju**
+                                        wasBlocked,
                                         animal.getDob(),
                                         animal.getBoja()
                                 );
@@ -325,21 +314,33 @@ public class HomeFragment extends Fragment {
 
     // Metoda za dohvat tipova ljubimaca
     private void getTipoveLjubimaca() {
+        if (apiService == null) {
+            Log.e(TAG, "getTipoveLjubimaca: apiService is null! Aborting chain.");
+            if(progressBar != null) progressBar.setVisibility(View.GONE);
+            isLoadingData = false;
+            return;
+        }
+        Log.d(TAG, "getTipoveLjubimaca: Fetching animal types...");
         apiService.getAnimalTypes().enqueue(new Callback<List<SifrTipLjubimca>>() {
             @Override
             public void onResponse(Call<List<SifrTipLjubimca>> call, Response<List<SifrTipLjubimca>> response) {
+                if (getContext() == null) { isLoadingData = false; return; }
                 if (response.isSuccessful() && response.body() != null) {
-                    getOdbijeneZivotinje();
                     tipLjubimcaList = response.body();
-                    Log.d(TAG, "Dohvaćeni tipovi ljubimaca: " + tipLjubimcaList.size());
+                    Log.d(TAG, "getTipoveLjubimaca: Success. Count: " + tipLjubimcaList.size());
                 } else {
-                    // Toast.makeText(getContext(), "Greška u dohvaćanju tipova ljubimaca", Toast.LENGTH_SHORT).show();
+                    Log.w(TAG, "getTipoveLjubimaca: Error fetching types. Code: " + response.code());
+                    tipLjubimcaList.clear();
                 }
+                getOdbijeneZivotinje();
             }
 
             @Override
             public void onFailure(Call<List<SifrTipLjubimca>> call, Throwable t) {
-                // Toast.makeText(getContext(), "Greška u dohvaćanju tipova ljubimaca", Toast.LENGTH_SHORT).show();
+                if (getContext() == null) { isLoadingData = false; return; }
+                Log.e(TAG, "getTipoveLjubimaca: API call failed.", t);
+                tipLjubimcaList.clear();
+                getOdbijeneZivotinje();
             }
         });
     }
@@ -350,7 +351,7 @@ public class HomeFragment extends Fragment {
         if (type == null || type.isEmpty()) {
             type = lastSearchedType;
             loadAllAnimals();
-            return; // Izađi jer će loadAllAnimals() već pozvati API bez type-a
+            return;
         } else {
             lastSearchedType = type;
             if (type.equalsIgnoreCase("pas")) {
@@ -426,83 +427,88 @@ public class HomeFragment extends Fragment {
     List<MyAdoptionModel> cartModelList = new ArrayList<>();
 
     private void loadAllAnimals() {
-        progressBar.setVisibility(View.VISIBLE);
-        Log.d(TAG, "Fetching all animals...");
+        if (getContext() == null || apiService == null) {
+            Log.w(TAG, "loadAllAnimals - Context or apiService is null, aborting.");
+            if (progressBar != null) progressBar.setVisibility(View.GONE);
+            isLoadingData = false; // Resetiraj zastavicu
+            return;
+        }
+        if (progressBar != null && progressBar.getVisibility() == View.GONE) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+        Log.d(TAG, "Fetching all animals (loadAllAnimals)...");
+        Log.d(TAG, "Current listaOdbijenih at start of loadAllAnimals: " + listaOdbijenih.toString());
+
         apiService.getAllAnimals().enqueue(new Callback<List<AnimalModel>>() {
             @Override
             public void onResponse(Call<List<AnimalModel>> call, Response<List<AnimalModel>> response) {
-                progressBar.setVisibility(View.GONE);
-                Log.d(TAG, "Fetch all animals - Response received NOVO");
-                Log.d(TAG, "Response code: " + response.code());
-                Log.d(TAG, "Response is successful: " + response.isSuccessful());
-                Log.d(TAG, "Response body: " + response.body());
+                if (getContext() == null) {
+                    Log.w(TAG, "loadAllAnimals onResponse - getContext() is null, aborting.");
+                    isLoadingData = false; // Resetiraj zastavicu
+                    if (progressBar != null) progressBar.setVisibility(View.GONE);
+                    return;
+                }
+                if (progressBar != null) progressBar.setVisibility(View.GONE);
+
                 if (response.isSuccessful() && response.body() != null) {
-                    Log.d(TAG, "Number of animals fetched: " + response.body().size());
+                    Log.d(TAG, "Fetched all animals - Response successful. Count: " + response.body().size());
                     animalModelList.clear();
 
-                    // Filtriraj životinje koje su već udomljene
-                    List<AnimalModel> availableAnimals = response.body().stream()
-                            .filter(animal -> !animal.isUdomljen() && !animal.isStatusUdomljavanja())
+                    List<AnimalModel> animalsToConsiderForDisplay = response.body().stream()
+                            .filter(animal -> {
+                                boolean isAdopted = animal.isUdomljen();
+                                boolean isPendingRequest = animal.isZahtjevUdomljavanja();
+                                return !isAdopted && !isPendingRequest;
+                            })
                             .collect(Collectors.toList());
+                    Log.d(TAG, "Animals to consider for display (after hiding adopted/pending): " + animalsToConsiderForDisplay.size());
 
-                    for (AnimalModel animal : availableAnimals) {
-                        Log.i("zivotinja",animal.getImeLjubimca()+String.valueOf(animal.getIdLjubimca())+String.valueOf(listaOdbijenih.contains(animal.getIdLjubimca())));
-                        if (animal.isZahtjevUdomljavanja() == false && listaOdbijenih.contains(animal.getIdLjubimca())){
-                            animalModelList.add(new IsBlockedAnimalModel(
-                                    animal.getIdLjubimca(),
-                                    animal.getIdUdomitelja(),
-                                    animal.getImeLjubimca(),
-                                    animal.getTipLjubimca(),
-                                    animal.getOpisLjubimca(),
-                                    animal.isUdomljen(),
-                                    animal.isZahtjevUdomljavanja(),
-                                    animal.getDatum(),
-                                    animal.getVrijeme(),
-                                    animal.getImgUrl(),
-                                    animal.StanjeZivotinje(),
-                                    true,
-                                    animal.getDob(),
-                                    animal.getBoja()));
-                            animal.isZahtjevUdomljavanja();
-                            Log.d(TAG, "Test" + animal.isZahtjevUdomljavanja());
-                        } else if (animal.isZahtjevUdomljavanja() == false) {
-                            animalModelList.add(new IsBlockedAnimalModel(
-                                    animal.getIdLjubimca(),
-                                    animal.getIdUdomitelja(),
-                                    animal.getImeLjubimca(),
-                                    animal.getTipLjubimca(),
-                                    animal.getOpisLjubimca(),
-                                    animal.isUdomljen(),
-                                    animal.isZahtjevUdomljavanja(),
-                                    animal.getDatum(),
-                                    animal.getVrijeme(),
-                                    animal.getImgUrl(),
-                                    animal.StanjeZivotinje(),
-                                    false,
-                                    animal.getDob(),
-                                    animal.getBoja()));
-                            animal.isZahtjevUdomljavanja();
-                            Log.d(TAG, "Test" + animal.isZahtjevUdomljavanja());
+                    for (AnimalModel animal : animalsToConsiderForDisplay) {
+                        boolean isBlockedDueToPriorRejection = listaOdbijenih.contains(animal.getIdLjubimca());
+                        String tipLjubimcaNaziv;
+                        try {
+                            if (tipLjubimcaList != null && !tipLjubimcaList.isEmpty()) {
+                                tipLjubimcaNaziv = getTypeNameById(Integer.parseInt(animal.getTipLjubimca()));
+                            } else {
+                                tipLjubimcaNaziv = animal.getTipLjubimca();
+                            }
+                        } catch (NumberFormatException e) {
+                            tipLjubimcaNaziv = animal.getTipLjubimca();
                         }
+
+                        animalModelList.add(new IsBlockedAnimalModel(
+                                animal.getIdLjubimca(), animal.getIdUdomitelja(), animal.getImeLjubimca(),
+                                tipLjubimcaNaziv, animal.getOpisLjubimca(), false, false,
+                                animal.getDatum(), animal.getVrijeme(), animal.getImgUrl(),
+                                animal.StanjeZivotinje(), isBlockedDueToPriorRejection,
+                                animal.getDob(), animal.getBoja()
+                        ));
                     }
-                    animalsAdapter.notifyDataSetChanged();
-                    List<AnimalModel> animals = response.body();
-                    Log.d(TAG, "Animals received from server: " + animals.toString());
-                    // fetchAdoptedAnimals(animals);
-                    Log.d(TAG, "Test123" + animalModelList.size());
-                    // animalModelList.removeIf(animal -> animal.getDob() != 18);
-                    Log.d(TAG, "Test1243" + animalModelList.size());
-                    animalsAdapter.notifyDataSetChanged();
+                    if (animalsAdapter != null) {
+                        animalsAdapter.notifyDataSetChanged();
+                    }
+                    Log.d(TAG, "Animal list updated for display. Final size: " + animalModelList.size());
+
                 } else {
-                    Log.e(TAG, "Error fetching animals. Response code: " + response.code() + ", Message: " + response.message());
+                    Log.e(TAG, "Error fetching animals. Code: " + response.code() + ", Message: " + response.message());
+                    if (getContext() != null) {
+                    }
                 }
+                isLoadingData = false;
             }
 
             @Override
             public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
-                progressBar.setVisibility(View.GONE);
+                if (getContext() == null) {
+                    Log.w(TAG, "loadAllAnimals onFailure - getContext() is null, aborting.");
+                    isLoadingData = false;
+                    if (progressBar != null) progressBar.setVisibility(View.GONE);
+                    return;
+                }
+                if (progressBar != null) progressBar.setVisibility(View.GONE);
                 Log.e(TAG, "Failed to fetch animals", t);
-                Toast.makeText(getContext(), "Greška u učitavanju životinja", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Neuspjelo učitavanje životinja: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                isLoadingData = false;
             }
         });
     }
@@ -520,7 +526,6 @@ public class HomeFragment extends Fragment {
                     Log.d(TAG, "Number of animals fetched: " + response.body().size());
                     animalModelList.clear();
 
-                    // Filtriraj životinje koje su već udomljene
                     List<AnimalModel> availableAnimals = response.body().stream()
                             .filter(animal -> !animal.isUdomljen() && !animal.isStatusUdomljavanja())
                             .collect(Collectors.toList());
@@ -670,45 +675,88 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    private int getCurrentUserId() {
+        if (getContext() == null) {
+            Log.w(TAG, "getCurrentUserId: getContext() is null.");
+            return -1;
+        }
+        if (getActivity() != null) {
+            SharedViewModel sharedViewModel = null;
+            try {
+                sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
+                String userIdStr = sharedViewModel.getUserId().getValue(); // getValue() je sinkrono
+                if (userIdStr != null && !userIdStr.isEmpty()) {
+                    return Integer.parseInt(userIdStr);
+                }
+            } catch (IllegalStateException e) {
+                Log.e(TAG, "getCurrentUserId: Error getting ViewModel, activity might be destroying.", e);
+            } catch (NumberFormatException e) {
+                Log.e(TAG, "getCurrentUserId: Invalid userId format in ViewModel: " + sharedViewModel.getUserId().getValue(), e);
+            }
+        }
+        SharedPreferences userPrefs = getContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
+        String userJson = userPrefs.getString("current_user", null);
+        if (userJson != null) {
+            UserModel currentUser = new Gson().fromJson(userJson, UserModel.class);
+            if (currentUser != null) {
+                return currentUser.getIdKorisnika();
+            }
+        }
+        Log.w(TAG, "getCurrentUserId: Nije moguće dohvatiti ID korisnika.");
+        return -1;
+    }
+
     private void getOdbijeneZivotinje() {
-        Call<List<RejectAdoptionModelRead>> call = apiService.getOdbijeneZivotinje();
-        call.enqueue(new Callback<List<RejectAdoptionModelRead>>() {
+        if (getContext() == null || apiService == null) {
+            Log.w(TAG, "getOdbijeneZivotinje - Context or apiService is null, aborting.");
+            listaOdbijenih.clear();
+            if(progressBar != null) progressBar.setVisibility(View.GONE);
+            isLoadingData = false;
+            return;
+        }
+
+        final int currentUserId = getCurrentUserId();
+        if (currentUserId == -1) {
+            Log.w(TAG, "getOdbijeneZivotinje: Invalid user ID (-1). Proceeding with empty listaOdbijenih.");
+            listaOdbijenih.clear();
+            loadAllAnimals();
+            return;
+        }
+
+        Log.d(TAG, "getOdbijeneZivotinje: Fetching rejected animals for user ID: " + currentUserId);
+        apiService.getOdbijeneZivotinje().enqueue(new Callback<List<RejectAdoptionModelRead>>() {
             @Override
             public void onResponse(Call<List<RejectAdoptionModelRead>> call, Response<List<RejectAdoptionModelRead>> response) {
-                Log.d(TAG, "Fetch blocked animals - Response received");
-                Log.d(TAG, "Response code: " + response.code());
+                if (getContext() == null) { isLoadingData = false; if(progressBar != null) progressBar.setVisibility(View.GONE); return; }
                 listaOdbijenih.clear();
                 if (response.isSuccessful() && response.body() != null) {
-                    List<RejectAdoptionModelRead> odbijeneZivotinje = response.body();
-                    for (RejectAdoptionModelRead zivotinja : odbijeneZivotinje){
-                        SharedViewModel sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
-                        sharedViewModel.getUserId().observe(getViewLifecycleOwner(), userId -> {
-                            if (userId != null && !userId.isEmpty()) { // Proverite da li userId nije null i nije prazan
-                                try {
-                                    if (Objects.equals(Integer.parseInt(userId), zivotinja.getId_korisnika())) {
-                                        listaOdbijenih.add(zivotinja.getId_ljubimca());
-                                    }
-                                } catch (NumberFormatException e) {
-                                    Log.e(TAG, "Invalid userId format: " + userId, e);
-                                }
-                            } else {
-                                Log.w(TAG, "userId is null or empty, skipping comparison");
+                    List<RejectAdoptionModelRead> sveOdbijeneSaServera = response.body();
+                    Log.d(TAG, "getOdbijeneZivotinje - Uspješno dohvaćeno " + sveOdbijeneSaServera.size() + " odbijenih zapisa s servera.");
+                    for (RejectAdoptionModelRead odbijenaZivotinja : sveOdbijeneSaServera) {
+                        if (odbijenaZivotinja.getId_korisnika() != null && odbijenaZivotinja.getId_korisnika() == currentUserId) {
+                            if (odbijenaZivotinja.getId_ljubimca() != null && !listaOdbijenih.contains(odbijenaZivotinja.getId_ljubimca())) {
+                                listaOdbijenih.add(odbijenaZivotinja.getId_ljubimca());
                             }
-                        });
+                        }
                     }
-                    loadAllAnimals();
+                    Log.d(TAG, "getOdbijeneZivotinje - Popunjena listaOdbijenih za korisnika " + currentUserId + ": " + listaOdbijenih.toString());
                 } else {
-                    Log.e(TAG, "Failed to fetch blocked animals. Response code: " + response.code() + ", Message: " + response.message());
+                    Log.e(TAG, "getOdbijeneZivotinje: Failed to fetch. Code: " + response.code());
                 }
+                loadAllAnimals(); // Nastavi lanac
             }
 
             @Override
             public void onFailure(Call<List<RejectAdoptionModelRead>> call, Throwable t) {
-                Log.e(TAG, "Failed to fetch blocked animals", t);
+                if (getContext() == null) { isLoadingData = false; if(progressBar != null) progressBar.setVisibility(View.GONE); return; }
+                Log.e(TAG, "getOdbijeneZivotinje: API call failed.", t);
+                listaOdbijenih.clear();
+                loadAllAnimals(); // Nastavi lanac
             }
         });
     }
 
+    /*
     private void getToken(){
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(task -> {
@@ -719,5 +767,27 @@ public class HomeFragment extends Fragment {
                     String token = task.getResult();
                     Log.i("FCM", "Token: " + token);
                 });
+    }
+    */
+
+    private void refreshAllData() {
+        if (isLoadingData) {
+            Log.d(TAG, "refreshAllData: Data is already loading, skipping new request.");
+            return;
+        }
+        if (getContext() == null || apiService == null) {
+            Log.w(TAG, "refreshAllData: Context or apiService is null, cannot refresh.");
+            if (progressBar != null) progressBar.setVisibility(View.GONE);
+            isLoadingData = false; // Resetiraj zastavicu ako ne možemo nastaviti
+            return;
+        }
+
+        Log.d(TAG, "refreshAllData: Initiating data refresh sequence...");
+        isLoadingData = true; // Postavi zastavicu da se podaci učitavaju
+        if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        getTipoveLjubimaca();
     }
 }

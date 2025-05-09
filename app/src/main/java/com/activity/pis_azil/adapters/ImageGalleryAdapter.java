@@ -37,15 +37,13 @@ public class ImageGalleryAdapter extends RecyclerView.Adapter<ImageGalleryAdapte
         String imageUrl = imageList.get(position);
         Glide.with(context).load(imageUrl).into(holder.imageView);
 
-        // Postavi OnClickListener za brisanje slike
         holder.imageView.setOnLongClickListener(v -> {
-            // Prikaži potvrdu pre brisanja
             new AlertDialog.Builder(context)
                     .setTitle("Obriši sliku")
                     .setMessage("Da li ste sigurni da želite obrisati ovu sliku?")
                     .setPositiveButton("Da", (dialog, which) -> {
-                        imageList.remove(position); // Uklonite sliku iz liste
-                        notifyDataSetChanged(); // Obavijestite adapter da je došlo do promjene podataka
+                        imageList.remove(position);
+                        notifyDataSetChanged();
                     })
                     .setNegativeButton("Ne", null)
                     .show();

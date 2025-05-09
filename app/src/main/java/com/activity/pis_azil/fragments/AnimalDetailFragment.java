@@ -43,10 +43,8 @@ public class AnimalDetailFragment extends Fragment {
     private IsBlockedAnimalModel animalModel;
 
     public AnimalDetailFragment() {
-        // Required empty public constructor
     }
 
-    // Novi konstruktor koji prima animalId
     public AnimalDetailFragment(int animalId, AnimalModel animalModel, UserModel userModel, IsBlockedAnimalModel blockedAnimalModel) {
         this.animalId = animalId;
         this.animal = animalModel;
@@ -62,7 +60,6 @@ public class AnimalDetailFragment extends Fragment {
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-        // Ako fragment nije dobio animalId kroz konstruktor, provjeri da li postoji u argumentima
         if (getArguments() != null) {
             animalId = getArguments().getInt("animalId", -1);
         }
@@ -170,7 +167,7 @@ public class AnimalDetailFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (animalId != -1) {
-            loadAnimalDetails();  // Refresh data when fragment is resumed
+            loadAnimalDetails();
         }
     }
 }

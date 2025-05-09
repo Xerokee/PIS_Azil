@@ -63,7 +63,6 @@ public class AnimalActivityFragment extends Fragment {
     String token;
 
     public AnimalActivityFragment() {
-        // Required empty public constructor
     }
 
     public AnimalActivityFragment(AnimalModel da, int aid) {
@@ -82,7 +81,6 @@ public class AnimalActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_popis_aktivnosti, container, false);
 
-        // Initialize UI elements
         linearLayoutAktivnosti = view.findViewById(R.id.linearLayoutAktivnosti);
         tvNemaAktivnosti = view.findViewById(R.id.tvNemaAktivnosti);
         addAktivnost = view.findViewById(R.id.addAktivnost);
@@ -154,16 +152,13 @@ public class AnimalActivityFragment extends Fragment {
         activitySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                // Dohvati odabranu aktivnost
                 String selectedActivity = parentView.getItemAtPosition(position).toString();
 
-                // Postavi odabranu aktivnost kao tekst na TextView
                 selectedActivityTextView.setText("Aktivnost: " + selectedActivity);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
-                // Ako ništa nije odabrano
             }
         });
 
@@ -175,28 +170,23 @@ public class AnimalActivityFragment extends Fragment {
         });
 
         addActivity.setOnClickListener(v -> {
-            // Check if all fields are filled
             if (Objects.equals(inputDateActivity.getText().toString(), "") || Objects.equals(inputDescriptionActivity.getText().toString(), "")) {
                 Toast.makeText(getContext(), "Moraju biti popunjeni svi podaci.", Toast.LENGTH_SHORT).show();
             } else {
-                // Get selected activity from the spinner
                 String selectedActivity = activitySpinner.getSelectedItem().toString();
 
-                // Create a new Aktivnost object with the selected data
                 Aktivnost novaAktivnost = new Aktivnost(
-                        0, // Id (set to 0 for now, as it will be created in the database)
-                        animalId, // The id of the animal
-                        inputDateActivity.getText().toString(), // The selected date
-                        selectedActivity, // The selected activity
-                        inputDescriptionActivity.getText().toString() // The activity description
+                        0,
+                        animalId,
+                        inputDateActivity.getText().toString(),
+                        selectedActivity,
+                        inputDescriptionActivity.getText().toString()
                 );
 
-                // Call the API to add the new activity
                 apiService.addAktivnost(novaAktivnost).enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         if (response.isSuccessful()) {
-                            // Slanje broadcasta s informacijama o novoj aktivnosti
                             Intent intent = new Intent("com.activity.pis_azil.NOVA_AKTIVNOST");
                             intent.putExtra("animalId", animalId);
                             intent.putExtra("aktivnost", selectedActivity);
@@ -283,7 +273,6 @@ public class AnimalActivityFragment extends Fragment {
                         tvNemaAktivnosti.setVisibility(View.GONE);
 
                         for (Aktivnost a : listaAktivnosti) {
-                            // CardView
                             CardView cardView = new CardView(getContext());
                             LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
                                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -293,18 +282,15 @@ public class AnimalActivityFragment extends Fragment {
                             cardView.setCardElevation(10f);
                             cardView.setCardBackgroundColor(Color.WHITE);
 
-                            // Glavni unutrašnji layout
                             LinearLayout verticalLayout = new LinearLayout(getContext());
                             verticalLayout.setOrientation(LinearLayout.VERTICAL);
                             verticalLayout.setPadding(40, 30, 40, 30);
 
-                            // Gornji red: opis + aktivnost
                             LinearLayout topRow = new LinearLayout(getContext());
                             topRow.setOrientation(LinearLayout.HORIZONTAL);
                             topRow.setLayoutParams(new LinearLayout.LayoutParams(
                                     LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
-                            // Opis aktivnosti (lijevo)
                             TextView tvOpis = new TextView(getContext());
                             tvOpis.setText(a.getOpis());
                             tvOpis.setTextSize(16);
@@ -313,7 +299,6 @@ public class AnimalActivityFragment extends Fragment {
                             tvOpis.setLayoutParams(new LinearLayout.LayoutParams(
                                     0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)); // 1f da popuni lijevi prostor
 
-                            // Tip aktivnosti (desno)
                             TextView tvAktivnost = new TextView(getContext());
                             tvAktivnost.setText(a.getAktivnost());
                             tvAktivnost.setTextSize(14);
@@ -324,14 +309,12 @@ public class AnimalActivityFragment extends Fragment {
                             topRow.addView(tvOpis);
                             topRow.addView(tvAktivnost);
 
-                            // Datum ispod
                             TextView tvDatum = new TextView(getContext());
                             tvDatum.setText(a.getDatum());
                             tvDatum.setTextSize(14);
                             tvDatum.setTextColor(Color.parseColor("#000000"));
                             tvDatum.setPadding(0, 20, 0, 0);
 
-                            // Složimo sve zajedno
                             verticalLayout.addView(topRow);
                             verticalLayout.addView(tvDatum);
 

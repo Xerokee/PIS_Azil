@@ -66,16 +66,12 @@ public class DetailedActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailed);
 
-        // Inicijalizacija ViewPager2
         viewPager = findViewById(R.id.viewPager);
 
-        // Inicijalizacija API servisa
         apiService = ApiClient.getClient().create(ApiService.class);
 
-        // Retrieve the animal ID passed from HomeFragment
         animalModel = (IsBlockedAnimalModel) getIntent().getSerializableExtra("animal");
 
-        // Logiranje proslijeđenog modela životinje
         //Log.d(TAG, "Proslijeđeni model životinje: " + animalModel);
 
         detailedImg = findViewById(R.id.detailed_img);
@@ -84,7 +80,6 @@ public class DetailedActivity extends AppCompatActivity {
 
         addToCart = findViewById(R.id.add_to_cart);
 
-        // Dohvaćanje trenutnog korisnika iz SharedPreferences
         SharedPreferences prefs = getSharedPreferences("user_prefs", Context.MODE_PRIVATE);
         String userJson = prefs.getString("current_user", null);
         UserModel currentUser;
@@ -96,29 +91,26 @@ public class DetailedActivity extends AppCompatActivity {
             currentUser = null;
         }
 
-        // Prikaži gumb "Udomi" za sve korisnike, ali s različitim funkcionalnostima
         if (currentUser != null && currentUser.isAdmin()) {
             // Admin bira udomitelja
             addToCart.setOnClickListener(v -> {
                 if (!isRequestInProgress) {
                     isRequestInProgress = true;
-                    addToCart.setEnabled(false);  // privremeno onemogućimo gumb
+                    addToCart.setEnabled(false);
                     showAdoptionDialogWithAllUsers();
                 }
             });
         } else {
-            // Obični korisnici mogu samo poslati zahtjev za udomljavanje
             addToCart.setOnClickListener(v -> {
                 if (!isRequestInProgress) {
                     isRequestInProgress = true;
-                    addToCart.setEnabled(false);  // privremeno onemogućimo gumb
+                    addToCart.setEnabled(false);
                     requestAdoptionForUser(currentUser);
                 }
             });
         }
 
         if (animalModel != null) {
-            // Fetch full details of the animal
             Log.d(TAG, "ID ljubimca: " + animalModel.getIdLjubimca());
             fetchAnimalDetails(animalModel.getIdLjubimca());
         } else {
@@ -163,7 +155,6 @@ public class DetailedActivity extends AppCompatActivity {
         name.setText(detailedAnimal.getImeLjubimca());
         description.setText(detailedAnimal.getOpisLjubimca());
 
-        // Update Image
         Log.d(TAG, "Učitavam sliku iz URL-a: " + detailedAnimal.getImgUrl());
         Glide.with(getApplicationContext())
                 .load(detailedAnimal.getImgUrl())
@@ -171,7 +162,6 @@ public class DetailedActivity extends AppCompatActivity {
                 .error(R.drawable.milk2)
                 .into(detailedImg);
 
-        // Update Gallery in ViewPager
         List<String> galleryUrls = new ArrayList<>();
         for (GalleryImageModel galleryImage : detailedAnimal.getGalerijaZivotinja()) {
             galleryUrls.add(galleryImage.getImgUrl());
@@ -186,7 +176,6 @@ public class DetailedActivity extends AppCompatActivity {
         }
     }
 
-    // Metoda za admina - prikaz dijaloga s popisom korisnika
     private void showAdoptionDialogWithAllUsers() {
         apiService.getAllUsers().enqueue(new Callback<List<UserModel>>() {
             @Override
@@ -195,7 +184,6 @@ public class DetailedActivity extends AppCompatActivity {
                     List<String> userNames = new ArrayList<>();
                     List<Integer> userIds = new ArrayList<>();
 
-                    // Prikazujemo samo korisnike koji nisu admini
                     for (UserModel user : response.body()) {
                         if (!user.isAdmin()) {
                             userNames.add(user.getIme());
@@ -229,26 +217,21 @@ public class DetailedActivity extends AppCompatActivity {
         });
     }
 
-    // Definicija interfejsa unutar DetailedActivity
     public interface OnEmailFetchedListener {
         void onEmailFetched(String email);
     }
 
 
-    // Metoda za admina - udomljavanje životinje za odabranog korisnika
     private void adoptAnimalForUser(int userId, String userName) {
         Log.d(TAG, "Udomljavanje životinje za korisnika: " + userName);
 
-        // Pozovemo adoptAnimal i nakon toga pošaljemo email
-        adoptAnimal(userId, false); // Admin odmah odobrava udomljavanje
+        adoptAnimal(userId, false);
 
-        // Nakon odabira udomitelja, dohvatite email korisnika i pošaljite email
         getEmailById(userId, email -> {
             if (email != null && !email.isEmpty()) {
                 String subject = "Životinja je uspješno udomljena!";
                 String body = "Poštovani, " + userName + " je uspješno udomio/udomila životinju " + animalModel.getImeLjubimca() + ".";
 
-                // Pokretanje nove niti za slanje emaila kako ne bi blokiralo glavni thread
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -289,16 +272,13 @@ public class DetailedActivity extends AppCompatActivity {
         });
     }
 
-
-    // Metoda za korisnike - zahtjev za udomljavanje životinje za sebe (dodaje se u listu za odobrenje)
     private void requestAdoptionForUser(UserModel currentUser) {
         if (currentUser != null) {
             Log.d(TAG, "Korisnik šalje zahtjev za udomljavanje: " + currentUser.getIme());
-            adoptAnimal(currentUser.getIdKorisnika(), true); // Korisnik šalje zahtjev koji čeka odobrenje
+            adoptAnimal(currentUser.getIdKorisnika(), true);
         }
     }
 
-    // Zajednička metoda za udomljavanje ili zahtjev za udomljavanje
     private void adoptAnimal(int userId, boolean requiresApproval) {
         if (animalModel == null) {
             Log.e(TAG, "AnimalModel je null, prekidam proces.");
@@ -310,7 +290,6 @@ public class DetailedActivity extends AppCompatActivity {
         adoptionModel.setIdLjubimca(animalModel.getIdLjubimca());
         Log.i("id ljubimca", String.valueOf(animalModel.getIdLjubimca()));
 
-        // Postavljanje imena ljubimca
         if (animalModel.getImeLjubimca() != null && !animalModel.getImeLjubimca().isEmpty()) {
             adoptionModel.setImeLjubimca(animalModel.getImeLjubimca());
         } else {
@@ -318,7 +297,6 @@ public class DetailedActivity extends AppCompatActivity {
             adoptionModel.setImeLjubimca("Nepoznato ime");
         }
 
-        // Postavljanje tipa ljubimca
         if (animalModel.getTipLjubimca() != null && !animalModel.getTipLjubimca().isEmpty()) {
             adoptionModel.setTipLjubimca(animalModel.getTipLjubimca());
         } else {
@@ -328,27 +306,23 @@ public class DetailedActivity extends AppCompatActivity {
 
         adoptionModel.setOpisLjubimca(animalModel.getOpisLjubimca());
 
-        // Postavljanje trenutnog datuma i vremena
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
 
-        // Adjust timezone to Croatian timezone
         sdfDate.setTimeZone(TimeZone.getTimeZone("Europe/Zagreb"));
         sdfTime.setTimeZone(TimeZone.getTimeZone("Europe/Zagreb"));
 
-        // Postavljanje datuma i vremena
         String currentDate = sdfDate.format(Calendar.getInstance().getTime());
         String currentTime = sdfTime.format(Calendar.getInstance().getTime());
 
         adoptionModel.setDatum(currentDate);
         adoptionModel.setVrijeme(currentTime);
         adoptionModel.setImgUrl(animalModel.getImgUrl());
-        adoptionModel.setIdKorisnika(userId);  // Postavljanje korisnika
+        adoptionModel.setIdKorisnika(userId);
 
         if (requiresApproval) {
-            // Ako zahtjeva odobrenje, označava se kao neudomljena životinja
             adoptionModel.setUdomljen(false);
-            adoptionModel.setStatusUdomljavanja(true); // Čeka odobrenje
+            adoptionModel.setStatusUdomljavanja(true);
             adoptionModel.setZahtjevUdomljavanja(true);
             adoptionModel.setZahtjevUdomljavanja(true);
             Log.d(TAG, "Print");
@@ -371,7 +345,6 @@ public class DetailedActivity extends AppCompatActivity {
                 }
             });
         } else {
-            // Ako admin odobrava odmah, označava se kao udomljena
             adoptionModel.setUdomljen(true);
             adoptionModel.setStatusUdomljavanja(false);
             apiService.adoptAnimalByAdmin(animalModel.getIdLjubimca()).enqueue(new Callback<Void>() {
@@ -409,7 +382,6 @@ public class DetailedActivity extends AppCompatActivity {
                         Toast.makeText(DetailedActivity.this, "Životinja je uspješno udomljena!", Toast.LENGTH_SHORT).show();
                     }
 
-                    // Postavi rezultat kao uspješan i vrati ID udomljene životinje
                     Intent resultIntent = new Intent();
                     resultIntent.putExtra("udomljena_zivotinja_id", animalModel.getIdLjubimca());
                     setResult(RESULT_OK, resultIntent);
@@ -429,9 +401,8 @@ public class DetailedActivity extends AppCompatActivity {
         });
     }
 
-    // Metoda za resetiranje stanja nakon API zahtjeva
     private void resetRequestState() {
         isRequestInProgress = false;
-        addToCart.setEnabled(true);  // ponovno omogućimo gumb
+        addToCart.setEnabled(true);
     }
 }
