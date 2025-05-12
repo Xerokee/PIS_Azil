@@ -6,7 +6,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/white">
 
-    <!-- Search Box -->
     <EditText
         android:id="@+id/search_adopter_box"
         android:layout_width="0dp"
@@ -25,7 +24,6 @@
         app:layout_constraintWidth_percent="0.8"
         android:layout_marginTop="16dp"/>
 
-    <!-- Filter Button -->
     <ImageButton
         android:id="@+id/filter_button"
         android:layout_width="48dp"
@@ -42,7 +40,6 @@
         app:layout_constraintTop_toTopOf="@+id/search_adopter_box"
         app:layout_constraintVertical_bias="1.0" />
 
-    <!-- RecyclerView for displaying the animals -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview_my_animals"
         android:layout_width="0dp"
@@ -55,7 +52,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_adopter_box" />
 
-    <!-- Empty State: Message when no animals are available -->
     <ImageView
         android:id="@+id/new_animals_img"
         android:layout_width="200dp"

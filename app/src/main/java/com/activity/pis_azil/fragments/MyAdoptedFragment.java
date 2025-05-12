@@ -171,7 +171,6 @@ public class MyAdoptedFragment extends Fragment {
             @Override
             public void onFailure(Call<List<UserModel>> call, Throwable t) {
                 Log.e("MyAdoptedFragment", "Error fetching users: ", t);
-                Toast.makeText(getActivity(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -239,14 +238,12 @@ public class MyAdoptedFragment extends Fragment {
                     adapter.notifyDataSetChanged();
                     updateEmptyState();
                 } else {
-                    Toast.makeText(getActivity(), "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<UpdateDnevnikModel>> call, Throwable t) {
                 Log.e("MyAdoptedFragment", "Error fetching documents: ", t);
-                Toast.makeText(getActivity(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -308,14 +305,12 @@ public class MyAdoptedFragment extends Fragment {
                     recyclerView.setAdapter(adapter);
                     updateEmptyState();
                 } else {
-                    Toast.makeText(getActivity(), "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<UpdateDnevnikModel>> call, Throwable t) {
                 Log.e("MyAdoptedFragment", "Error fetching documents: ", t);
-                Toast.makeText(getActivity(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -25,7 +25,6 @@ public class UpdateDnevnikModel implements Serializable {
     private List<String> activities;
     private boolean isNotificationShown = false;
 
-    // Defaultni konstruktor sa inicijalizacijom
     public UpdateDnevnikModel() {
         galleryImgUrls = new ArrayList<>();
         activities = new ArrayList<>();

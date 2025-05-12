@@ -126,7 +126,7 @@ public class ProfileFragment extends Fragment {
 
     private void refreshFragment() {
         FragmentTransaction ft = getParentFragmentManager().beginTransaction();
-        ft.detach(this).attach(this).commit(); // Ponovno učitajte fragment
+        ft.detach(this).attach(this).commit();
     }
 
     private void showImagePickDialog() {
@@ -210,7 +210,6 @@ public class ProfileFragment extends Fragment {
                     email.setText(userModel.getResult().getEmail());
                     lozinka.setText(userModel.getResult().getLozinka());
 
-                    // Provjera je li slika profila null
                     if (userModel.getResult().getProfileImg() != null) {
                         Glide.with(getContext()).load(userModel.getResult().getProfileImg()).into(profileImage);
                     } else {
@@ -255,7 +254,6 @@ public class ProfileFragment extends Fragment {
     }
 
     private void updateUserProfile() {
-        // Provjera da li je slika odabrana
         if (imageUri == null) {
             Toast.makeText(getContext(), "Molimo odaberite sliku prije ažuriranja profila", Toast.LENGTH_SHORT).show();
             return;

@@ -35,7 +35,7 @@ public class AlarmReceiver extends BroadcastReceiver {
         Intent intent = new Intent(context, AlarmReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_MUTABLE);
 
-        long interval = AlarmManager.INTERVAL_DAY * 7; // Tjedan dana
+        long interval = AlarmManager.INTERVAL_DAY * 7;
         alarmManager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), interval, pendingIntent);
     }
 

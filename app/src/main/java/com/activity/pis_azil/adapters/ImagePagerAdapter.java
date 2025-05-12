@@ -42,7 +42,7 @@ public class ImagePagerAdapter extends RecyclerView.Adapter<ImagePagerAdapter.Vi
 
         holder.imageView.setOnClickListener(v -> {
             Intent intent = new Intent(context, ImageDetailActivity.class);
-            intent.putExtra("imageUrl", imageUrl);  // Prosljeđivanje URL-a slike
+            intent.putExtra("imageUrl", imageUrl);
             context.startActivity(intent);
         });
     }

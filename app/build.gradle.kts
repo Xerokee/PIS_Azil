@@ -92,16 +92,12 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
-    // Rounded Imageview
     implementation("com.makeramen:roundedimageview:2.3.0")
 
-    // Glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
-    // Circle ImageView
     implementation("de.hdodenhof:circleimageview:3.1.0")
 
-    //Dialog Plus
     implementation ("com.orhanobut:dialogplus:1.11@aar")
 
     implementation("com.google.firebase:firebase-messaging-ktx")

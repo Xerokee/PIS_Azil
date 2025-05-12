@@ -153,7 +153,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
         holder.itemView.setBackgroundColor(Color.WHITE);
         /*
-        // Postavljanje boje pozadine ovisno o statusu udomljavanja
         if (!cartModel.isStatusUdomljavanja()) {
             holder.itemView.setBackgroundColor(Color.RED); // Crvena boja za odbijeno udomljavanje
         } else {
@@ -163,7 +162,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         holder.name.setText(" " + cartModel.getImeLjubimca());
 
         /*
-        // Dohvati email korisnika prema ID-u
         getEmailById(cartModel.getIdKorisnika(), email -> {
             if (email != null && !email.isEmpty()) {
                 holder.requester.setText(email); // Prikaz emaila u TextView
@@ -272,7 +270,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         }
 
         if (currentUser.isAdmin()) {
-            // If admin, fetch all records
             apiService.getDnevnikUdomljavanja().enqueue(new Callback<List<UpdateDnevnikModel>>() {
                 @Override
                 public void onResponse(Call<List<UpdateDnevnikModel>> call, Response<List<UpdateDnevnikModel>> response) {
@@ -365,8 +362,8 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
         UpdateDnevnikModel model = new UpdateDnevnikModel();
         model.setId_korisnika(cartModel.getIdKorisnika());
-        model.setUdomljen(true);  // Označava da je životinja udomljena
-        model.setStatus_udomljavanja(false); // Završava proces udomljavanja
+        model.setUdomljen(true);
+        model.setStatus_udomljavanja(false);
         model.setIme_ljubimca(cartModel.getImeLjubimca());
         model.setTip_ljubimca(cartModel.getTipLjubimca());
         model.setDatum(cartModel.getDatum());
@@ -374,7 +371,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         model.setImgUrl(cartModel.getImgUrl());
         model.setStanje_zivotinje(cartModel.isStanjeZivotinje());
 
-        // RequestAnimalId postavljamo na 1
         apiService.updateAdoption(1, animalId, model).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -589,7 +585,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         builder.create().show();
     }
 
-    // MyAdoptionAdapter.java
     private void updateAnimalDocument(int position, String updatedName, String updatedType, String updatedDate, String updatedTime, String updatedImgUrl, boolean stanjeZivotinje) {
         MyAdoptionModel cartModel = cartModelList.get(position);
 
@@ -643,9 +638,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
     }
 
     private void showAdoptionDialog(MyAdoptionModel selectedAnimal, int position) {
-        // Provjeravamo postoji li korisnik koji je podnio zahtjev
         if (selectedAnimal.getIdKorisnika() != 0) {
-            // Ako postoji korisnik koji je podnio zahtjev, prikaži dijalog samo za tog korisnika
             getEmailById(selectedAnimal.getIdKorisnika(), email -> {
                 if (email != null && !email.isEmpty()) {
                     new AlertDialog.Builder(context)
@@ -661,7 +654,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 }
             });
         } else {
-            // Ako nema korisnika koji je podnio zahtjev, prikaži dijalog sa svim korisnicima
             showAdoptionDialogWithAllUsers(selectedAnimal, position);
         }
     }
@@ -674,7 +666,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                     List<String> adopterNames = new ArrayList<>();
                     List<String> adopterIds = new ArrayList<>();
 
-                    // Prikaži sve korisnike osim admina
                     for (UserModel userModel : response.body()) {
                         if (!userModel.isAdmin()) {
                             adopterNames.add(userModel.getIme());
@@ -684,7 +675,7 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
 
                     if (adopterNames.isEmpty()) {
                         Toast.makeText(context, "Trenutno nema dostupnih udomitelja.", Toast.LENGTH_SHORT).show();
-                        return; // Izađi ako nema udomitelja
+                        return;
                     }
 
                     CharSequence[] adoptersArray = adopterNames.toArray(new CharSequence[0]);
@@ -717,11 +708,9 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             notificationManager.createNotificationChannel(channel);
         }
 
-        // Kreiramo Intent za otvaranje AdoptionStatusActivity s dodatnim informacijama
         Intent intent = new Intent(context, AdoptionStatusActivity.class);
-        intent.putExtra("idLjubimca", idLjubimca);  // Šaljemo ID životinje
+        intent.putExtra("idLjubimca", idLjubimca);
 
-        // Postavljamo PendingIntent s Intentom
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 context,
                 0,
@@ -729,7 +718,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
         );
 
-        // Kreiramo obavijest
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(R.drawable.paw)  // Ikonica za obavijest
                 .setContentTitle("Unesite status za udomljavanje")
@@ -738,7 +726,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
                 .setContentIntent(pendingIntent)  // Klik na obavijest otvara aktivnost
                 .setAutoCancel(true);  // Obavijest će se automatski ukloniti kada se klikne
 
-        // Prikazujemo obavijest
         notificationManager.notify(animalName.hashCode(), builder.build());
     }
 
@@ -757,12 +744,10 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
         // model.setId_ljubimca(selectedAnimal.getIdLjubimca());
 
         Date now = new Date();
-        // Format za datum
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String currentDate = dateFormat.format(now);
         model.setDatum(currentDate);
 
-        // Format za vrijeme
         SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
         String currentTime = timeFormat.format(now);
         model.setVrijeme(currentTime);
@@ -777,7 +762,6 @@ public class MyAdoptionAdapter extends RecyclerView.Adapter<MyAdoptionAdapter.Vi
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     Log.d(TAG, "Animal adopted successfully: " + selectedAnimal.getIdLjubimca() + ", adopterId: " + adopterId + ", adopterName: " + adopterName);
-                    // Slanje obavijesti korisniku
                     // sendAdoptionStatusNotification(context, selectedAnimal.getIdLjubimca(), selectedAnimal.getImeLjubimca());
                     Toast.makeText(context, "Životinja je udomljena za korisnika " + adopterName, Toast.LENGTH_SHORT).show();
                     notifyDataSetChanged();

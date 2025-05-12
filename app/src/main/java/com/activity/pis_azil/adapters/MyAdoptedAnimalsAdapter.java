@@ -146,7 +146,7 @@ public class MyAdoptedAnimalsAdapter extends RecyclerView.Adapter<MyAdoptedAnima
             adopterSurnameTextView.setText("Nepoznato");
             animal.setImeUdomitelja("Nepoznato");
             animal.setPrezimeUdomitelja("Nepoznato");
-            notifyDataSetChanged(); // Osvježi adapter nakon ažuriranja modela
+            notifyDataSetChanged();
             return;
         }
 

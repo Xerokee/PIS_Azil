@@ -106,7 +106,7 @@ public class HomeFragment extends Fragment {
         Log.d(TAG,"fsdfsdd");
         getTipoveLjubimaca();
         refreshAllData();
-        // loadAllAnimals();
+        loadAllAnimals();
         // loadAllAdoptedAnimals();
         // getToken();
 
@@ -151,7 +151,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    // Otvaranje filter dijaloga
     private void openFilterDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Filtriraj životinje");
@@ -163,7 +162,6 @@ public class HomeFragment extends Fragment {
         Spinner ageSpinner = filterView.findViewById(R.id.spinner_age);
         Spinner colorSpinner = filterView.findViewById(R.id.spinner_color);
 
-        // Postavljanje opcija u Spinner
         ArrayAdapter<CharSequence> typeAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.animal_types, android.R.layout.simple_spinner_item);
         typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -181,22 +179,19 @@ public class HomeFragment extends Fragment {
 
         AlertDialog dialog = builder.create();
 
-        // Potvrda filtera
         Button confirmButton = filterView.findViewById(R.id.confirm_button);
         confirmButton.setOnClickListener(v -> {
             String selectedType = typeSpinner.getSelectedItem().toString();
             String selectedAge = ageSpinner.getSelectedItem().toString();
             String selectedColor = colorSpinner.getSelectedItem().toString();
 
-            applyFilters(selectedType, selectedAge, selectedColor); // Prosljeđivanje naziva, a ne ID-a
+            applyFilters(selectedType, selectedAge, selectedColor);
             dialog.dismiss();
         });
 
-        // Odustajanje
         Button cancelButton = filterView.findViewById(R.id.cancel_button);
         cancelButton.setOnClickListener(v -> dialog.dismiss());
 
-        // Resetiranje filtera
         Button resetButton = filterView.findViewById(R.id.reset_button);
         resetButton.setOnClickListener(v -> {
             typeSpinner.setSelection(0);
@@ -210,10 +205,9 @@ public class HomeFragment extends Fragment {
         dialog.show();
     }
 
-    // Metoda za resetiranje filtera
     private void resetFilter() {
         Log.d(TAG, "Resetting filters and reloading all animals");
-        if(searchBox != null) searchBox.setText(""); // Očisti i polje za pretragu
+        if(searchBox != null) searchBox.setText("");
         lastSearchedType = "";
         refreshAllData();
     }
@@ -221,19 +215,16 @@ public class HomeFragment extends Fragment {
     private String getTypeNameById(int id) {
         for (SifrTipLjubimca tip : tipLjubimcaList) {
             if (tip.getId() == id) {
-                return tip.getNaziv(); // Vraća naziv (npr. "Pas" ili "Mačka")
+                return tip.getNaziv();
             }
         }
-        return "Nepoznato"; // Ako ID ne postoji
+        return "pas";
     }
 
-
-    // Metoda za primjenu filtera
     private void applyFilters(String typeName, String age, String color) {
         Integer minDob = null;
         Integer maxDob = null;
 
-        // Postavljanje dobi na osnovu izabrane opcije
         if (!age.equals("Sve")) {
             switch (age) {
                 case "0 do 1 godina":
@@ -246,13 +237,11 @@ public class HomeFragment extends Fragment {
                     break;
                 case "5+ godina":
                     minDob = 6;
-                    maxDob = 20; // Maksimalna starost
+                    maxDob = 20;
                     break;
             }
         }
-
         Log.d(TAG, "Filtriraj: tip=" + (typeName != null ? typeName : "Sve") + ", dobMin=" + minDob + ", dobMax=" + maxDob + ", boja=" + color);
-
         progressBar.setVisibility(View.VISIBLE);
 
         Set<Integer> blockedAnimalIds = new HashSet<>();
@@ -262,7 +251,6 @@ public class HomeFragment extends Fragment {
             }
         }
 
-        // API poziv koji koristi naziv tipa umjesto ID-a
         apiService.getFilteredAnimalsByAgeRange(
                 typeName.equals("Sve") ? null : typeName,
                 minDob == null ? 0 : minDob,
@@ -277,12 +265,12 @@ public class HomeFragment extends Fragment {
                     animalModelList.clear();
                     List<IsBlockedAnimalModel> mappedAnimals = response.body().stream()
                             .map(animal -> {
-                                boolean wasBlocked = blockedAnimalIds.contains(animal.getIdLjubimca()); // **Provjeri da li je ova životinja bila blokirana**
+                                boolean wasBlocked = blockedAnimalIds.contains(animal.getIdLjubimca());
                                 return new IsBlockedAnimalModel(
                                         animal.getIdLjubimca(),
                                         animal.getIdUdomitelja(),
                                         animal.getImeLjubimca(),
-                                        getTypeNameById(Integer.parseInt(animal.getTipLjubimca())), // Ovdje će sada biti naziv umjesto ID-a
+                                        getTypeNameById(Integer.parseInt(animal.getTipLjubimca())),
                                         animal.getOpisLjubimca(),
                                         animal.isUdomljen(),
                                         animal.isZahtjevUdomljavanja(),
@@ -312,7 +300,6 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    // Metoda za dohvat tipova ljubimaca
     private void getTipoveLjubimaca() {
         if (apiService == null) {
             Log.e(TAG, "getTipoveLjubimaca: apiService is null! Aborting chain.");
@@ -430,7 +417,7 @@ public class HomeFragment extends Fragment {
         if (getContext() == null || apiService == null) {
             Log.w(TAG, "loadAllAnimals - Context or apiService is null, aborting.");
             if (progressBar != null) progressBar.setVisibility(View.GONE);
-            isLoadingData = false; // Resetiraj zastavicu
+            isLoadingData = false;
             return;
         }
         if (progressBar != null && progressBar.getVisibility() == View.GONE) {
@@ -507,7 +494,6 @@ public class HomeFragment extends Fragment {
                 }
                 if (progressBar != null) progressBar.setVisibility(View.GONE);
                 Log.e(TAG, "Failed to fetch animals", t);
-                Toast.makeText(getContext(), "Neuspjelo učitavanje životinja: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 isLoadingData = false;
             }
         });
@@ -562,7 +548,6 @@ public class HomeFragment extends Fragment {
             public void onFailure(Call<List<AnimalModel>> call, Throwable t) {
                 progressBar.setVisibility(View.GONE);
                 Log.e(TAG, "Failed to fetch animals", t);
-                Toast.makeText(getContext(), "Greška u učitavanju životinja", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -595,14 +580,12 @@ public class HomeFragment extends Fragment {
                     fetchBlokiranjeZivotinje(filteredAnimals);
                 } else {
                     Log.e(TAG, "Failed to fetch adopted animals. Response code: " + response.code() + ", Message: " + response.message());
-                    Toast.makeText(getActivity(), "Greška: " + response.message(), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<UpdateDnevnikModel>> call, Throwable t) {
                 Log.e(TAG, "Error fetching adopted animals: ", t);
-                Toast.makeText(getActivity(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -684,7 +667,7 @@ public class HomeFragment extends Fragment {
             SharedViewModel sharedViewModel = null;
             try {
                 sharedViewModel = new ViewModelProvider(requireActivity()).get(SharedViewModel.class);
-                String userIdStr = sharedViewModel.getUserId().getValue(); // getValue() je sinkrono
+                String userIdStr = sharedViewModel.getUserId().getValue();
                 if (userIdStr != null && !userIdStr.isEmpty()) {
                     return Integer.parseInt(userIdStr);
                 }
@@ -722,7 +705,6 @@ public class HomeFragment extends Fragment {
             loadAllAnimals();
             return;
         }
-
         Log.d(TAG, "getOdbijeneZivotinje: Fetching rejected animals for user ID: " + currentUserId);
         apiService.getOdbijeneZivotinje().enqueue(new Callback<List<RejectAdoptionModelRead>>() {
             @Override
@@ -743,15 +725,14 @@ public class HomeFragment extends Fragment {
                 } else {
                     Log.e(TAG, "getOdbijeneZivotinje: Failed to fetch. Code: " + response.code());
                 }
-                loadAllAnimals(); // Nastavi lanac
+                loadAllAnimals();
             }
-
             @Override
             public void onFailure(Call<List<RejectAdoptionModelRead>> call, Throwable t) {
                 if (getContext() == null) { isLoadingData = false; if(progressBar != null) progressBar.setVisibility(View.GONE); return; }
                 Log.e(TAG, "getOdbijeneZivotinje: API call failed.", t);
                 listaOdbijenih.clear();
-                loadAllAnimals(); // Nastavi lanac
+                loadAllAnimals();
             }
         });
     }
@@ -778,16 +759,14 @@ public class HomeFragment extends Fragment {
         if (getContext() == null || apiService == null) {
             Log.w(TAG, "refreshAllData: Context or apiService is null, cannot refresh.");
             if (progressBar != null) progressBar.setVisibility(View.GONE);
-            isLoadingData = false; // Resetiraj zastavicu ako ne možemo nastaviti
+            isLoadingData = false;
             return;
         }
-
         Log.d(TAG, "refreshAllData: Initiating data refresh sequence...");
-        isLoadingData = true; // Postavi zastavicu da se podaci učitavaju
+        isLoadingData = true;
         if (progressBar != null) {
             progressBar.setVisibility(View.VISIBLE);
         }
-
         getTipoveLjubimaca();
     }
 }

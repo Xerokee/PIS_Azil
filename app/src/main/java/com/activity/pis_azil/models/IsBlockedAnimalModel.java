@@ -181,7 +181,7 @@ public class IsBlockedAnimalModel implements Serializable {
                 ", vrijeme='" + vrijeme + '\'' +
                 ", imgUrl='" + imgUrl + '\'' +
                 ", stanje_zivotinje=" + stanje_zivotinje +
-                ", isBlocked=" + isBlocked +  // Dodano novo polje u toString metodu
+                ", isBlocked=" + isBlocked +
                 ", dob=" + dob +
                 ", boja='" + boja + '\'' +
                 '}';

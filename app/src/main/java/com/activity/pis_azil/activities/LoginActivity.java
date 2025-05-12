@@ -127,7 +127,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void autoLogin() {
-        int userId = preferences.getInt("biometric_user_id", 1); // Dohvati spremljeni ID
+        int userId = preferences.getInt("biometric_user_id", 1);
         Log.d("LoginActivity", "Biometric User ID: " + userId);
 
         if (userId != -1) {
@@ -190,7 +190,6 @@ public class LoginActivity extends AppCompatActivity {
                         Log.d("LoginActivity", "Entered password: " + userPassword);
                         if (dbPassword.equals(userPassword)) {
                             Toast.makeText(LoginActivity.this, "Prijava je uspješna!", Toast.LENGTH_SHORT).show();
-                            // Fetch user data by email
                             apiService.getUserByIdEmail(userEmail).enqueue(new Callback<UserByEmailResponseModel>() {
                                 @Override
                                 public void onResponse(Call<UserByEmailResponseModel> call, Response<UserByEmailResponseModel> response) {
