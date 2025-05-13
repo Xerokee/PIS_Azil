@@ -104,12 +104,12 @@ public class MeetingFragment extends Fragment {
                 if (vg != null) {
                     TextView monthTitle = (TextView) vg.getChildAt(0);
                     if (monthTitle instanceof TextView) {
-                        monthTitle.setTextColor(Color.BLACK); // mjesec/godina
+                        monthTitle.setTextColor(Color.BLACK);
                     }
                     ImageButton leftArrow = (ImageButton) vg.getChildAt(1);
                     ImageButton rightArrow = (ImageButton) vg.getChildAt(2);
-                    if (leftArrow != null) leftArrow.setColorFilter(Color.BLACK); // lijeva strelica
-                    if (rightArrow != null) rightArrow.setColorFilter(Color.BLACK); // desna strelica
+                    if (leftArrow != null) leftArrow.setColorFilter(Color.BLACK);
+                    if (rightArrow != null) rightArrow.setColorFilter(Color.BLACK);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -148,7 +148,6 @@ public class MeetingFragment extends Fragment {
             }
             @Override
             public void onFailure(Call<HttpRequestResponseList<Meeting>> call, Throwable t) {
-                Toast.makeText(getContext(), "Greška: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -171,7 +170,6 @@ public class MeetingFragment extends Fragment {
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(getContext(), "Greška u API pozivu.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -194,7 +192,6 @@ public class MeetingFragment extends Fragment {
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(getContext(), "Greška u API pozivu.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -219,13 +216,12 @@ public class MeetingFragment extends Fragment {
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(getContext(), "Greška u API pozivu.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     private boolean isAdmin() {
-        return idKorisnika == 1; // Ili tvoje pravilo za admina
+        return idKorisnika == 1;
     }
 
     private void showAdminOptions(Meeting meeting) {
@@ -314,8 +310,6 @@ public class MeetingFragment extends Fragment {
                     }
                 });
                 popupWindow.showAtLocation(v,Gravity.CENTER,0,0);
-
-
             }
         });
 
@@ -349,7 +343,7 @@ public class MeetingFragment extends Fragment {
                 String timeRange = startTimeStr + " - " + endTimeStr;
                 tvTime.setText(timeRange);
             } catch (Exception e) {
-                tvTime.setText(meeting.getVrijeme()); // fallback
+                tvTime.setText(meeting.getVrijeme());
             }
             if (meeting.getImeKorisnik() != null) {
                 tvName.setText(meeting.getImeKorisnik());
@@ -359,11 +353,11 @@ public class MeetingFragment extends Fragment {
                 tvName.setTextColor(Color.parseColor("#2fbd22"));
             }
 
-            if (!Objects.equals(idKorisnika,1)){  //nisi admin
+            if (!Objects.equals(idKorisnika,1)){
                 btnObrisi.setVisibility(View.GONE);
             }
             else{
-                btnRezerviraj.setVisibility(View.GONE); //jesi admin
+                btnRezerviraj.setVisibility(View.GONE);
                 btnOtkazi.setVisibility(View.GONE);
             }
             btnObrisi.setOnClickListener(new View.OnClickListener() {
@@ -389,13 +383,10 @@ public class MeetingFragment extends Fragment {
             }
             else {
                 if (meeting.getIdKorisnik() == 0) {
-                    // Termin je slobodan, svi korisnici mogu rezervirati
                     btnOtkazi.setVisibility(View.GONE);
                 } else if (meeting.getIdKorisnik() == idKorisnika) {
-                    // Termin je rezervirao trenutni korisnik
                     btnRezerviraj.setVisibility(View.GONE);
                 } else {
-                    // Termin je rezerviran od drugog korisnika
                     btnRezerviraj.setVisibility(View.GONE);
                     btnOtkazi.setVisibility(View.GONE);
                 }
