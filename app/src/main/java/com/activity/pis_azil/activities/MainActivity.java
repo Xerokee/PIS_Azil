@@ -227,7 +227,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<UserByEmailResponseModel> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Failed to fetch user data: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
