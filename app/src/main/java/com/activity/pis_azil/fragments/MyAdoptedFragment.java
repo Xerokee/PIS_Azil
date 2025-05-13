@@ -54,7 +54,6 @@ public class MyAdoptedFragment extends Fragment {
     private List<UpdateDnevnikModel> adoptedAnimalsList;
     public List<UpdateDnevnikModel> filteredAdoptedAnimalsList;
     private TextView newAnimalsTextView;
-    private ImageView newAnimalsImageView;
     private Map<Integer, String> userMap = new HashMap<>();
 
     public MyAdoptedFragment() {
@@ -79,7 +78,6 @@ public class MyAdoptedFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         newAnimalsTextView = root.findViewById(R.id.new_animals_textview);
-        newAnimalsImageView = root.findViewById(R.id.new_animals_img);
 
         fetchUsers();
 
@@ -251,10 +249,8 @@ public class MyAdoptedFragment extends Fragment {
     private void updateEmptyState() {
         if (filteredAdoptedAnimalsList.isEmpty()) {
             newAnimalsTextView.setVisibility(View.VISIBLE);
-            newAnimalsImageView.setVisibility(View.VISIBLE);
         } else {
             newAnimalsTextView.setVisibility(View.GONE);
-            newAnimalsImageView.setVisibility(View.GONE);
         }
     }
 

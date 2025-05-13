@@ -147,7 +147,6 @@ public class MyAnimalsFragment extends Fragment implements MyAnimalsAdapter.OnFe
                 }
             }
         }
-
         adapter.notifyDataSetChanged();
     }
 
@@ -218,7 +217,6 @@ public class MyAnimalsFragment extends Fragment implements MyAnimalsAdapter.OnFe
             recyclerView.setVisibility(View.VISIBLE);
             emptyStateTextView.setVisibility(View.GONE);
         }
-
         adapter.notifyDataSetChanged();
     }
 

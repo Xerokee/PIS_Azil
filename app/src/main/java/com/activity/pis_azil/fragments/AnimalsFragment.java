@@ -16,6 +16,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.activity.pis_azil.R;
@@ -51,10 +52,10 @@ public class AnimalsFragment extends Fragment implements DataRefreshListener {
     private EditText searchAnimalBox;
     private String currentSearchQuery = "";
     private String currentTypeFilter = "Svi";
+    private TextView animalsTextView;
     List<MyAdoptionModel> allAnimalsList = new ArrayList<>();
 
     public AnimalsFragment() {
-        // Required empty public constructor
     }
 
     @SuppressLint("MissingInflatedId")
@@ -75,7 +76,8 @@ public class AnimalsFragment extends Fragment implements DataRefreshListener {
         cartAdapter = new MyAdoptionAdapter(requireContext(), cartModelList, this); // Pass full list initially
         recyclerView.setAdapter(cartAdapter);
 
-        // Search box logic
+        animalsTextView = root.findViewById(R.id.animals_textview);
+
         searchAnimalBox.addTextChangedListener(new android.text.TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
@@ -90,7 +92,6 @@ public class AnimalsFragment extends Fragment implements DataRefreshListener {
             public void afterTextChanged(android.text.Editable editable) {}
         });
 
-        // Filter button logic
         filterButton.setOnClickListener(v -> showFilterDialog());
 
         fetchAdoptedAnimals();
@@ -140,7 +141,7 @@ public class AnimalsFragment extends Fragment implements DataRefreshListener {
                             allAnimalsList.add(adoption);
                         }
                     }
-
+                    updateEmptyState();
                     applyFilters(currentTypeFilter);
                 } else {
                     Log.e(TAG, "Failed to fetch adopted animals: " + response.message());
@@ -188,6 +189,14 @@ public class AnimalsFragment extends Fragment implements DataRefreshListener {
         dialog.show();
     }
 
+    private void updateEmptyState() {
+        if (allAnimalsList.isEmpty()) {
+            animalsTextView.setVisibility(View.VISIBLE);
+        } else {
+            animalsTextView.setVisibility(View.GONE);
+        }
+    }
+
     private void applyFilters(String type) {
         currentTypeFilter = type;
 
@@ -209,12 +218,12 @@ public class AnimalsFragment extends Fragment implements DataRefreshListener {
             }
         }
 
-        cartAdapter.updateData(filteredList);  // Direktno u adapter
+        cartAdapter.updateData(filteredList);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        fetchAdoptedAnimals();  // Osigurava pravo osvježavanje kad se vratiš na fragment
+        fetchAdoptedAnimals();
     }
 }

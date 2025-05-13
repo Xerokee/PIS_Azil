@@ -38,7 +38,6 @@ public class AvailableAnimalsFragment extends Fragment {
     private Spinner filterTypeSpinner, filterStatusSpinner;
 
     public AvailableAnimalsFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -63,19 +62,16 @@ public class AvailableAnimalsFragment extends Fragment {
     }
 
     private void setupFilterSpinners() {
-        // Set up the type filter spinner
         ArrayAdapter<CharSequence> typeSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),
                 R.array.animal_types2, android.R.layout.simple_spinner_item);
         typeSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterTypeSpinner.setAdapter(typeSpinnerAdapter);
 
-        // Set up the status filter spinner
         ArrayAdapter<CharSequence> statusSpinnerAdapter = ArrayAdapter.createFromResource(getContext(),
-                R.array.animal_statuses2, android.R.layout.simple_spinner_item); // Ažurirano da koristi novi niz sa dvije opcije
+                R.array.animal_statuses2, android.R.layout.simple_spinner_item);
         statusSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         filterStatusSpinner.setAdapter(statusSpinnerAdapter);
 
-        // Set listeners for spinners
         filterTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -84,7 +80,6 @@ public class AvailableAnimalsFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // Do nothing
             }
         });
 
@@ -96,7 +91,6 @@ public class AvailableAnimalsFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                // Do nothing
             }
         });
     }
@@ -140,7 +134,6 @@ public class AvailableAnimalsFragment extends Fragment {
             }
         }
 
-        // Update UI for empty state
         if (filteredAnimalsList.isEmpty()) {
             recyclerView.setVisibility(View.GONE);
             emptyStateTextView.setVisibility(View.VISIBLE);

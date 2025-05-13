@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.AnimalsFragment"
-    android:background="@color/white">
+    android:fillViewport="true" android:background="@color/white">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -33,39 +33,42 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintWidth_percent="0.8"
-                android:layout_marginTop="16dp" />
-
-            <ImageButton
-                android:id="@+id/filter_button"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center_vertical"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="Filtriraj"
-                android:scaleType="centerInside"
-                android:src="@drawable/search_filter"
-                app:layout_constraintBottom_toBottomOf="@+id/search_animal_box"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/search_animal_box"
-                app:layout_constraintVertical_bias="1.0" />
+                android:layout_marginStart="8dp" /> <ImageButton
+            android:id="@+id/filter_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="8dp" android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Filtriraj"
+            android:scaleType="centerInside"
+            android:src="@drawable/search_filter"
+            app:layout_constraintBottom_toBottomOf="@+id/search_animal_box"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/search_animal_box" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="7dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp" android:layout_marginLeft="7dp"
                 android:layout_marginRight="7dp"
-                android:background="@color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.461"
-                app:layout_constraintVertical_bias="0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/search_animal_box" />
+                android:layout_marginTop="8dp" android:background="@color/white"
+                app:layout_constraintTop_toBottomOf="@+id/search_animal_box"
+                app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <TextView
+                android:id="@+id/animals_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/alice"
+                android:text="Nema zahtjeva za udomljavanje!"
+                android:textAlignment="center"
+                android:textColor="@color/green_700"
+                android:textSize="22sp"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent"       app:layout_constraintBottom_toBottomOf="parent"  app:layout_constraintStart_toStartOf="parent"    app:layout_constraintEnd_toEndOf="parent"        tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </FrameLayout>
-
 </androidx.core.widget.NestedScrollView>
